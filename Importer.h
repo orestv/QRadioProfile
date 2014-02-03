@@ -20,6 +20,7 @@ public:
 
     static QList<RightTriangle> import(QString path);
     
+    static QList<RightTriangle> generateRightTriangles(QList<QVector3D> triangle);    
 private:
     static QList<QVector3D> _read_vertices(QString path);
     static QList<QList<int>> _read_indices(QString path);
@@ -28,8 +29,7 @@ private:
     static QList<int> _parse_face_line(QByteArray line);
     static QList<QList<QVector3D>> _generate_faces(QList<QVector3D> points, QList<QList<int>> face_indices);
     static QList<QList<QVector3D>> _generate_triangles(QList<QList<QVector3D>> faces);
-    static QList<RightTriangle> _generate_right_triangles(QList<QList<QVector3D>> triangles);
-    static QList<RightTriangle> _generate_right_triangles(QList<QVector3D> triangle);
+    static QList<RightTriangle> _generate_right_triangles(QList<QList<QVector3D>> triangles);    
     
     QString _filename;
 };

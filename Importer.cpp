@@ -8,6 +8,7 @@
 #include "Importer.h"
 #include <QDebug>
 #include <ctype.h>
+#include <math.h>
 
 QList<RightTriangle> Importer::import(QString path) {
     QList<RightTriangle> result;
@@ -159,17 +160,56 @@ QList<QList<QVector3D>> Importer::_generate_triangles(QList<QList<QVector3D> > f
 
 QList<RightTriangle> Importer::_generate_right_triangles(QList<QList<QVector3D> > triangles) {
     QList<RightTriangle> right_triangles;
-    
+    int skipped_triangles = 0;
     for (auto triangle = triangles.begin(); triangle != triangles.end(); triangle++) {
-        right_triangles.append(Importer::_generate_right_triangles(*triangle));
+        QList<RightTriangle> rt = Importer::generateRightTriangles(*triangle);
+        if (rt.length() > 0)
+            right_triangles.append(rt);
+        else
+            skipped_triangles++;
     }
-    
+    qDebug()<<skipped_triangles<<" triangles skipped.";
     return right_triangles;
 }
 
-QList<RightTriangle> Importer::_generate_right_triangles(QList<QVector3D> triangle) {
+QList<RightTriangle> Importer::generateRightTriangles(QList<QVector3D> triangle) {
+    QVector<QVector3D> t = triangle.toVector();
     QList<RightTriangle> result;
+    int side_indices[][3] = { {0, 1, 2}, {1, 2, 0}, {2, 0, 1} };
+    double max_length = 0;
+    int max_length_index = -1;
+    for (int i = 0; i < 3; i++) {
+        int *side_i = side_indices[i];
+        QVector3D a, b;
+        a = t[side_i[0]];
+        b = t[side_i[1]];
+        QVector3D side = b - a;
+        if (side.length() < 0.01) {        //One of the sides is too short
+            return result;
+        }            
+        if (side.lengthSquared() > max_length) {
+            max_length = side.lengthSquared();
+            max_length_index = i;
+        }
+    }
+    int *ml_side_indices = side_indices[max_length_index];
+    QVector3D a = t[ml_side_indices[0]], 
+            b = t[ml_side_indices[1]],
+            c = t[ml_side_indices[2]];
     
+    QVector3D hippotenuse = c - a;
+    QVector3D longSide = b - a;
     
+    float dotProduct = QVector3D::dotProduct(hippotenuse, longSide);
+    float angleCos = dotProduct / (hippotenuse.length() * longSide.length());
+    
+    QVector3D right_angle_vertex = longSide.normalized() * 
+            hippotenuse.length() * angleCos + a;
+    
+    RightTriangle rt1(right_angle_vertex, c, a),
+            rt2(right_angle_vertex, b, c);
+    
+    result.push_back(rt1);
+    result.push_back(rt2);
     return result;
 }

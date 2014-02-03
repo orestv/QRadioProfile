@@ -8,6 +8,7 @@
 
 #include <QApplication>
 #include "Importer.h"
+#include <QVector3D>
 
 int main(int argc, char *argv[]) {
     // initialize resources, if needed
@@ -18,6 +19,13 @@ int main(int argc, char *argv[]) {
     // create and show your widgets here
 
 //    return app.exec();
+    
+//    QVector3D a(5, 1, 1), b(2, 2, 1), c(1, 1, 1);
+//    QList<QVector3D> triangle;
+//    triangle.push_back(a);
+//    triangle.push_back(b);
+//    triangle.push_back(c);
+//    Importer::generateRightTriangles(triangle);
     
     QString path = "/home/seth/dev/pymodelanalyzer/models/t72.obj";
     try {
