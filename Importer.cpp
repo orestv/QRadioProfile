@@ -12,17 +12,17 @@
 QList<RightTriangle> Importer::import(QString path) {
     QList<RightTriangle> result;
     
-    QList<Point> points = Importer::_read_vertices(path);
+    QList<QVector3D> points = Importer::_read_vertices(path);
     QList<QList<int>> face_indices = Importer::_read_indices(path);
-    QList<QList<Point>> faces = Importer::_generate_faces(points, face_indices);
-    QList<QList<Point>> triangles = Importer::_generate_triangles(faces);
+    QList<QList<QVector3D>> faces = Importer::_generate_faces(points, face_indices);
+    QList<QList<QVector3D>> triangles = Importer::_generate_triangles(faces);
     result = Importer::_generate_right_triangles(triangles);
     
     return result;
 }
 
-QList<Point> Importer::_read_vertices(QString path) {
-    QList<Point> result;
+QList<QVector3D> Importer::_read_vertices(QString path) {
+    QList<QVector3D> result;
     QFile file(path);
     if (!file.exists())
         throw "File doesn't exist!";
@@ -33,7 +33,7 @@ QList<Point> Importer::_read_vertices(QString path) {
         QByteArray line = file.readLine();
         if (!line.startsWith("v "))
             continue;
-        Point pt = _parse_vertex_line(line);
+        QVector3D pt = _parse_vertex_line(line);
         result.push_back(pt);
         
         vertex_count++;
@@ -71,7 +71,7 @@ QList<QList<int>> Importer::_read_indices(QString path) {
     return result;
 }
 
-Point Importer::_parse_vertex_line(QByteArray line) {
+QVector3D Importer::_parse_vertex_line(QByteArray line) {
     while (!isdigit(line[0]))
         line.remove(0, 1);
     line = line.trimmed();
@@ -82,7 +82,7 @@ Point Importer::_parse_vertex_line(QByteArray line) {
     y = (*iter).toDouble();iter++;
     z = (*iter).toDouble();iter++;
 
-    return Point(x, y, z);
+    return QVector3D(x, y, z);
 }
 
 QList<int> Importer::_parse_face_line(QByteArray line) {
@@ -111,10 +111,10 @@ QList<int> Importer::_parse_face_line(QByteArray line) {
     return face_list;
 }
 
-QList<QList<Point>> Importer::_generate_faces(QList<Point> points, QList<QList<int> > indices) {
-    QList<QList<Point>> faces;
+QList<QList<QVector3D>> Importer::_generate_faces(QList<QVector3D> points, QList<QList<int> > indices) {
+    QList<QList<QVector3D>> faces;
     for (auto face_indices = indices.begin(); face_indices != indices.end(); face_indices++) {
-        QList<Point> face_points;
+        QList<QVector3D> face_points;
         for (auto index = face_indices->begin(); index != face_indices->end(); index++) {
             if (points.length() <= *index - 1) {
                 qDebug()<<"Failed to get vertex with index "<<*index-1;
@@ -127,8 +127,8 @@ QList<QList<Point>> Importer::_generate_faces(QList<Point> points, QList<QList<i
     return faces;
 }
 
-QList<QList<Point>> Importer::_generate_triangles(QList<QList<Point> > faces) {
-    QList<QList<Point>> triangles;
+QList<QList<QVector3D>> Importer::_generate_triangles(QList<QList<QVector3D> > faces) {
+    QList<QList<QVector3D>> triangles;
 
     for (auto face = faces.begin(); face != faces.end(); face++) {
         if (face->length() < 3) {
@@ -145,7 +145,7 @@ QList<QList<Point>> Importer::_generate_triangles(QList<QList<Point> > faces) {
         }
         int triangle_indices_1[] = {0, 1, 2};
         int triangle_indices_2[] = {0, 2, 3};
-        QList<Point> triangle_1, triangle_2;
+        QList<QVector3D> triangle_1, triangle_2;
         for (int i = 0; i < 3; i++) {
             triangle_1.push_back(face->at(triangle_indices_1[i]));
             triangle_2.push_back(face->at(triangle_indices_2[i]));
@@ -157,7 +157,7 @@ QList<QList<Point>> Importer::_generate_triangles(QList<QList<Point> > faces) {
     return triangles;
 }
 
-QList<RightTriangle> Importer::_generate_right_triangles(QList<QList<Point> > triangles) {
+QList<RightTriangle> Importer::_generate_right_triangles(QList<QList<QVector3D> > triangles) {
     QList<RightTriangle> right_triangles;
     
     for (auto triangle = triangles.begin(); triangle != triangles.end(); triangle++) {
@@ -167,7 +167,7 @@ QList<RightTriangle> Importer::_generate_right_triangles(QList<QList<Point> > tr
     return right_triangles;
 }
 
-QList<RightTriangle> Importer::_generate_right_triangles(QList<Point> triangle) {
+QList<RightTriangle> Importer::_generate_right_triangles(QList<QVector3D> triangle) {
     QList<RightTriangle> result;
     
     

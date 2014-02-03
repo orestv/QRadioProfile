@@ -8,16 +8,16 @@
 #ifndef RIGHTTRIANGLE_H
 #define	RIGHTTRIANGLE_H
 
-#include "Point.h"
+#include <QVector3D>
 
 class RightTriangle {
 public:
     RightTriangle();
-    RightTriangle(Point vertex, Point p1, Point p2);
+    RightTriangle(QVector3D vertex, QVector3D p1, QVector3D p2);
     RightTriangle(const RightTriangle& orig);
     virtual ~RightTriangle();
 private:
-    Point _vertex, _p1, _p2;
+    QVector3D _vertex, _p1, _p2;
 };
 
 #endif	/* RIGHTTRIANGLE_H */

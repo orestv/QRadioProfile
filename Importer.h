@@ -11,6 +11,7 @@
 #include <QList>
 #include <QString>
 #include <QFile>
+#include <QVector3D>
 
 #include "RightTriangle.h"
 
@@ -20,14 +21,15 @@ public:
     static QList<RightTriangle> import(QString path);
     
 private:
-    static QList<Point> _read_vertices(QString path);
+    static QList<QVector3D> _read_vertices(QString path);
     static QList<QList<int>> _read_indices(QString path);
     
-    static Point _parse_vertex_line(QByteArray line);
+    static QVector3D _parse_vertex_line(QByteArray line);
     static QList<int> _parse_face_line(QByteArray line);
-    static QList<QList<Point>> _generate_faces(QList<Point> points, QList<QList<int>> face_indices);
-    static QList<QList<Point>> _generate_triangles(QList<QList<Point>> faces);
-    static QList<QList<RightTriangle>> _generate_right_triangles(QList<QList<Point>> triangles);
+    static QList<QList<QVector3D>> _generate_faces(QList<QVector3D> points, QList<QList<int>> face_indices);
+    static QList<QList<QVector3D>> _generate_triangles(QList<QList<QVector3D>> faces);
+    static QList<RightTriangle> _generate_right_triangles(QList<QList<QVector3D>> triangles);
+    static QList<RightTriangle> _generate_right_triangles(QList<QVector3D> triangle);
     
     QString _filename;
 };

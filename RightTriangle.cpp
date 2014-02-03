@@ -10,7 +10,7 @@
 RightTriangle::RightTriangle() {
 }
 
-RightTriangle::RightTriangle(Point vertex, Point p1, Point p2) {
+RightTriangle::RightTriangle(QVector3D vertex, QVector3D p1, QVector3D p2) {
     this->_vertex = vertex;
     this->_p1 = p1;
     this->_p2 = p2;
