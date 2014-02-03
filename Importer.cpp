@@ -128,7 +128,31 @@ QList<QList<Point>> Importer::_generate_faces(QList<Point> points, QList<QList<i
 
 QList<QList<Point>> Importer::_generate_triangles(QList<QList<Point> > faces) {
     QList<QList<Point>> triangles;
-    
+
+    for (auto face = faces.begin(); face != faces.end(); face++) {
+        if (face->length() < 3) {
+            qDebug()<<"Face has less than 3 vertices; skipped";
+            continue;
+        }
+        if (face->length() > 4) {
+            qDebug()<<"Face has "<<face->length()<<" vertices; skipped";
+            continue;
+        }
+        if (face->length() == 3) {
+            triangles.push_back(*face);
+            continue;
+        }
+        int triangle_indices_1[] = {0, 1, 2};
+        int triangle_indices_2[] = {0, 2, 3};
+        QList<Point> triangle_1, triangle_2;
+        for (int i = 0; i < 3; i++) {
+            triangle_1.push_back(face->at(triangle_indices_1[i]));
+            triangle_2.push_back(face->at(triangle_indices_2[i]));
+        }
+        triangles.push_back(triangle_1);
+        triangles.push_back(triangle_2);
+    }
+    qDebug()<<faces.length()<<" faces converted to "<<triangles.length()<<" triangles.";
     return triangles;
 }
 
