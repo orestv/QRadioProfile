@@ -30,6 +30,5 @@ Processor::isTriangleVisible(
     QVector3D viewVector =  viewpoint - triangle.vertex();
     viewVector.normalize();
     float viewAngleCos = QVector3D::dotProduct(viewVector, triangle.normal());
-    qDebug()<<viewAngleCos;
     return viewAngleCos > 0;
 }

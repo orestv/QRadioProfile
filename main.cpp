@@ -8,9 +8,10 @@
 
 #include <QApplication>
 #include "Importer.h"
+#include "Processor.h"
 #include <QVector3D>
 
-int __main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     // initialize resources, if needed
     // Q_INIT_RESOURCE(resfile);
 
@@ -28,10 +29,16 @@ int __main(int argc, char *argv[]) {
 //    Importer::generateRightTriangles(triangle);
     
     QString path = "/home/seth/dev/pymodelanalyzer/models/t72.obj";
+    QList<RightTriangle> triangles;
     try {
-        QList<RightTriangle> triangles = Importer::import(path);
+        triangles = Importer::import(path);
     }
     catch (char *exception) {
         std::cout<<"Exception caught: "<<exception;
+        return 0;
     }
+    QVector3D viewpoint(-20, 2, 0);
+    std::cout<<"Processing "<<triangles.length()<<" triangles."<<std::endl;
+    QList<RightTriangle> visibleTriangles = Processor::getVisibleTriangles(triangles, viewpoint);
+    std::cout<<"Visible triangles count: "<<visibleTriangles.length();
 }

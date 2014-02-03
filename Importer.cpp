@@ -14,9 +14,9 @@ QList<RightTriangle> Importer::import(QString path) {
     QList<RightTriangle> result;
     
     QList<QVector3D> points = Importer::_read_vertices(path);
-    QList<QList<int>> face_indices = Importer::_read_indices(path);
-    QList<QList<QVector3D>> faces = Importer::_generate_faces(points, face_indices);
-    QList<QList<QVector3D>> triangles = Importer::_generate_triangles(faces);
+    QList<QList<int> > face_indices = Importer::_read_indices(path);
+    QList<QList<QVector3D> > faces = Importer::_generate_faces(points, face_indices);
+    QList<QList<QVector3D> > triangles = Importer::_generate_triangles(faces);
     result = Importer::_generate_right_triangles(triangles);
     
     return result;
@@ -47,8 +47,8 @@ QList<QVector3D> Importer::_read_vertices(QString path) {
     return result;
 }
 
-QList<QList<int>> Importer::_read_indices(QString path) {
-    QList<QList<int>> result;
+QList<QList<int> > Importer::_read_indices(QString path) {
+    QList<QList<int> > result;
     QFile file(path);
     if (!file.exists())
         throw "File doesn't exist!";
@@ -169,6 +169,7 @@ QList<RightTriangle> Importer::_generate_right_triangles(QList<QList<QVector3D> 
             skipped_triangles++;
     }
     qDebug()<<skipped_triangles<<" triangles skipped.";
+    qDebug()<<"Generated "<<right_triangles.length()<<" right triangles.";
     return right_triangles;
 }
 

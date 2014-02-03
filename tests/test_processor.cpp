@@ -38,7 +38,7 @@ void testIsTriangleVisible() {
         std::cout << "%TEST_FAILED% This triangle should have been hidden!" << std::endl;
 }
 
-int main(int argc, char** argv) {
+int _main(int argc, char** argv) {
     std::cout << "%SUITE_STARTING% test_processor" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
 
