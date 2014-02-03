@@ -16,6 +16,7 @@ QList<RightTriangle> Importer::import(QString path) {
     QList<QList<int>> face_indices = Importer::_read_indices(path);
     QList<QList<Point>> faces = Importer::_generate_faces(points, face_indices);
     QList<QList<Point>> triangles = Importer::_generate_triangles(faces);
+    result = Importer::_generate_right_triangles(triangles);
     
     return result;
 }
@@ -156,8 +157,19 @@ QList<QList<Point>> Importer::_generate_triangles(QList<QList<Point> > faces) {
     return triangles;
 }
 
-QList<QList<RightTriangle>> Importer::_generate_right_triangles(QList<QList<Point> > triangles) {
-    QList<QList<RightTriangle>> right_triangles;
+QList<RightTriangle> Importer::_generate_right_triangles(QList<QList<Point> > triangles) {
+    QList<RightTriangle> right_triangles;
+    
+    for (auto triangle = triangles.begin(); triangle != triangles.end(); triangle++) {
+        right_triangles.append(Importer::_generate_right_triangles(*triangle));
+    }
     
     return right_triangles;
+}
+
+QList<RightTriangle> Importer::_generate_right_triangles(QList<Point> triangle) {
+    QList<RightTriangle> result;
+    
+    
+    return result;
 }
