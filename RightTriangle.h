@@ -18,7 +18,9 @@ public:
     
     QVector3D vertex() const;
     QVector3D p1() const;
+    QVector3D leg_1() const;
     QVector3D p2() const;
+    QVector3D leg_2() const;
     QVector3D normal() const;
     
     virtual ~RightTriangle();

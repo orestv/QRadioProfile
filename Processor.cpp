@@ -32,3 +32,33 @@ Processor::isTriangleVisible(
     float viewAngleCos = QVector3D::dotProduct(viewVector, triangle.normal());
     return viewAngleCos > 0;
 }
+
+Processor::VIEWPOINT_SUMS
+Processor::calculateViewpointSums(
+        QList<RightTriangle> triangles, 
+        QVector3D viewpoint, 
+        double wavelength) {
+    
+    VIEWPOINT_SUMS result;
+    
+    for (auto t = triangles.begin(); t != triangles.end(); t++) {
+        QVector3D short_leg, long_leg;
+        if (t->leg_1().lengthSquared() > t->leg_2().lengthSquared()) {
+            short_leg = t->leg_2();
+            long_leg = t->leg_1();
+        } else {
+            short_leg = t->leg_1();
+            long_leg = t->leg_2();
+        }
+        
+        
+    }
+        
+    return result;
+}
+
+QVector3D projectOntoPlane(QVector3D vector, QVector3D plane_normale) {
+    plane_normale.normalize();
+    
+    
+}
