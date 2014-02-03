@@ -25,3 +25,19 @@ RightTriangle::RightTriangle(const RightTriangle& orig) {
 RightTriangle::~RightTriangle() {
 }
 
+QVector3D RightTriangle::vertex() const {
+    return this->_vertex;
+}
+
+QVector3D RightTriangle::p1() const {
+    return this->_p1;
+}
+
+QVector3D RightTriangle::p2() const {
+    return this->_p2;
+}
+
+QVector3D RightTriangle::normal() const {
+    QVector3D leg_1 = _p1 - _vertex, leg_2 = _p2 - _vertex;
+    return QVector3D::normal(leg_1, leg_2);
+}
