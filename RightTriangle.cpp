@@ -48,3 +48,17 @@ QVector3D RightTriangle::leg_2() const {
 QVector3D RightTriangle::normal() const {
     return QVector3D::normal(leg_1(), leg_2());
 }
+
+QVector3D RightTriangle::shortLeg() const {
+    if (leg_1().lengthSquared() > leg_2().lengthSquared())
+        return leg_2();
+    else
+        return leg_1();
+}
+
+QVector3D RightTriangle::longLeg() const {
+    if (leg_1().lengthSquared() > leg_2().lengthSquared())
+        return leg_1();
+    else
+        return leg_2();
+}

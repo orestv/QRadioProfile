@@ -23,6 +23,9 @@ public:
     QVector3D leg_2() const;
     QVector3D normal() const;
     
+    QVector3D shortLeg() const;
+    QVector3D longLeg() const;
+    
     virtual ~RightTriangle();
 private:
     QVector3D _vertex, _p1, _p2;

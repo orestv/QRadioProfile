@@ -18,10 +18,18 @@ public:
         double sum_sin;
     };
     
+    struct TRIANGLE_ANGLES {
+        double alpha;
+        double beta;
+    };
+    
     static QList<RightTriangle> getVisibleTriangles(QList<RightTriangle> triangles, 
             QVector3D viewpoint);
     static bool isTriangleVisible(RightTriangle triangle, QVector3D viewpoint);
     static VIEWPOINT_SUMS calculateViewpointSums(QList<RightTriangle> triangles, QVector3D viewpoint, double wavelength);
+    static TRIANGLE_ANGLES calculateTriangleAngles(RightTriangle &triangle, QVector3D &viewpoint);
+    static QVector3D projectOntoPlane(QVector3D &vector, QVector3D plane_normal);
+    static double calculateEn(TRIANGLE_ANGLES &angles, QVector3D &shortLeg, QVector3D &longLeg, double wavelength);
 private:
 
 };

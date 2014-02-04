@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 //    triangle.push_back(c);
 //    Importer::generateRightTriangles(triangle);
     
-    QString path = "/home/seth/dev/pymodelanalyzer/models/t72.obj";
+    QString path = "models/t72.obj";
     QList<RightTriangle> triangles;
     try {
         triangles = Importer::import(path);
@@ -40,5 +40,7 @@ int main(int argc, char *argv[]) {
     QVector3D viewpoint(-20, 2, 0);
     std::cout<<"Processing "<<triangles.length()<<" triangles."<<std::endl;
     QList<RightTriangle> visibleTriangles = Processor::getVisibleTriangles(triangles, viewpoint);
-    std::cout<<"Visible triangles count: "<<visibleTriangles.length();
+    std::cout<<"Visible triangles count: "<<visibleTriangles.length()<<std::endl;
+    Processor::VIEWPOINT_SUMS sums = Processor::calculateViewpointSums(visibleTriangles, viewpoint, 0.1);
+    std::cout<<"Viewpoint sums calculated.";
 }
