@@ -181,13 +181,19 @@ QList<RightTriangle> Importer::generateRightTriangles(QList<QVector3D> triangle)
     int max_length_index = -1;
     for (int i = 0; i < 3; i++) {
         int *side_i = side_indices[i];
-        QVector3D a, b;
+        QVector3D a, b, c;
         a = t[side_i[0]];
         b = t[side_i[1]];
+        c = t[side_i[2]];
         QVector3D side = b - a;
         if (side.length() < 0.01) {        //One of the sides is too short
             return result;
-        }            
+        }
+        if (abs(QVector3D::dotProduct(b - a, c - a)) < 0.01) {
+            qDebug()<<"Triangle is right already!";
+            result.push_back(RightTriangle(a, b, c));
+            return result;
+        }
         if (side.lengthSquared() > max_length) {
             max_length = side.lengthSquared();
             max_length_index = i;

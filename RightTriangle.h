@@ -9,6 +9,7 @@
 #define	RIGHTTRIANGLE_H
 
 #include <QVector3D>
+#include <QDebug>
 
 class RightTriangle {
 public:

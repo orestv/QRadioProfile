@@ -10,6 +10,12 @@
 #include "Processor.h"
 #include <math.h>
 
+
+QDebug operator<< (QDebug d, RightTriangle &triangle) {
+    d<<triangle.vertex()<<triangle.p1()<<triangle.p2();
+    return d;
+}
+
 const double ANGLE_PRECISION = 0.01;
 
 QList<RightTriangle> 
@@ -49,6 +55,8 @@ Processor::calculateViewpointSums(
         QVector3D shortLeg = t->shortLeg(), 
             longLeg = t->longLeg();
         double En = calculateEn(angles, shortLeg, longLeg, wavelength);
+        double R = (viewpoint - t->vertex()).length();
+        qDebug()<<"R="<<R;
     }
         
     return result;
@@ -58,28 +66,55 @@ Processor::TRIANGLE_ANGLES
 Processor::calculateTriangleAngles(
         RightTriangle &triangle, 
         QVector3D &viewpoint) {
+    
+    QVector3D viewVector = viewpoint - triangle.vertex();    
+    QVector3D triangleNormal = triangle.normal();
+    
+    TRIANGLE_ANGLES result;
+    
+    qDebug()<<"Legs:"<<triangle.leg_1()<<triangle.leg_2();
+    
+    if (abs(triangle.leg_1().lengthSquared() - 
+            triangle.leg_2().lengthSquared()) > 0.01) {
+        QVector3D shortLegPlaneNormal = triangle.longLeg().normalized();
+        result = calculateTriangleAngles(triangleNormal, shortLegPlaneNormal, viewVector);
+    } else {
+        QVector3D normal_1 = triangle.leg_1().normalized(),
+                normal_2 = triangle.leg_2().normalized();
+        TRIANGLE_ANGLES result_1 = calculateTriangleAngles(triangleNormal,
+                normal_1, viewVector),
+                result_2 = calculateTriangleAngles(triangleNormal,
+                normal_2, viewVector);
+        qDebug()<<result_1.alpha<<result_2.alpha;
+        qDebug()<<result_1.beta<<result_2.beta;
+        result.alpha = fmin(result_1.alpha, result_2.alpha);
+        result.beta = fmin(result_1.beta, result_2.beta);
+    }    
+    return result;
+}
+
+Processor::TRIANGLE_ANGLES
+Processor::calculateTriangleAngles (
+        QVector3D& triangleNormal,
+        QVector3D& planeNormal, 
+        QVector3D& viewVector) {
         
-    QVector3D shortLeg = triangle.shortLeg(), 
-            longLeg = triangle.longLeg();
-    
-    QVector3D viewVector = viewpoint - triangle.vertex();
-    QVector3D shortLegPlaneNormal = longLeg;
-    if (QVector3D::dotProduct(viewVector, shortLegPlaneNormal) < 0)
-        shortLegPlaneNormal = -shortLegPlaneNormal;
-    shortLegPlaneNormal.normalize();
-    
     QVector3D vv_projection = projectOntoPlane(viewVector, 
-            shortLegPlaneNormal);
+            planeNormal);
+    qDebug()<<"Projected vector: "<<vv_projection<<", was projected onto "<<planeNormal;
     QVector3D vv_projection_unit = vv_projection.normalized();
+    qDebug()<<"Projection unit: "<<vv_projection_unit;
     
     double cos_alpha = QVector3D::dotProduct(vv_projection_unit, 
-            triangle.normal());
+            triangleNormal);
+    qDebug()<<"Calculating angle between "<<vv_projection_unit<<" and "<<triangleNormal;
     double cos_beta = QVector3D::dotProduct(viewVector.normalized(), 
             vv_projection_unit);
     
     TRIANGLE_ANGLES result;
     result.alpha = acos(cos_alpha);
     result.beta = acos(cos_beta);    
+    
     return result;
 }
 

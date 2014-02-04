@@ -28,16 +28,28 @@ int main(int argc, char *argv[]) {
 //    triangle.push_back(c);
 //    Importer::generateRightTriangles(triangle);
     
-    QString path = "models/t72.obj";
+    QString path = "models/cub.obj";
     QList<RightTriangle> triangles;
     try {
-        triangles = Importer::import(path);
+//        triangles = Importer::import(path);
     }
     catch (char *exception) {
         std::cout<<"Exception caught: "<<exception;
         return 0;
     }
-    QVector3D viewpoint(-20, 2, 0);
+    RightTriangle t(QVector3D(-25, -25, 0), QVector3D(25, -25, 0), QVector3D(-25, 25, 0));
+    QVector3D viewpoint(0, 0, 50);
+    
+    qDebug()<<Processor::isTriangleVisible(t, viewpoint);
+    
+    Processor::TRIANGLE_ANGLES angles = Processor::calculateTriangleAngles(t, viewpoint);
+    
+    qDebug()<<"Alpha == "<<angles.alpha<<", beta == "<<angles.beta;
+    qDebug()<<"R == "<<(viewpoint - t.vertex()).length();
+    
+    
+    return 0;
+//    QVector3D viewpoint(53.3, 25, 53.3);
     std::cout<<"Processing "<<triangles.length()<<" triangles."<<std::endl;
     QList<RightTriangle> visibleTriangles = Processor::getVisibleTriangles(triangles, viewpoint);
     std::cout<<"Visible triangles count: "<<visibleTriangles.length()<<std::endl;
