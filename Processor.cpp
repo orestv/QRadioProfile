@@ -49,13 +49,21 @@ Processor::calculateViewpointSums(
         double wavelength) {
     
     VIEWPOINT_SUMS result;
+    result.sum_cos = 0;
+    result.sum_sin = 0;
+    double k = 2 * M_PI / wavelength;
     
     for (auto t = triangles.begin(); t != triangles.end(); t++) {
         TRIANGLE_ANGLES angles = calculateTriangleAngles(*t, viewpoint);
         QVector3D shortLeg = t->shortLeg(), 
             longLeg = t->longLeg();
         double En = calculateEn(angles, shortLeg, longLeg, wavelength);
-        double R = (viewpoint - t->vertex()).length();        
+        double R = (viewpoint - t->vertex()).length();  
+        
+        qDebug()<<"En == "<<En;
+        
+        result.sum_cos += En * cos(k*R);
+        result.sum_sin += En * sin(k*R);
     }
         
     return result;
@@ -82,8 +90,6 @@ Processor::calculateTriangleAngles(
                 normal_1, viewVector),
                 result_2 = calculateTriangleAngles(triangleNormal,
                 normal_2, viewVector);
-        qDebug()<<result_1.alpha<<result_2.alpha;
-        qDebug()<<result_1.beta<<result_2.beta;
         result.alpha = fmin(result_1.alpha, result_2.alpha);
         result.beta = fmin(result_1.beta, result_2.beta);
     }    

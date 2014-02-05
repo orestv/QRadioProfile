@@ -45,5 +45,6 @@ int main(int argc, char *argv[]) {
     QList<RightTriangle> visibleTriangles = Processor::getVisibleTriangles(triangles, viewpoint);
     std::cout<<"Visible triangles count: "<<visibleTriangles.length()<<std::endl;
     Processor::VIEWPOINT_SUMS sums = Processor::calculateViewpointSums(visibleTriangles, viewpoint, wavelength);
-    std::cout<<"Viewpoint sums calculated";
+    qDebug()<<"Viewpoint sums calculated: "<<sums.sum_cos<<", "<<sums.sum_sin;
+    qDebug()<<"E = "<<sqrt(pow(sums.sum_cos, 2) + pow(sums.sum_sin, 2));
 }
