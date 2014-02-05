@@ -13,7 +13,7 @@
 #include <QFile>
 #include <QVector3D>
 
-#include "RightTriangle.h"
+#include "geometry/RightTriangle.h"
 
 class Importer {
 public:

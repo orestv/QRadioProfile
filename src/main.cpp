@@ -7,8 +7,8 @@
 #include <iostream>
 
 #include <QApplication>
-#include "Importer.h"
-#include "Processor.h"
+#include "import/Importer.h"
+#include "processing/Processor.h"
 #include <QVector3D>
 
 int main(int argc, char *argv[]) {

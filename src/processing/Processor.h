@@ -8,7 +8,7 @@
 #ifndef PROCESSOR_H
 #define	PROCESSOR_H
 
-#include "RightTriangle.h"
+#include "geometry/RightTriangle.h"
 #include <QVector3D>
 
 class Processor {
