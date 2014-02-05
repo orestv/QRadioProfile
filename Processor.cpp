@@ -55,8 +55,7 @@ Processor::calculateViewpointSums(
         QVector3D shortLeg = t->shortLeg(), 
             longLeg = t->longLeg();
         double En = calculateEn(angles, shortLeg, longLeg, wavelength);
-        double R = (viewpoint - t->vertex()).length();
-        qDebug()<<"R="<<R;
+        double R = (viewpoint - t->vertex()).length();        
     }
         
     return result;
@@ -71,8 +70,6 @@ Processor::calculateTriangleAngles(
     QVector3D triangleNormal = triangle.normal();
     
     TRIANGLE_ANGLES result;
-    
-    qDebug()<<"Legs:"<<triangle.leg_1()<<triangle.leg_2();
     
     if (abs(triangle.leg_1().lengthSquared() - 
             triangle.leg_2().lengthSquared()) > 0.01) {
@@ -101,13 +98,13 @@ Processor::calculateTriangleAngles (
         
     QVector3D vv_projection = projectOntoPlane(viewVector, 
             planeNormal);
-    qDebug()<<"Projected vector: "<<vv_projection<<", was projected onto "<<planeNormal;
+//    qDebug()<<"Projected vector: "<<vv_projection<<", was projected onto "<<planeNormal;
     QVector3D vv_projection_unit = vv_projection.normalized();
-    qDebug()<<"Projection unit: "<<vv_projection_unit;
+//    qDebug()<<"Projection unit: "<<vv_projection_unit;
     
     double cos_alpha = QVector3D::dotProduct(vv_projection_unit, 
             triangleNormal);
-    qDebug()<<"Calculating angle between "<<vv_projection_unit<<" and "<<triangleNormal;
+//    qDebug()<<"Calculating angle between "<<vv_projection_unit<<" and "<<triangleNormal;
     double cos_beta = QVector3D::dotProduct(viewVector.normalized(), 
             vv_projection_unit);
     

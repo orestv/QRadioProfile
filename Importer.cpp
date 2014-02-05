@@ -73,8 +73,7 @@ QList<QList<int> > Importer::_read_indices(QString path) {
 }
 
 QVector3D Importer::_parse_vertex_line(QByteArray line) {
-    while (!isdigit(line[0]))
-        line.remove(0, 1);
+    line.remove(0, 1);
     line = line.trimmed();
     QList<QByteArray> coordinates = line.split(' ');
     auto iter = coordinates.begin();
@@ -82,6 +81,8 @@ QVector3D Importer::_parse_vertex_line(QByteArray line) {
     x = (*iter).toDouble();iter++;
     y = (*iter).toDouble();iter++;
     z = (*iter).toDouble();iter++;
+    
+    QVector3D result(x, y, z);
 
     return QVector3D(x, y, z);
 }
@@ -94,19 +95,14 @@ QList<int> Importer::_parse_face_line(QByteArray line) {
         line.remove(0, 1);
     line = line.trimmed();
     
-//    qDebug()<<"Removed 'face' specificator: "<<line;
-    
     QList<QByteArray> indices = line.split(' ');
     for (auto iter = indices.begin(); iter != indices.end(); iter++) {
         int first_nondigit_index = 0;
         while (isdigit(iter->at(first_nondigit_index)))
             first_nondigit_index++;
         iter->remove(first_nondigit_index, iter->length());
-        
-//        qDebug()<<"Removed everything after the first slash: "<<*iter<<line;
                 
         int face_index = iter->toInt();
-
         face_list.push_back(face_index);
     }
     return face_list;
@@ -190,7 +186,6 @@ QList<RightTriangle> Importer::generateRightTriangles(QList<QVector3D> triangle)
             return result;
         }
         if (abs(QVector3D::dotProduct(b - a, c - a)) < 0.01) {
-            qDebug()<<"Triangle is right already!";
             result.push_back(RightTriangle(a, b, c));
             return result;
         }
