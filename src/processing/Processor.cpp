@@ -122,8 +122,8 @@ Processor::calculateTriangleAngles (
         cos_beta = QVector3D::dotProduct(-viewVector.normalized(), 
             vv_projection_unit);
     
-    double alpha = acos(alpha),
-            beta = acos(beta);
+    double alpha = acos(cos_alpha),
+            beta = acos(cos_beta);
     TRIANGLE_ANGLES result;
     result.cos_alpha = cos_alpha;
     result.cos_beta = cos_beta;
@@ -157,14 +157,14 @@ Processor::calculateEn(
     
     double cos_alpha = angles.cos_alpha, cos_beta = angles.cos_beta,
             sin_alpha = angles.sin_alpha, sin_beta = angles.sin_beta;
-    if (abs(sin_alpha) < ANGLE_PRECISION) {
-        sin_alpha = 0;
-        cos_alpha = 1;
-    }
-    if (abs(sin_beta) < ANGLE_PRECISION) {
-        sin_beta = 0;
-        cos_beta = 1;
-    }
+//    if (sin_alpha < ANGLE_PRECISION) {
+//        sin_alpha = 0;
+//        cos_alpha = 1;
+//    }
+//    if (abs(sin_beta) < ANGLE_PRECISION) {
+//        sin_beta = 0;
+//        cos_beta = 1;
+//    }
     double a = shortLeg.length();
     double b = longLeg.length();
     
