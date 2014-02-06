@@ -205,10 +205,21 @@ Processor::calculateEn(
                     pow(((1 - (sin(2*kbsinb))/(kbsinb)) / (kbsinb)), 2)
                 );
     } else {
-        double e1 = E1(k, sigma, a, b, alpha, beta);    
-        double e2_03 = pow(E2_3(k, a, alpha, beta) - E2_4(k, b, beta), 2);
-        double e2 = E2_1(k, a, b, alpha, beta) + E2_2(k, b, beta) * e2_03;
-        result = e1 * e2;
+        double e1_top = sigma * pow(cos(alpha)*cos(beta), 2);
+        double e1_bottom = pow(pow(k*a*sin(alpha)*cos(beta), 2) - 
+                pow(k*b*sin(beta), 2), 2);
+        double e1 = e1_top/e1_bottom;
+
+        double e2_1 = pow(pow(sin(k*a*sin(alpha)*cos(beta)), 2) - pow(sin(k*b*sin(beta)), 2), 2);
+        double e2_2 = pow(k*b*sin(beta), 2);
+        double e2_3 = sin(2*k*a*sin(alpha)*cos(beta))/(2*k*a*sin(alpha)*cos(beta));
+        double e2_4 = sin(2*k*b*sin(beta))/(2*k*b*sin(beta));
+
+        double e2_03 = pow(e2_3 - e2_4, 2);
+
+        double e2 = e2_1 + e2_2 * e2_03;
+        double e3 = e1 * e2;
+        result = e3;
     }
     
     return result;
@@ -232,6 +243,7 @@ Processor::analyzeModel(QList<RightTriangle> triangles,
         x = params.viewpointDistance * sin(viewpointAzimuth);
         
         QVector3D viewpoint(x, y, z);
+        qDebug()<<"viewpoint: "<<viewpoint;
         
         QList<RightTriangle> visibleTriangles = Processor::getVisibleTriangles(
                 triangles, viewpoint);

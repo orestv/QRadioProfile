@@ -58,7 +58,7 @@ void ParamsWidget::initWidgets() {
     layout->addWidget(new QLabel(tr("Висота ТС, м")), 2, 0);
     layout->addWidget(_spViewpointHeight, 2, 1);
     
-    layout->addWidget(new QLabel(tr("Відстань між ТС і центром координат, м")), 3, 0);
+    layout->addWidget(new QLabel(tr("Відстань по горизонталі між ТС і центром координат, м")), 3, 0);
     layout->addWidget(_spViewpointDistance, 3, 1);
     
     layout->addWidget(new QLabel(tr("Крок повороту напрямку на ТС, °")), 4, 0);
