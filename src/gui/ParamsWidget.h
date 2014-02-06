@@ -17,6 +17,15 @@ class ParamsWidget : public QWidget{
 public:
     ParamsWidget();
     virtual ~ParamsWidget();
+    
+    bool isReady() const;
+
+signals:
+    void updated();
+
+private slots:
+    void filePickerUpdated();
+
 private:
     void initWidgets();
     void initSignals();

@@ -12,6 +12,8 @@ MainWindow::MainWindow() {
     setWindowTitle(tr("Аналіз моделі"));
     initWidgets();
     initSignals();
+    
+    updateWidgetsReadiness();
 }
 
 MainWindow::~MainWindow() {
@@ -31,5 +33,15 @@ void MainWindow::initWidgets() {
 }
 
 void MainWindow::initSignals() {
-    
+    QObject::connect(_paramsWidget, &ParamsWidget::updated,
+            this, &MainWindow::paramsWidgetUpdated);
+}
+
+void MainWindow::paramsWidgetUpdated() {
+    updateWidgetsReadiness();
+}
+
+void MainWindow::updateWidgetsReadiness() {
+    bool paramsReady = _paramsWidget->isReady();
+    _btnCalculate->setEnabled(paramsReady);
 }

@@ -17,13 +17,18 @@ class MainWindow : public QWidget{
 public:
     MainWindow();
     virtual ~MainWindow();
+    
+private slots:
+    void paramsWidgetUpdated();
+    
 private:
     void initWidgets();
     void initSignals();
+    
+    void updateWidgetsReadiness();
     
     ParamsWidget *_paramsWidget;
     QPushButton *_btnCalculate;    
 };
 
 #endif	/* MAINWINDOW_H */
-

@@ -33,5 +33,17 @@ void ParamsWidget::initWidgets() {
 }
 
 void ParamsWidget::initSignals() {
-    
+    QObject::connect(_fpModel, &FilePicker::updated,
+            this, &ParamsWidget::filePickerUpdated);
+    QObject::connect(_fpResult, &FilePicker::updated,
+            this, &ParamsWidget::filePickerUpdated);
+}
+
+void ParamsWidget::filePickerUpdated() {
+    emit updated();
+}
+
+bool ParamsWidget::isReady() const {
+    return (!_fpModel->selectedPath().isEmpty() && 
+            !_fpResult->selectedPath().isEmpty());
 }

@@ -56,3 +56,7 @@ void FilePicker::showFileDialog() {
     _lblFilename->setText(fileInfo.fileName());
     emit updated();
 }
+
+QString FilePicker::selectedPath() const {
+    return _selectedPath;
+}

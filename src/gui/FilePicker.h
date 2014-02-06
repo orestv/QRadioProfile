@@ -19,6 +19,7 @@ public:
     FilePicker(bool save, QString filters = "*.*");
     virtual ~FilePicker();
 
+    QString selectedPath() const;
 signals:
     void updated();
 
