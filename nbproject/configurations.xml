@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="90">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
-    <logicalFolder name="fixedpoint" displayName="fixedpoint" projectFiles="true">
-      <itemPath>fixedpoint/fixed_class.h</itemPath>
-      <itemPath>fixedpoint/fixed_func.cpp</itemPath>
-      <itemPath>fixedpoint/fixed_func.h</itemPath>
-      <itemPath>fixedpoint/fixed_point.h</itemPath>
-      <itemPath>fixedpoint/fixsintab.h</itemPath>
-      <itemPath>fixedpoint/stdint.h</itemPath>
-    </logicalFolder>
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
@@ -92,18 +84,6 @@
       </item>
       <item path="Vector.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="fixedpoint/fixed_class.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="fixedpoint/fixed_func.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="fixedpoint/fixed_func.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="fixedpoint/fixed_point.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="fixedpoint/fixsintab.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="fixedpoint/stdint.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="src/geometry/RightTriangle.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/geometry/RightTriangle.h" ex="false" tool="3" flavor2="0">
@@ -163,18 +143,6 @@
       <item path="ProcessParams.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Vector.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="fixedpoint/fixed_class.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="fixedpoint/fixed_func.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="fixedpoint/fixed_func.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="fixedpoint/fixed_point.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="fixedpoint/fixsintab.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="fixedpoint/stdint.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/geometry/RightTriangle.cpp" ex="false" tool="1" flavor2="0">
       </item>
