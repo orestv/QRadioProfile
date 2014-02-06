@@ -47,7 +47,7 @@ public:
     static bool isTriangleVisible(RightTriangle triangle, QVector3D viewpoint);
     static VIEWPOINT_SUMS calculateViewpointSums(QList<RightTriangle> triangles, QVector3D viewpoint, double wavelength);
     static TRIANGLE_ANGLES calculateTriangleAngles(RightTriangle &triangle, QVector3D &viewpoint);
-    static TRIANGLE_ANGLES calculateTriangleAngles(QVector3D &triangleNormal, QVector3D &planeNormal, QVector3D &viewVector);
+    static TRIANGLE_ANGLES calculateTriangleAngles(QVector3D &triangleNormal, QVector3D planeNormal, QVector3D &viewVector);
     static QVector3D projectOntoPlane(QVector3D &vector, QVector3D plane_normal);
     static double calculateEn(TRIANGLE_ANGLES &angles, QVector3D &shortLeg, QVector3D &longLeg, double wavelength);
     

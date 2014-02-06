@@ -9,6 +9,10 @@
 
 #include <QVBoxLayout>
 #include <QDebug>
+#include <QMessageBox>
+#include <QDesktopServices>
+#include <QUrl>
+
 #include <math.h>
 
 #include "processing/Processor.h"
@@ -72,13 +76,13 @@ MainWindow::convertParams(ParamsWidget::CALCULATION_PARAMS params) {
 }
 
 void MainWindow::beginCalculation() {
-    ParamsWidget::CALCULATION_PARAMS paramsWidgetParams = 
+    ParamsWidget::CALCULATION_PARAMS inputParams = 
             _paramsWidget->gatherParams();    
     Processor::PARAMS calculationParams = 
-            MainWindow::convertParams(paramsWidgetParams);
+            MainWindow::convertParams(inputParams);
     QList<RightTriangle> model;
     try {
-        model = Importer::import(paramsWidgetParams.inputPath);
+        model = Importer::import(inputParams.inputPath);
     }
     catch (char *exceptionMessage) {
         qDebug()<<exceptionMessage;
@@ -90,6 +94,12 @@ void MainWindow::beginCalculation() {
         double azimuthDeg = item->azimuth * 180 / M_PI;
         qDebug()<<"For azimuth "<<azimuthDeg<<" e == "<<item->E;
     }
-    Importer::exportToFile(paramsWidgetParams.resultPath, result);
+    Importer::exportToFile(inputParams.resultPath, result);
     qDebug()<<"File saved";
+    QMessageBox::StandardButton response = QMessageBox::question(this, tr("Модель проаналізовано!"),
+            tr("Результати збережено. Бажаєте відкрити файл?"),
+            QMessageBox::StandardButton::Yes|QMessageBox::StandardButton::No,
+            QMessageBox::StandardButton::Yes);
+    if (response == QMessageBox::StandardButton::Yes)
+        QDesktopServices::openUrl(QUrl(inputParams.resultPath));        
 }

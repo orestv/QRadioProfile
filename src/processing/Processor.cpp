@@ -7,6 +7,7 @@
 
 #include <QList>
 #include <QDebug>
+#include <iostream>
 
 #include "Processor.h"
 #include <math.h>
@@ -60,7 +61,7 @@ Processor::calculateViewpointSums(
         double En = calculateEn(angles, shortLeg, longLeg, wavelength);
         double R = (viewpoint - t->vertex()).length();  
         
-//        qDebug()<<"En for "<<*t<<" = "<<En;
+//        std::cout<<"En for "<<*t<<" = "<<En;
         
         result.sum_cos += En * cos(k*R);
         result.sum_sin += En * sin(k*R);
@@ -87,9 +88,13 @@ Processor::calculateTriangleAngles(
         QVector3D normal_1 = triangle.leg_1().normalized(),
                 normal_2 = triangle.leg_2().normalized();
         TRIANGLE_ANGLES result_1 = calculateTriangleAngles(triangleNormal,
-                normal_1, viewVector),
+                        normal_1, viewVector),
                 result_2 = calculateTriangleAngles(triangleNormal,
-                normal_2, viewVector);
+                        normal_2, viewVector);
+        
+//        std::cout<<"Alphas:"<<result_1.alpha<<result_2.alpha<<std::endl;
+//        std::cout<<"betas:"<<result_1.beta<<result_2.beta<<std::endl;
+        
         result.alpha = fmin(result_1.alpha, result_2.alpha);
         result.beta = fmin(result_1.beta, result_2.beta);
     }    
@@ -99,19 +104,22 @@ Processor::calculateTriangleAngles(
 Processor::TRIANGLE_ANGLES
 Processor::calculateTriangleAngles (
         QVector3D& triangleNormal,
-        QVector3D& planeNormal, 
+        QVector3D planeNormal, 
         QVector3D& viewVector) {
-        
+    
     QVector3D vv_projection = projectOntoPlane(viewVector, 
             planeNormal);
-//    qDebug()<<"Projected vector: "<<vv_projection<<", was projected onto "<<planeNormal;
     QVector3D vv_projection_unit = vv_projection.normalized();
-//    qDebug()<<"Projection unit: "<<vv_projection_unit;
     
     double cos_alpha = QVector3D::dotProduct(vv_projection_unit, 
             triangleNormal);
-//    qDebug()<<"Calculating angle between "<<vv_projection_unit<<" and "<<triangleNormal;
+    if (cos_alpha < 0)
+        cos_alpha = QVector3D::dotProduct(vv_projection_unit, 
+            -triangleNormal);
     double cos_beta = QVector3D::dotProduct(viewVector.normalized(), 
+            vv_projection_unit);
+    if (cos_beta < 0)
+        cos_beta = QVector3D::dotProduct(-viewVector.normalized(), 
             vv_projection_unit);
     
     TRIANGLE_ANGLES result;
@@ -192,6 +200,8 @@ Processor::calculateEn(
                 pow(wavelength, 2));
     double k = 2 * M_PI / wavelength;
     
+//    std::cout<<alpha<<beta<<a<<b<<sigma<<k<<wavelength;
+    
     if (alpha == 0 && beta == 0) {
         result = sigma;
     } else if (beta == 0) {
@@ -206,18 +216,35 @@ Processor::calculateEn(
                 );
     } else {
         double e1_top = sigma * pow(cos(alpha)*cos(beta), 2);
-        double e1_bottom = pow(pow(k*a*sin(alpha)*cos(beta), 2) - 
-                pow(k*b*sin(beta), 2), 2);
+        double e1_bottom_1 = pow(k*a*sin(alpha)*cos(beta), 2);
+        double e1_bottom_2 = pow(k*b*sin(beta), 2);
+        double e1_bottom = pow((e1_bottom_1 - e1_bottom_2), 2);
         double e1 = e1_top/e1_bottom;
+////        std::cout<<sigma<<pow(cos(alpha)*cos(beta), 2);
+//        std::cout<<"e1_bottom_1="<<e1_bottom_1<<",\te1_bottom_2="<<e1_bottom_2<<std::endl;
+//        std::cout<<"e1_top="<<e1_top<<",\te1_bottom="<<e1_bottom<<",\te1="<<e1<<std::endl;
 
         double e2_1 = pow(pow(sin(k*a*sin(alpha)*cos(beta)), 2) - pow(sin(k*b*sin(beta)), 2), 2);
+        double e2_1_1 = sin(k*a*sin(alpha)*cos(beta));
+        double e2_1_2 = sin(k*b*sin(beta));
+//        std::cout<<"k="<<k<<",\ta="<<a<<",\tsin(alpha)="<<sin(alpha)<<",\t"<<"cos(beta)="<<cos(beta)<<std::endl;
+//        std::cout<<"Ridiculously large:"<<k*a*sin(alpha)*cos(beta)<<std::endl;
+        e2_1_1 *= e2_1_1;
+        e2_1_2 *= e2_1_2;
+        
+//        std::cout<<"e2_1 parts: "<<e2_1_1<<e2_1_2<<std::endl;
+        
+        e2_1 = pow(e2_1_1 - e2_1_2, 2);
         double e2_2 = pow(k*b*sin(beta), 2);
         double e2_3 = sin(2*k*a*sin(alpha)*cos(beta))/(2*k*a*sin(alpha)*cos(beta));
         double e2_4 = sin(2*k*b*sin(beta))/(2*k*b*sin(beta));
+        
+//        std::cout<<"e2_1="<<e2_1<<"e2_2="<<e2_2;
 
         double e2_03 = pow(e2_3 - e2_4, 2);
 
         double e2 = e2_1 + e2_2 * e2_03;
+//        std::cout<<"e2 = "<<e2;
         double e3 = e1 * e2;
         result = e3;
     }
@@ -235,7 +262,7 @@ Processor::analyzeModel(QList<RightTriangle> triangles,
     for (double viewpointAzimuth = 0;
             viewpointAzimuth < 2*M_PI;
             viewpointAzimuth += params.viewpointRotationStep) {
-        qDebug()<<viewpointAzimuth;
+        std::cout<<viewpointAzimuth;
         
         double x, y, z;
         y = params.viewpointHeight;
@@ -243,7 +270,7 @@ Processor::analyzeModel(QList<RightTriangle> triangles,
         x = params.viewpointDistance * sin(viewpointAzimuth);
         
         QVector3D viewpoint(x, y, z);
-        qDebug()<<"viewpoint: "<<viewpoint;
+//        std::cout<<"viewpoint: "<<viewpoint;
         
         QList<RightTriangle> visibleTriangles = Processor::getVisibleTriangles(
                 triangles, viewpoint);

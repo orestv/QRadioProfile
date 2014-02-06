@@ -4,8 +4,6 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>ProcessParams.h</itemPath>
-      <itemPath>Vector.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -21,12 +19,6 @@
         <itemPath>src/geometry/RightTriangle.h</itemPath>
       </logicalFolder>
       <logicalFolder name="gui" displayName="gui" projectFiles="true">
-        <itemPath>src/gui/FilePicker.cpp</itemPath>
-        <itemPath>src/gui/FilePicker.h</itemPath>
-        <itemPath>src/gui/MainWindow.cpp</itemPath>
-        <itemPath>src/gui/MainWindow.h</itemPath>
-        <itemPath>src/gui/ParamsWidget.cpp</itemPath>
-        <itemPath>src/gui/ParamsWidget.h</itemPath>
       </logicalFolder>
       <logicalFolder name="import" displayName="import" projectFiles="true">
         <itemPath>src/import/Importer.cpp</itemPath>
@@ -51,8 +43,20 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>QRadioProfile-Makefile.mk</itemPath>
     </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>QRadioProfile-Makefile.mk</itemPath>
+    </logicalFolder>
   </logicalFolder>
   <sourceRootList>
+    <Elem>src</Elem>
     <Elem>src</Elem>
     <Elem>fixedpoint</Elem>
   </sourceRootList>
