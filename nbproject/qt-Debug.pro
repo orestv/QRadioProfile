@@ -8,8 +8,8 @@ CONFIG -= debug_and_release app_bundle lib_bundle
 CONFIG += debug 
 PKGCONFIG +=
 QT = core gui widgets
-SOURCES += src/geometry/RightTriangle.cpp src/import/Importer.cpp src/main.cpp src/processing/ProcessParams.cpp src/processing/Processor.cpp
-HEADERS += src/geometry/RightTriangle.h src/import/Importer.h src/processing/ProcessParams.h src/processing/Processor.h
+SOURCES += src/geometry/RightTriangle.cpp src/gui/FilePicker.cpp src/gui/MainWindow.cpp src/gui/ParamsWidget.cpp src/import/Importer.cpp src/main.cpp src/processing/ProcessParams.cpp src/processing/Processor.cpp
+HEADERS += src/geometry/RightTriangle.h src/gui/FilePicker.h src/gui/MainWindow.h src/gui/ParamsWidget.h src/import/Importer.h src/processing/ProcessParams.h src/processing/Processor.h
 FORMS +=
 RESOURCES +=
 TRANSLATIONS +=
@@ -21,7 +21,7 @@ QMAKE_CC = gcc
 QMAKE_CXX = g++
 DEFINES += 
 INCLUDEPATH += src 
-LIBS += 
+LIBS += -lgmpxx -lgmp  
 equals(QT_MAJOR_VERSION, 4) {
 QMAKE_CXXFLAGS += -std=c++11
 }

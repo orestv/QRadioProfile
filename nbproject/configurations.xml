@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="90">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="fixedpoint" displayName="fixedpoint" projectFiles="true">
+      <itemPath>fixedpoint/fixed_class.h</itemPath>
+      <itemPath>fixedpoint/fixed_func.cpp</itemPath>
+      <itemPath>fixedpoint/fixed_func.h</itemPath>
+      <itemPath>fixedpoint/fixed_point.h</itemPath>
+      <itemPath>fixedpoint/fixsintab.h</itemPath>
+      <itemPath>fixedpoint/stdint.h</itemPath>
+    </logicalFolder>
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
@@ -21,6 +29,12 @@
         <itemPath>src/geometry/RightTriangle.h</itemPath>
       </logicalFolder>
       <logicalFolder name="gui" displayName="gui" projectFiles="true">
+        <itemPath>src/gui/FilePicker.cpp</itemPath>
+        <itemPath>src/gui/FilePicker.h</itemPath>
+        <itemPath>src/gui/MainWindow.cpp</itemPath>
+        <itemPath>src/gui/MainWindow.h</itemPath>
+        <itemPath>src/gui/ParamsWidget.cpp</itemPath>
+        <itemPath>src/gui/ParamsWidget.h</itemPath>
       </logicalFolder>
       <logicalFolder name="import" displayName="import" projectFiles="true">
         <itemPath>src/import/Importer.cpp</itemPath>
@@ -48,6 +62,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>src</Elem>
+    <Elem>fixedpoint</Elem>
   </sourceRootList>
   <projectmakefile>QRadioProfile-Makefile.mk</projectmakefile>
   <confs>
@@ -67,14 +82,43 @@
             <pElem>src</pElem>
           </incDir>
         </ccTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerOptionItem>-lgmpxx -lgmp</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
       </compileType>
       <item path="ProcessParams.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Vector.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="fixedpoint/fixed_class.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fixedpoint/fixed_func.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="fixedpoint/fixed_func.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fixedpoint/fixed_point.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fixedpoint/fixsintab.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fixedpoint/stdint.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/geometry/RightTriangle.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/geometry/RightTriangle.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/gui/FilePicker.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/gui/FilePicker.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/gui/MainWindow.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/gui/MainWindow.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/gui/ParamsWidget.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/gui/ParamsWidget.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/import/Importer.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -120,9 +164,33 @@
       </item>
       <item path="Vector.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="fixedpoint/fixed_class.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fixedpoint/fixed_func.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="fixedpoint/fixed_func.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fixedpoint/fixed_point.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fixedpoint/fixsintab.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fixedpoint/stdint.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/geometry/RightTriangle.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/geometry/RightTriangle.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/gui/FilePicker.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/gui/FilePicker.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/gui/MainWindow.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/gui/MainWindow.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/gui/ParamsWidget.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/gui/ParamsWidget.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/import/Importer.cpp" ex="false" tool="1" flavor2="0">
       </item>

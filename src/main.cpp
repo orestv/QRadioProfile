@@ -9,17 +9,23 @@
 #include <QApplication>
 #include "import/Importer.h"
 #include "processing/Processor.h"
+#include "gui/MainWindow.h"
 #include <QVector3D>
 
+
 int main(int argc, char *argv[]) {
+   
     // initialize resources, if needed
     // Q_INIT_RESOURCE(resfile);
 
-//    QApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     // create and show your widgets here
+    
+    MainWindow w;
+    w.show();
 
-//    return app.exec();
+    return app.exec();
     
 //    QVector3D a(5, 1, 1), b(2, 2, 1), c(1, 1, 1);
 //    QList<QVector3D> triangle;
@@ -27,6 +33,9 @@ int main(int argc, char *argv[]) {
 //    triangle.push_back(b);
 //    triangle.push_back(c);
 //    Importer::generateRightTriangles(triangle);
+    
+    
+    return 0;
     
     QString path = "models/cub.obj";
     QList<RightTriangle> triangles;
