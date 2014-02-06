@@ -35,9 +35,7 @@ void MainWindow::initWidgets() {
     _paramsWidget = new ParamsWidget();
     _btnCalculate = new QPushButton(tr("Обчислити"));
     _progressBar = new QProgressBar();
-    
-    _progressBar->setHidden(true);
-    
+        
     QVBoxLayout *layout = new QVBoxLayout();
     
     layout->addWidget(_paramsWidget);
@@ -46,6 +44,8 @@ void MainWindow::initWidgets() {
     layout->addWidget(_btnCalculate);    
     
     setLayout(layout);
+    
+    _progressBar->setHidden(true);
 }
 
 void MainWindow::initSignals() {
@@ -114,6 +114,7 @@ void MainWindow::threadIterationFinished(int iteration) {
 
 void MainWindow::threadFinished() {
     this->_progressBar->setHidden(true);
+    this->_progressBar->setVisible(false);
     ParamsWidget::CALCULATION_PARAMS inputParams = 
             _paramsWidget->gatherParams();   
     

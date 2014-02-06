@@ -95,8 +95,8 @@ Processor::calculateTriangleAngles(
 //        std::cout<<"Alphas:"<<result_1.alpha<<result_2.alpha<<std::endl;
 //        std::cout<<"betas:"<<result_1.beta<<result_2.beta<<std::endl;
         
-        result.alpha = fmin(result_1.alpha, result_2.alpha);
-        result.beta = fmin(result_1.beta, result_2.beta);
+        result.cos_alpha = fmin(result_1.cos_alpha, result_2.cos_alpha);
+        result.cos_beta = fmin(result_1.cos_beta, result_2.cos_beta);
     }    
     return result;
 }
@@ -122,9 +122,13 @@ Processor::calculateTriangleAngles (
         cos_beta = QVector3D::dotProduct(-viewVector.normalized(), 
             vv_projection_unit);
     
+    double alpha = acos(alpha),
+            beta = acos(beta);
     TRIANGLE_ANGLES result;
-    result.alpha = acos(cos_alpha);
-    result.beta = acos(cos_beta);    
+    result.cos_alpha = cos_alpha;
+    result.cos_beta = cos_beta;
+    result.sin_alpha = sin(alpha);
+    result.sin_beta = sin(beta);
     
     return result;
 }
@@ -142,42 +146,6 @@ Processor::projectOntoPlane(
     return vector - projection_onto_normal;
 }
 
-double E1_top(double sigma, double alpha, double beta) {
-    return sigma * pow(cos(alpha)*cos(beta), 2);
-}
-
-double E1_bottom(double k, double a, double b, double alpha, double beta) {
-    return pow(pow(k*a*sin(alpha)*cos(beta), 2) - 
-            pow(k*b*sin(beta), 2), 2);
-}
-
-double E1(double k, double sigma, double a, double b, double alpha, double beta) {
-    return E1_top(sigma, alpha, beta) / E1_bottom(k, a, b, alpha, beta);
-}
-
-double E2_1(double k, double a, double b, double alpha, double beta) {
-    double s1, s2;
-    s1 = sin(k*a*sin(alpha)*cos(beta));
-    s2 = sin(k*b*sin(beta));
-    s1 *= s1;
-    s2 *= s2;
-    return pow(s1 - s2, 2);
-}
-
-double E2_2(double k, double b, double beta) {
-    return pow(k*b*sin(beta), 2);
-}
-
-double E2_3(double k, double a, double alpha, double beta) {
-    double x = 2*k*a*sin(alpha)*cos(beta);
-    return sin(x)/x;
-}
-
-double E2_4(double k, double b, double beta) {
-    double x = 2*k*b*sin(beta);    
-    return sin(x) / x;
-}
-
 double 
 Processor::calculateEn(
         TRIANGLE_ANGLES& angles, 
@@ -187,11 +155,16 @@ Processor::calculateEn(
     
     double result;
     
-    double alpha = angles.alpha, beta = angles.beta;
-    if (alpha < ANGLE_PRECISION)
-        alpha = 0;
-    if (beta < ANGLE_PRECISION)
-        beta = 0;
+    double cos_alpha = angles.cos_alpha, cos_beta = angles.cos_beta,
+            sin_alpha = angles.sin_alpha, sin_beta = angles.sin_beta;
+    if (abs(sin_alpha) < ANGLE_PRECISION) {
+        sin_alpha = 0;
+        cos_alpha = 1;
+    }
+    if (abs(sin_beta) < ANGLE_PRECISION) {
+        sin_beta = 0;
+        cos_beta = 1;
+    }
     double a = shortLeg.length();
     double b = longLeg.length();
     
@@ -202,31 +175,31 @@ Processor::calculateEn(
     
 //    std::cout<<alpha<<beta<<a<<b<<sigma<<k<<wavelength;
     
-    if (alpha == 0 && beta == 0) {
+    if (sin_alpha == 0 && sin_beta == 0) {
         result = sigma;
-    } else if (beta == 0) {
-        result = sigma * pow(cos(alpha), 2) * 
-                pow((sin(k*a*cos(alpha))) / (k*a*sin(alpha)), 4);
-    } else if (alpha == 0) {
-        double kbsinb = k * b * sin(beta);
-        result = sigma * pow(cos(beta), 2) * 
+    } else if (sin_beta == 0) {
+        result = sigma * pow(cos_alpha, 2) * 
+                pow((sin(k*a*cos_alpha)) / (k*a*sin_alpha), 4);
+    } else if (sin_alpha == 0) {
+        double kbsinb = k * b * sin_beta;
+        result = sigma * pow(cos_beta, 2) * 
                 (
                     pow(sin(kbsinb)/kbsinb, 4) + 
                     pow(((1 - (sin(2*kbsinb))/(kbsinb)) / (kbsinb)), 2)
                 );
     } else {
-        double e1_top = sigma * pow(cos(alpha)*cos(beta), 2);
-        double e1_bottom_1 = pow(k*a*sin(alpha)*cos(beta), 2);
-        double e1_bottom_2 = pow(k*b*sin(beta), 2);
+        double e1_top = sigma * pow(cos_alpha*cos_beta, 2);
+        double e1_bottom_1 = pow(k*a*sin_alpha*cos_beta, 2);
+        double e1_bottom_2 = pow(k*b*sin_beta, 2);
         double e1_bottom = pow((e1_bottom_1 - e1_bottom_2), 2);
         double e1 = e1_top/e1_bottom;
 ////        std::cout<<sigma<<pow(cos(alpha)*cos(beta), 2);
 //        std::cout<<"e1_bottom_1="<<e1_bottom_1<<",\te1_bottom_2="<<e1_bottom_2<<std::endl;
 //        std::cout<<"e1_top="<<e1_top<<",\te1_bottom="<<e1_bottom<<",\te1="<<e1<<std::endl;
 
-        double e2_1 = pow(pow(sin(k*a*sin(alpha)*cos(beta)), 2) - pow(sin(k*b*sin(beta)), 2), 2);
-        double e2_1_1 = sin(k*a*sin(alpha)*cos(beta));
-        double e2_1_2 = sin(k*b*sin(beta));
+        double e2_1 = pow(pow(sin(k*a*sin_alpha*cos_beta), 2) - pow(sin(k*b*sin_beta), 2), 2);
+        double e2_1_1 = sin(k*a*sin_alpha*cos_beta);
+        double e2_1_2 = sin(k*b*sin_beta);
 //        std::cout<<"k="<<k<<",\ta="<<a<<",\tsin(alpha)="<<sin(alpha)<<",\t"<<"cos(beta)="<<cos(beta)<<std::endl;
 //        std::cout<<"Ridiculously large:"<<k*a*sin(alpha)*cos(beta)<<std::endl;
         e2_1_1 *= e2_1_1;
@@ -235,9 +208,9 @@ Processor::calculateEn(
 //        std::cout<<"e2_1 parts: "<<e2_1_1<<e2_1_2<<std::endl;
         
         e2_1 = pow(e2_1_1 - e2_1_2, 2);
-        double e2_2 = pow(k*b*sin(beta), 2);
-        double e2_3 = sin(2*k*a*sin(alpha)*cos(beta))/(2*k*a*sin(alpha)*cos(beta));
-        double e2_4 = sin(2*k*b*sin(beta))/(2*k*b*sin(beta));
+        double e2_2 = pow(k*b*sin_beta, 2);
+        double e2_3 = sin(2*k*a*sin_alpha*cos_beta)/(2*k*a*sin_alpha*cos_beta);
+        double e2_4 = sin(2*k*b*sin_beta)/(2*k*b*sin_beta);
         
 //        std::cout<<"e2_1="<<e2_1<<"e2_2="<<e2_2;
 

@@ -33,8 +33,10 @@ public:
     };
     
     struct TRIANGLE_ANGLES {
-        double alpha;
-        double beta;
+        double cos_alpha;
+        double cos_beta;
+        double sin_alpha;
+        double sin_beta;
     };
     
     constexpr static double LIGHTSPEED = 299792458;
