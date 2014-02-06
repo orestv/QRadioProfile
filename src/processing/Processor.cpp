@@ -5,12 +5,11 @@
  * Created on February 3, 2014, 10:02 PM
  */
 
-#include <qt5/QtCore/qlist.h>
+#include <QList>
 #include <QDebug>
+
 #include "Processor.h"
 #include <math.h>
-
-#include <iostream>
 
 QDebug operator<< (QDebug d, RightTriangle &triangle) {
     d<<triangle.vertex()<<triangle.p1()<<triangle.p2();
@@ -135,6 +134,42 @@ Processor::projectOntoPlane(
     return vector - projection_onto_normal;
 }
 
+double E1_top(double sigma, double alpha, double beta) {
+    return sigma * pow(cos(alpha)*cos(beta), 2);
+}
+
+double E1_bottom(double k, double a, double b, double alpha, double beta) {
+    return pow(pow(k*a*sin(alpha)*cos(beta), 2) - 
+            pow(k*b*sin(beta), 2), 2);
+}
+
+double E1(double k, double sigma, double a, double b, double alpha, double beta) {
+    return E1_top(sigma, alpha, beta) / E1_bottom(k, a, b, alpha, beta);
+}
+
+double E2_1(double k, double a, double b, double alpha, double beta) {
+    double s1, s2;
+    s1 = sin(k*a*sin(alpha)*cos(beta));
+    s2 = sin(k*b*sin(beta));
+    s1 *= s1;
+    s2 *= s2;
+    return pow(s1 - s2, 2);
+}
+
+double E2_2(double k, double b, double beta) {
+    return pow(k*b*sin(beta), 2);
+}
+
+double E2_3(double k, double a, double alpha, double beta) {
+    double x = 2*k*a*sin(alpha)*cos(beta);
+    return sin(x)/x;
+}
+
+double E2_4(double k, double b, double beta) {
+    double x = 2*k*b*sin(beta);    
+    return sin(x) / x;
+}
+
 double 
 Processor::calculateEn(
         TRIANGLE_ANGLES& angles, 
@@ -142,22 +177,20 @@ Processor::calculateEn(
         QVector3D& longLeg,
         double wavelength) {
     
-    long double result;
+    double result;
     
-    long double alpha = angles.alpha, beta = angles.beta;
+    double alpha = angles.alpha, beta = angles.beta;
     if (alpha < ANGLE_PRECISION)
         alpha = 0;
     if (beta < ANGLE_PRECISION)
         beta = 0;
-    long double a = shortLeg.length();
-    long double b = longLeg.length();
+    double a = shortLeg.length();
+    double b = longLeg.length();
     
-    long double sigma = 4 * M_PI * 
+    double sigma = 4 * M_PI * 
                 shortLeg.lengthSquared() * longLeg.lengthSquared() / (
                 pow(wavelength, 2));
-    long double k = 2 * M_PI / wavelength;
-    std::cout<<"Alpha = "<<alpha<<", beta = "<<beta<<std::endl;
-    std::cout<<"Sigma = "<<sigma<<", k = "<<k<<", wavelength = "<<wavelength<<std::endl;
+    double k = 2 * M_PI / wavelength;
     
     if (alpha == 0 && beta == 0) {
         result = sigma;
@@ -172,35 +205,10 @@ Processor::calculateEn(
                     pow(((1 - (sin(2*kbsinb))/(kbsinb)) / (kbsinb)), 2)
                 );
     } else {
-        double kasinacosb = 2*k*a*sin(alpha)*cos(beta),
-                kbsinb = 2*k*b*sin(beta);
-        double E1 = (sigma * pow(cos(alpha)*cos(beta), 2) / 
-                pow(
-                    pow(k*a*sin(alpha)*cos(beta), 2) - 
-                    pow(k*b*sin(beta), 2)
-                , 2));
-        std::cout<<"E1 top == "<<sigma * pow(cos(alpha)*cos(beta), 2)<<std::endl;
-        std::cout<<"E1 bottom == "<<pow(
-                    pow(k*a*sin(alpha)*cos(beta), 2) - 
-                    pow(k*b*sin(beta), 2)
-                , 2)<<std::endl;
-        long double e1_bottom_1 = k*a*sin(alpha)*cos(beta);
-        long double e1_bottom_2 = k*b*sin(beta);
-        std::cout<<"e1 bottom 1 and 2: "<<e1_bottom_1<<", "<<e1_bottom_2<<std::endl;
-        e1_bottom_1 = pow(e1_bottom_1, 2);
-        e1_bottom_2 = pow(e1_bottom_2, 2);
-        std::cout<<"e1 bottom 1 and 2: "<<e1_bottom_1<<", "<<e1_bottom_2<<std::endl;
-        
-        double e1_bottom = pow(e1_bottom_1 - e1_bottom_2, 2);
-        std::cout<<"E1_bottom = "<<e1_bottom<<std::endl;
-        double E2 = pow(
-                        pow(sin(k*a*sin(alpha)*cos(beta)), 2) - 
-                        pow(sin(k*b*sin(beta)), 2)
-                    , 2) + 
-                    pow(k*b*sin(beta), 2) * 
-                        pow( (sin(kasinacosb)/kasinacosb) - (sin(kbsinb)/kbsinb), 2);
-        std::cout<<"E1 = "<<E1<<", E2 = "<<E2<<std::endl;
-        result = E1*E2;
+        double e1 = E1(k, sigma, a, b, alpha, beta);    
+        double e2_03 = pow(E2_3(k, a, alpha, beta) - E2_4(k, b, beta), 2);
+        double e2 = E2_1(k, a, b, alpha, beta) + E2_2(k, b, beta) * e2_03;
+        result = e1 * e2;
     }
     
     return result;
