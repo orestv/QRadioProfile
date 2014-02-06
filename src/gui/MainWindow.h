@@ -10,8 +10,10 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QProgressBar>
 #include "ParamsWidget.h"
 #include "processing/Processor.h"
+#include "processing/CalculationThread.h"
 
 class MainWindow : public QWidget{
     Q_OBJECT
@@ -22,6 +24,8 @@ public:
 private slots:
     void paramsWidgetUpdated();
     void calculateClicked();
+    void threadIterationFinished(int iteration);
+    void threadFinished();
     
 private:
     void initWidgets();
@@ -33,7 +37,9 @@ private:
     static Processor::PARAMS convertParams(ParamsWidget::CALCULATION_PARAMS);
     
     ParamsWidget *_paramsWidget;
+    QProgressBar *_progressBar;
     QPushButton *_btnCalculate;    
+    CalculationThread *_calculationThread;
 };
 
 #endif	/* MAINWINDOW_H */

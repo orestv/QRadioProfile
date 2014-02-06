@@ -25,6 +25,8 @@
         <itemPath>src/import/Importer.h</itemPath>
       </logicalFolder>
       <logicalFolder name="processing" displayName="processing" projectFiles="true">
+        <itemPath>src/processing/CalculationThread.cpp</itemPath>
+        <itemPath>src/processing/CalculationThread.h</itemPath>
         <itemPath>src/processing/ProcessParams.cpp</itemPath>
         <itemPath>src/processing/ProcessParams.h</itemPath>
         <itemPath>src/processing/Processor.cpp</itemPath>
@@ -105,6 +107,13 @@
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/processing/CalculationThread.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/processing/CalculationThread.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/processing/ProcessParams.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/processing/ProcessParams.h" ex="false" tool="3" flavor2="0">
@@ -167,6 +176,13 @@
       <item path="src/import/Importer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/processing/CalculationThread.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/processing/CalculationThread.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/processing/ProcessParams.cpp" ex="false" tool="1" flavor2="0">
       </item>

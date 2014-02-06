@@ -18,6 +18,7 @@
 #include "processing/Processor.h"
 #include "import/Importer.h"
 #include "geometry/RightTriangle.h"
+#include "processing/CalculationThread.h"
 
 MainWindow::MainWindow() {
     setWindowTitle(tr("Аналіз моделі"));
@@ -33,12 +34,16 @@ MainWindow::~MainWindow() {
 void MainWindow::initWidgets() {
     _paramsWidget = new ParamsWidget();
     _btnCalculate = new QPushButton(tr("Обчислити"));
+    _progressBar = new QProgressBar();
+    
+    _progressBar->setHidden(true);
     
     QVBoxLayout *layout = new QVBoxLayout();
     
     layout->addWidget(_paramsWidget);
     layout->addStretch();
-    layout->addWidget(_btnCalculate);
+    layout->addWidget(_progressBar);
+    layout->addWidget(_btnCalculate);    
     
     setLayout(layout);
 }
@@ -88,18 +93,37 @@ void MainWindow::beginCalculation() {
         qDebug()<<exceptionMessage;
         return;
     }
-    QList<Processor::CALCULATION_RESULT> result = Processor::analyzeModel(model, calculationParams);
-    qDebug()<<"Calculation complete, items count: "<<result.length();
-    for (auto item = result.begin(); item != result.end() && false; item++) {
-        double azimuthDeg = item->azimuth * 180 / M_PI;
-        qDebug()<<"For azimuth "<<azimuthDeg<<" e == "<<item->E;
-    }
-    Importer::exportToFile(inputParams.resultPath, result);
+    _progressBar->setValue(0);
+    _progressBar->setMaximum(2*M_PI/calculationParams.viewpointRotationStep);
+    _calculationThread = new CalculationThread(this, calculationParams, model);
+    
+    QObject::connect(_calculationThread, &CalculationThread::iterationFinished,
+            this, &MainWindow::threadIterationFinished);
+    QObject::connect(_calculationThread, &CalculationThread::finished,
+            this, &MainWindow::threadFinished);
+   
+    this->setDisabled(true);
+    this->_progressBar->setVisible(true);
+    
+    _calculationThread->start();
+}
+
+void MainWindow::threadIterationFinished(int iteration) {
+    _progressBar->setValue(iteration);
+}
+
+void MainWindow::threadFinished() {
+    this->_progressBar->setHidden(true);
+    ParamsWidget::CALCULATION_PARAMS inputParams = 
+            _paramsWidget->gatherParams();   
+    
+    Importer::exportToFile(inputParams.resultPath, _calculationThread->results());
     qDebug()<<"File saved";
     QMessageBox::StandardButton response = QMessageBox::question(this, tr("Модель проаналізовано!"),
             tr("Результати збережено. Бажаєте відкрити файл?"),
             QMessageBox::StandardButton::Yes|QMessageBox::StandardButton::No,
             QMessageBox::StandardButton::Yes);
     if (response == QMessageBox::StandardButton::Yes)
-        QDesktopServices::openUrl(QUrl(inputParams.resultPath));        
+        QDesktopServices::openUrl(QUrl(inputParams.resultPath));    
+    this->setEnabled(true);
 }
