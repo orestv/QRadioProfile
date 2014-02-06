@@ -86,4 +86,10 @@ void MainWindow::beginCalculation() {
     }
     QList<Processor::CALCULATION_RESULT> result = Processor::analyzeModel(model, calculationParams);
     qDebug()<<"Calculation complete, items count: "<<result.length();
+    for (auto item = result.begin(); item != result.end() && false; item++) {
+        double azimuthDeg = item->azimuth * 180 / M_PI;
+        qDebug()<<"For azimuth "<<azimuthDeg<<" e == "<<item->E;
+    }
+    Importer::exportToFile(paramsWidgetParams.resultPath, result);
+    qDebug()<<"File saved";
 }

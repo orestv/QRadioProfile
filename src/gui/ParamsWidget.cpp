@@ -21,11 +21,6 @@ void ParamsWidget::initWidgets() {
     _fpModel = new FilePicker(false, "Файли моделі (*.obj)");
     _fpResult = new FilePicker(true, "*.csv");
 
-#ifdef QT_DEBUG
-    _fpModel->setSelectedPath("models/cub.obj");
-    _fpResult->setSelectedPath("output.csv");
-#endif
-    
     _spViewpointHeight = new QDoubleSpinBox();
     _spViewpointDistance = new QDoubleSpinBox();
     _spViewpointRotationStep = new QDoubleSpinBox();
@@ -45,6 +40,12 @@ void ParamsWidget::initWidgets() {
     _spFrequency->setMinimum(0);
     _spFrequency->setSingleStep(0.1);
     _spFrequency->setValue(95);
+    
+#ifdef QT_DEBUG
+    _fpModel->setSelectedPath("models/cub.obj");
+    _fpResult->setSelectedPath("output.csv");
+    _spViewpointRotationStep->setValue(45);
+#endif
     
     QGridLayout *layout = new QGridLayout();
     

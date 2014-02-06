@@ -74,11 +74,6 @@
             <pElem>src</pElem>
           </incDir>
         </ccTool>
-        <linkerTool>
-          <linkerLibItems>
-            <linkerOptionItem>-lgmpxx -lgmp</linkerOptionItem>
-          </linkerLibItems>
-        </linkerTool>
       </compileType>
       <item path="ProcessParams.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -132,6 +127,9 @@
         <ccTool>
           <developmentMode>5</developmentMode>
           <standard>8</standard>
+          <incDir>
+            <pElem>src</pElem>
+          </incDir>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>

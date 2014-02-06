@@ -7,8 +7,11 @@
 
 #include "Importer.h"
 #include <QDebug>
-#include <ctype.h>
+#include <QTextStream>
+
+#include <iostream>
 #include <math.h>
+#include <qt5/QtCore/qtextstream.h>
 
 QList<RightTriangle> Importer::import(QString path) {
     QList<RightTriangle> result;
@@ -214,4 +217,27 @@ QList<RightTriangle> Importer::generateRightTriangles(QList<QVector3D> triangle)
     result.push_back(rt1);
     result.push_back(rt2);
     return result;
+}
+
+void Importer::exportToFile(
+        QString path, 
+        QList<Processor::CALCULATION_RESULT> results) {
+    QFile file(path);
+    if (file.exists())
+        file.remove();
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        throw "Failed to open file";
+    QTextStream strm(&file);
+    strm.setCodec("UTF-8");
+    strm<<QString::fromUtf8("Азимут;Е;Сума косинусів;Сума синусів\n");
+    for (auto result = results.begin(); result != results.end(); result++) {
+        strm<<QString::number(result->azimuth, 'f')<<";"
+                <<QString::number(result->E, 'f')<<";"
+                <<QString::number(result->sum_cos, 'f')<<";"
+                <<QString::number(result->sum_sin, 'f')
+                <<"\n";
+    }
+    
+    strm.flush();
+    file.close();
 }

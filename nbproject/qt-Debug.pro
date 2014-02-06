@@ -21,7 +21,7 @@ QMAKE_CC = gcc
 QMAKE_CXX = g++
 DEFINES += 
 INCLUDEPATH += src 
-LIBS += -lgmpxx -lgmp  
+LIBS += 
 equals(QT_MAJOR_VERSION, 4) {
 QMAKE_CXXFLAGS += -std=c++11
 }

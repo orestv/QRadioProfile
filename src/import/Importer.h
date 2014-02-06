@@ -14,11 +14,13 @@
 #include <QVector3D>
 
 #include "geometry/RightTriangle.h"
+#include "processing/Processor.h"
 
 class Importer {
 public:
 
     static QList<RightTriangle> import(QString path);
+    static void exportToFile(QString path, QList<Processor::CALCULATION_RESULT> results);
     
     static QList<RightTriangle> generateRightTriangles(QList<QVector3D> triangle);    
 private:

@@ -60,6 +60,8 @@ Processor::calculateViewpointSums(
         double En = calculateEn(angles, shortLeg, longLeg, wavelength);
         double R = (viewpoint - t->vertex()).length();  
         
+//        qDebug()<<"En for "<<*t<<" = "<<En;
+        
         result.sum_cos += En * cos(k*R);
         result.sum_sin += En * sin(k*R);
     }
@@ -222,6 +224,7 @@ Processor::analyzeModel(QList<RightTriangle> triangles,
     for (double viewpointAzimuth = 0;
             viewpointAzimuth < 2*M_PI;
             viewpointAzimuth += params.viewpointRotationStep) {
+        qDebug()<<viewpointAzimuth;
         
         double x, y, z;
         y = params.viewpointHeight;
