@@ -45,18 +45,23 @@ void FilePicker::showFileDialog() {
         selectedPath = QFileDialog::getSaveFileName(this,
             tr("Виберіть файл"), _selectedPath, this->_filters);
     else {
-        QFileDialog fd;
         selectedPath = QFileDialog::getOpenFileName(this,
             tr("Виберіть файл"), _selectedPath, this->_filters);
     }
     if (selectedPath.isNull())
-        return;    
-    _selectedPath = selectedPath;
-    QFileInfo fileInfo(selectedPath);
-    _lblFilename->setText(fileInfo.fileName());
-    emit updated();
+        return;
+    setSelectedPath(selectedPath);
 }
 
 QString FilePicker::selectedPath() const {
     return _selectedPath;
+}
+
+void FilePicker::setSelectedPath(QString path) {
+    if (path.isNull())
+        return;    
+    _selectedPath = path;
+    QFileInfo fileInfo(path);
+    _lblFilename->setText(fileInfo.fileName());
+    emit updated();
 }

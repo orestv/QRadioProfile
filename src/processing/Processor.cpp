@@ -60,8 +60,6 @@ Processor::calculateViewpointSums(
         double En = calculateEn(angles, shortLeg, longLeg, wavelength);
         double R = (viewpoint - t->vertex()).length();  
         
-        qDebug()<<"En == "<<En;
-        
         result.sum_cos += En * cos(k*R);
         result.sum_sin += En * sin(k*R);
     }
@@ -209,6 +207,44 @@ Processor::calculateEn(
         double e2_03 = pow(E2_3(k, a, alpha, beta) - E2_4(k, b, beta), 2);
         double e2 = E2_1(k, a, b, alpha, beta) + E2_2(k, b, beta) * e2_03;
         result = e1 * e2;
+    }
+    
+    return result;
+}
+
+QList<Processor::CALCULATION_RESULT>
+Processor::analyzeModel(QList<RightTriangle> triangles,
+        Processor::PARAMS params) {
+    QList<Processor::CALCULATION_RESULT> result;
+    
+    double wavelength = Processor::LIGHTSPEED / params.frequency;
+    
+    for (double viewpointAzimuth = 0;
+            viewpointAzimuth < 2*M_PI;
+            viewpointAzimuth += params.viewpointRotationStep) {
+        
+        double x, y, z;
+        y = params.viewpointHeight;
+        z = params.viewpointDistance * cos(viewpointAzimuth);
+        x = params.viewpointDistance * sin(viewpointAzimuth);
+        
+        QVector3D viewpoint(x, y, z);
+        
+        QList<RightTriangle> visibleTriangles = Processor::getVisibleTriangles(
+                triangles, viewpoint);
+        
+        Processor::VIEWPOINT_SUMS sums = Processor::calculateViewpointSums(
+                visibleTriangles, viewpoint, wavelength);
+        
+        double E = sqrt(pow(sums.sum_cos, 2) + pow(sums.sum_sin, 2));
+        
+        Processor::CALCULATION_RESULT localResult;        
+        localResult.azimuth = viewpointAzimuth;
+        localResult.E = E;
+        localResult.sum_cos = sums.sum_cos;
+        localResult.sum_sin = sums.sum_sin;
+        
+        result.push_back(localResult);
     }
     
     return result;

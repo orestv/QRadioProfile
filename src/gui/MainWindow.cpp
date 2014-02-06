@@ -6,7 +6,14 @@
  */
 
 #include "MainWindow.h"
+
 #include <QVBoxLayout>
+#include <QDebug>
+#include <math.h>
+
+#include "processing/Processor.h"
+#include "import/Importer.h"
+#include "geometry/RightTriangle.h"
 
 MainWindow::MainWindow() {
     setWindowTitle(tr("Аналіз моделі"));
@@ -35,6 +42,8 @@ void MainWindow::initWidgets() {
 void MainWindow::initSignals() {
     QObject::connect(_paramsWidget, &ParamsWidget::updated,
             this, &MainWindow::paramsWidgetUpdated);
+    QObject::connect(_btnCalculate, &QPushButton::clicked, 
+            this, &MainWindow::calculateClicked);
 }
 
 void MainWindow::paramsWidgetUpdated() {
@@ -44,4 +53,37 @@ void MainWindow::paramsWidgetUpdated() {
 void MainWindow::updateWidgetsReadiness() {
     bool paramsReady = _paramsWidget->isReady();
     _btnCalculate->setEnabled(paramsReady);
+}
+
+void MainWindow::calculateClicked() {
+    beginCalculation();    
+}
+
+Processor::PARAMS
+MainWindow::convertParams(ParamsWidget::CALCULATION_PARAMS params) {
+    Processor::PARAMS result;
+    
+    result.viewpointHeight = params.viewpointHeight;
+    result.viewpointDistance = params.viewpointDistance;
+    result.frequency = params.frequency * pow(10, 9);
+    result.viewpointRotationStep = params.viewpointRotationStep * M_PI / 180.;
+    
+    return result;
+}
+
+void MainWindow::beginCalculation() {
+    ParamsWidget::CALCULATION_PARAMS paramsWidgetParams = 
+            _paramsWidget->gatherParams();    
+    Processor::PARAMS calculationParams = 
+            MainWindow::convertParams(paramsWidgetParams);
+    QList<RightTriangle> model;
+    try {
+        model = Importer::import(paramsWidgetParams.inputPath);
+    }
+    catch (char *exceptionMessage) {
+        qDebug()<<exceptionMessage;
+        return;
+    }
+    QList<Processor::CALCULATION_RESULT> result = Processor::analyzeModel(model, calculationParams);
+    qDebug()<<"Calculation complete, items count: "<<result.length();
 }

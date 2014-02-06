@@ -20,6 +20,7 @@ public:
     virtual ~FilePicker();
 
     QString selectedPath() const;
+    void setSelectedPath(QString path);
 signals:
     void updated();
 
