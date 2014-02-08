@@ -11,7 +11,6 @@
 
 #include <iostream>
 #include <math.h>
-#include <qt5/QtCore/qtextstream.h>
 
 QList<RightTriangle> Importer::import(QString path) {
     QList<RightTriangle> result;
