@@ -89,8 +89,8 @@ void MainWindow::beginCalculation() {
     try {
         model = Importer::import(inputParams.inputPath);
     }
-    catch (char *exceptionMessage) {
-        qDebug()<<exceptionMessage;
+    catch (char const *exceptionMessage) {
+        QMessageBox::critical(this, tr("Помилка"), tr("Не вдалось відкрити файл моделі!"));
         return;
     }
     _progressBar->setValue(0);
@@ -117,8 +117,13 @@ void MainWindow::threadFinished() {
     this->_progressBar->setVisible(false);
     ParamsWidget::CALCULATION_PARAMS inputParams = 
             _paramsWidget->gatherParams();   
-    
-    Importer::exportToFile(inputParams.resultPath, _calculationThread->results());
+    try {
+        Importer::exportToFile(inputParams.resultPath, _calculationThread->results());
+    } catch (char const *exceptionMessage) {
+        QMessageBox::critical(this, tr("Помилка"), tr("Не вдалось зберегти файл результату."));
+        return;
+    }
+
     qDebug()<<"File saved";
     QMessageBox::StandardButton response = QMessageBox::question(this, tr("Модель проаналізовано!"),
             tr("Результати збережено. Бажаєте відкрити файл?"),
