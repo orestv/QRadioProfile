@@ -10,6 +10,8 @@
 
 #include "geometry/RightTriangle.h"
 #include <QVector3D>
+#include <Qt3D/QTriangle3D>
+#include <complex>
 
 class Processor {
 public:
@@ -40,14 +42,19 @@ public:
     };
     
     constexpr static double LIGHTSPEED = 299792458;
+
+    static long double getE(const QVector3D &observationPoint, QList<QTriangle3D> &model, const double wavelength);
+    static bool isTriangleVisible(const QTriangle3D &triangle, const QList<QTriangle3D> &model);
+    static long double getSigma(const QVector3D &observationPoint, const QTriangle3D &triangle, const double R, const double wavelength);
+    static long double getU(const QVector3D &observationPoint, const QTriangle3D &triangle, const double wavelength);
     
-    static QList<CALCULATION_RESULT> analyzeModel(QList<RightTriangle> triangles,
+    static QList<CALCULATION_RESULT> analyzeModel(QList<RightTriangle> &triangles,
         Processor::PARAMS parameters);
     
-    static QList<RightTriangle> getVisibleTriangles(QList<RightTriangle> triangles, 
+    static QList<RightTriangle> getVisibleTriangles(QList<RightTriangle> &triangles,
             QVector3D viewpoint);
     static bool isTriangleVisible(RightTriangle triangle, QVector3D viewpoint);
-    static VIEWPOINT_SUMS calculateViewpointSums(QList<RightTriangle> triangles, QVector3D viewpoint, double wavelength);
+    static VIEWPOINT_SUMS calculateViewpointSums(QList<RightTriangle> &triangles, QVector3D viewpoint, double wavelength);
     static TRIANGLE_ANGLES calculateTriangleAngles(RightTriangle &triangle, QVector3D &viewpoint);
     static TRIANGLE_ANGLES calculateTriangleAngles(QVector3D &triangleNormal, QVector3D planeNormal, QVector3D &viewVector);
     static QVector3D projectOntoPlane(QVector3D &vector, QVector3D plane_normal);

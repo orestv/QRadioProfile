@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QUrl>
+#include <Qt3D/QTriangle3D>
 
 #include <math.h>
 
@@ -85,7 +86,7 @@ void MainWindow::beginCalculation() {
             _paramsWidget->gatherParams();    
     Processor::PARAMS calculationParams = 
             MainWindow::convertParams(inputParams);
-    QList<RightTriangle> model;
+    QList<QTriangle3D> model;
     try {
         model = Importer::import(inputParams.inputPath);
     }
@@ -93,19 +94,19 @@ void MainWindow::beginCalculation() {
         QMessageBox::critical(this, tr("Помилка"), tr("Не вдалось відкрити файл моделі!"));
         return;
     }
-    _progressBar->setValue(0);
-    _progressBar->setMaximum(2*M_PI/calculationParams.viewpointRotationStep);
-    _calculationThread = new CalculationThread(this, calculationParams, model);
+//    _progressBar->setValue(0);
+//    _progressBar->setMaximum(2*M_PI/calculationParams.viewpointRotationStep);
+//    _calculationThread = new CalculationThread(this, calculationParams, model);
     
-    QObject::connect(_calculationThread, &CalculationThread::iterationFinished,
-            this, &MainWindow::threadIterationFinished);
-    QObject::connect(_calculationThread, &CalculationThread::finished,
-            this, &MainWindow::threadFinished);
+//    QObject::connect(_calculationThread, &CalculationThread::iterationFinished,
+//            this, &MainWindow::threadIterationFinished);
+//    QObject::connect(_calculationThread, &CalculationThread::finished,
+//            this, &MainWindow::threadFinished);
    
-    this->setDisabled(true);
-    this->_progressBar->setVisible(true);
+//    this->setDisabled(true);
+//    this->_progressBar->setVisible(true);
     
-    _calculationThread->start();
+//    _calculationThread->start();
 }
 
 void MainWindow::threadIterationFinished(int iteration) {

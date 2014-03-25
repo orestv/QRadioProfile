@@ -10,7 +10,7 @@
 ProcessParams::ProcessParams() {
 }
 
-ProcessParams::ProcessParams(const ProcessParams& orig) {
+ProcessParams::ProcessParams(const ProcessParams& ) {
 }
 
 ProcessParams::~ProcessParams() {

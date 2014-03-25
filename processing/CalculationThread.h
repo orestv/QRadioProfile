@@ -17,7 +17,7 @@ class CalculationThread : public QThread{
     Q_OBJECT
 public:
     CalculationThread(QObject *parent, Processor::PARAMS params,
-            QList<RightTriangle> model);
+            QList<RightTriangle> &model);
     virtual ~CalculationThread();
     
     virtual void run();

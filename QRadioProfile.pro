@@ -1,12 +1,13 @@
 QT       += core gui widgets
 
 TARGET = RadioProfile
-CONFIG   += app_bundle
+CONFIG   += app_bundle testlib
 
 QMAKE_CXXFLAGS = -std=c++0x
 
 TEMPLATE = app
 
+LIBS += -lgsl -lgslcblas -lm
 
 SOURCES += main.cpp \
     geometry/RightTriangle.cpp \
@@ -16,7 +17,9 @@ SOURCES += main.cpp \
     import/Importer.cpp \
     processing/ProcessParams.cpp \
     processing/Processor.cpp \
-    processing/CalculationThread.cpp
+    processing/CalculationThread.cpp \
+    geometry/triangle.cpp \
+    processing/ecalculator.cpp
 
 HEADERS += \
     geometry/RightTriangle.h \
@@ -26,5 +29,8 @@ HEADERS += \
     import/Importer.h \
     processing/ProcessParams.h \
     processing/Processor.h \
-    processing/CalculationThread.h
+    processing/CalculationThread.h \
+    geometry/triangle.h \
+    processing/ICalculator.h \
+    processing/ecalculator.h
 

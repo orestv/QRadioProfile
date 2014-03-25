@@ -21,7 +21,7 @@ const double ANGLE_PRECISION = 0.01;
 
 QList<RightTriangle> 
 Processor::getVisibleTriangles(
-        QList<RightTriangle> triangles, 
+        QList<RightTriangle> &triangles,
         QVector3D viewpoint) {
     QList<RightTriangle> result;
     
@@ -45,7 +45,7 @@ Processor::isTriangleVisible(
 
 Processor::VIEWPOINT_SUMS
 Processor::calculateViewpointSums(
-        QList<RightTriangle> triangles, 
+        QList<RightTriangle> &triangles,
         QVector3D viewpoint, 
         double wavelength) {
     
@@ -226,7 +226,7 @@ Processor::calculateEn(
 }
 
 QList<Processor::CALCULATION_RESULT>
-Processor::analyzeModel(QList<RightTriangle> triangles,
+Processor::analyzeModel(QList<RightTriangle> &triangles,
         Processor::PARAMS params) {
     QList<Processor::CALCULATION_RESULT> result;
     
@@ -263,4 +263,47 @@ Processor::analyzeModel(QList<RightTriangle> triangles,
     }
     
     return result;
+}
+
+long double
+Processor::getE(
+        const QVector3D &observationPoint,
+        QList<QTriangle3D> &model,
+        const double wavelength) {
+    long double result = 0;
+    for (auto triangle = model.begin(); triangle != model.end(); triangle++) {
+        if (!isTriangleVisible(*triangle, model))
+            continue;
+
+        double R = (observationPoint - triangle->center()).length();
+        result += getSigma(observationPoint, *triangle, R, wavelength);
+    }
+    return result;
+}
+
+bool
+Processor::isTriangleVisible(
+        const QTriangle3D &triangle,
+        const QList<QTriangle3D> &model) {
+
+    return true;
+}
+
+long double
+Processor::getSigma(
+        const QVector3D &observationPoint,
+        const QTriangle3D &triangle,
+        const double R,
+        const double wavelength) {
+
+    return sqrt(pow(R, 2) * getU(observationPoint, triangle, wavelength));
+}
+
+long double
+Processor::getU(
+        const QVector3D &observationPoint,
+        const QTriangle3D &triangle,
+        const double wavelength) {
+
+    return 0;
 }
