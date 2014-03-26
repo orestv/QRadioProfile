@@ -70,9 +70,12 @@ void MainWindow::calculateClicked() {
 }
 
 Processor::PARAMS
-MainWindow::convertParams(ParamsWidget::CALCULATION_PARAMS params) {
+MainWindow::convertParams(
+    ParamsWidget::CALCULATION_PARAMS params) {
     Processor::PARAMS result;
     
+    result.viewpointStartAngle = params.viewpointStartAngle;
+    result.viewpointEndAngle = params.viewpointEndAngle;
     result.viewpointHeight = params.viewpointHeight;
     result.viewpointDistance = params.viewpointDistance;
     result.frequency = params.frequency * pow(10, 9);
@@ -94,19 +97,19 @@ void MainWindow::beginCalculation() {
         QMessageBox::critical(this, tr("Помилка"), tr("Не вдалось відкрити файл моделі!"));
         return;
     }
-//    _progressBar->setValue(0);
-//    _progressBar->setMaximum(2*M_PI/calculationParams.viewpointRotationStep);
-//    _calculationThread = new CalculationThread(this, calculationParams, model);
+    _progressBar->setValue(calculationParams.viewpointStartAngle);
+    _progressBar->setMaximum(calculationParams.viewpointEndAngle);
+    _calculationThread = new CalculationThread(this, calculationParams, model);
     
-//    QObject::connect(_calculationThread, &CalculationThread::iterationFinished,
-//            this, &MainWindow::threadIterationFinished);
-//    QObject::connect(_calculationThread, &CalculationThread::finished,
-//            this, &MainWindow::threadFinished);
+    QObject::connect(_calculationThread, &CalculationThread::iterationFinished,
+            this, &MainWindow::threadIterationFinished);
+    QObject::connect(_calculationThread, &CalculationThread::finished,
+            this, &MainWindow::threadFinished);
    
-//    this->setDisabled(true);
-//    this->_progressBar->setVisible(true);
+    this->setDisabled(true);
+    this->_progressBar->setVisible(true);
     
-//    _calculationThread->start();
+    _calculationThread->start();
 }
 
 void MainWindow::threadIterationFinished(int iteration) {

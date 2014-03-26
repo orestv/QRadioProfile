@@ -6,11 +6,11 @@
  */
 #include <iostream>
 
-//#include <QApplication>
-//#include "import/Importer.h"
-//#include "processing/Processor.h"
-//#include "gui/MainWindow.h"
-//#include <QVector3D>
+#include <QApplication>
+#include "import/Importer.h"
+#include "processing/Processor.h"
+#include "gui/MainWindow.h"
+#include <QVector3D>
 
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_monte.h>
@@ -84,14 +84,14 @@ int main(int argc, char *argv[]) {
                                   calls, r, s, &res, &rerr);
         gsl_monte_plain_free(s);
         std::cout<<"Result: "<<res;
-    }
+    };
 
-    return 0;
+//    return 0;
 
-//    QApplication app(argc, argv);
+    QApplication app(argc, argv);
 
-//    MainWindow w;
-//    w.show();
+    MainWindow w;
+    w.show();
 
-//    return app.exec();
+    return app.exec();
 }

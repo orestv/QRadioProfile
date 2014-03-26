@@ -19,6 +19,8 @@ public:
         double viewpointHeight;
         double viewpointDistance;
         double viewpointRotationStep;
+        double viewpointStartAngle;
+        double viewpointEndAngle;
         double frequency;
     };
     

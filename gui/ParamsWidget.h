@@ -11,6 +11,7 @@
 #include <QWidget>
 #include <QLineEdit>
 #include <QDoubleSpinBox>
+#include <QGridLayout>
 
 #include "FilePicker.h"
 
@@ -24,6 +25,8 @@ public:
         double viewpointHeight;
         double viewpointDistance;
         double viewpointRotationStep;       //degrees
+        double viewpointStartAngle;
+        double viewpointEndAngle;
         double frequency;                   //GHz
     };    
     
@@ -42,12 +45,17 @@ private slots:
 private:
     void initWidgets();
     void initSignals();
+
+    void addWidget(QGridLayout &layout, const QString labelText,
+                   QWidget *widget);
     
     FilePicker *_fpModel;
     FilePicker *_fpResult;
     QDoubleSpinBox *_spViewpointHeight;
     QDoubleSpinBox *_spViewpointDistance;
     QDoubleSpinBox *_spViewpointRotationStep;
+    QDoubleSpinBox *_spViewpointRotationStartAngle;
+    QDoubleSpinBox *_spViewpointRotationEndAngle;
     QDoubleSpinBox *_spFrequency;
 };
 
