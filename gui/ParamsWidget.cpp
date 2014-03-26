@@ -29,9 +29,11 @@ void ParamsWidget::initWidgets() {
     _spFrequency = new QDoubleSpinBox();
     
     _spViewpointHeight->setMinimum(0);
+    _spViewpointHeight->setMaximum(INFINITY);
     _spViewpointHeight->setValue(25);
     
     _spViewpointDistance->setMinimum(0);
+    _spViewpointDistance->setMaximum(INFINITY);
     _spViewpointDistance->setValue(75);
     
     _spViewpointRotationStep->setMinimum(0);

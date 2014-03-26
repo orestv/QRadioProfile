@@ -265,16 +265,19 @@ Processor::analyzeModel(QList<RightTriangle> &triangles,
 
 long double
 Processor::getE(
-        const QVector3D &observationPoint,
+        const QVector3D &viewPoint,
         QList<QTriangle3D> &model,
         const double wavelength) {
     long double result = 0;
     for (auto triangle = model.begin(); triangle != model.end(); triangle++) {
-        if (!isTriangleVisible(*triangle, model))
+        if (!isTriangleVisible(*triangle, model, viewPoint)) {
+            qDebug()<<"("<<triangle->p()<<","<<triangle->q()<<","<<triangle->r()<<
+                      ") is invisible, skipping.";
             continue;
+        }
 
-        double R = (observationPoint - triangle->center()).length();
-        result += getSigma(observationPoint, *triangle, R, wavelength);
+        double R = (viewPoint - triangle->center()).length();
+        result += getSigma(viewPoint, *triangle, R, wavelength);
     }
     return result;
 }
@@ -282,7 +285,12 @@ Processor::getE(
 bool
 Processor::isTriangleVisible(
         const QTriangle3D &triangle,
-        const QList<QTriangle3D> &model) {
+        const QList<QTriangle3D> &model,
+        const QVector3D &viewPoint) {
+
+    QVector3D viewVector = (triangle.center() - viewPoint);
+    if (QVector3D::dotProduct(viewVector, triangle.faceNormal()) < 0)
+        return false;
 
     return true;
 }

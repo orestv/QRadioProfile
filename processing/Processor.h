@@ -43,8 +43,8 @@ public:
     
     constexpr static double LIGHTSPEED = 299792458;
 
-    static long double getE(const QVector3D &observationPoint, QList<QTriangle3D> &model, const double wavelength);
-    static bool isTriangleVisible(const QTriangle3D &triangle, const QList<QTriangle3D> &model);
+    static long double getE(const QVector3D &viewPoint, QList<QTriangle3D> &model, const double wavelength);
+    static bool isTriangleVisible(const QTriangle3D &triangle, const QList<QTriangle3D> &model, const QVector3D &viewPoint);
     static long double getSigma(const QVector3D &observationPoint, const QTriangle3D &triangle, const double R, const double wavelength);
     static long double getU(const QVector3D &observationPoint, const QTriangle3D &triangle, const double wavelength);
     
