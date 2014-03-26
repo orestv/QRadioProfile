@@ -11,13 +11,13 @@
 #include <QThread>
 
 #include "Processor.h"
-#include "geometry/RightTriangle.h"
+#include <Qt3D/QTriangle3D>
 
 class CalculationThread : public QThread{
     Q_OBJECT
 public:
     CalculationThread(QObject *parent, Processor::PARAMS params,
-            QList<RightTriangle> &model);
+            QList<QTriangle3D> &model);
     virtual ~CalculationThread();
     
     virtual void run();
@@ -30,7 +30,7 @@ signals:
 private:
     Processor::PARAMS _params;
     QList<Processor::CALCULATION_RESULT> _results;
-    QList<RightTriangle> _model;
+    QList<QTriangle3D> _model;
 };
 
 #endif	/* CALCULATIONTHREAD_H */

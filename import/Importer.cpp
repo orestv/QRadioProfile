@@ -227,12 +227,10 @@ void Importer::exportToFile(
         throw "Failed to open file";
     QTextStream strm(&file);
     strm.setCodec("UTF-8");
-    strm<<QString::fromUtf8("Азимут;Е;Сума косинусів;Сума синусів\n");
+    strm<<QString::fromUtf8("Азимут;Е\n");
     for (auto result = results.begin(); result != results.end(); result++) {
         strm<<QString::number(result->azimuth, 'f')<<";"
-                <<QString::number(result->E, 'f')<<";"
-                <<QString::number(result->sum_cos, 'f')<<";"
-                <<QString::number(result->sum_sin, 'f')
+                <<QString::number(result->E, 'f')
                 <<"\n";
     }
     

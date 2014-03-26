@@ -247,17 +247,15 @@ Processor::analyzeModel(QList<RightTriangle> &triangles,
         
         QList<RightTriangle> visibleTriangles = Processor::getVisibleTriangles(
                 triangles, viewpoint);
-        
+
         Processor::VIEWPOINT_SUMS sums = Processor::calculateViewpointSums(
                 visibleTriangles, viewpoint, wavelength);
-        
+
         double E = sqrt(pow(sums.sum_cos, 2) + pow(sums.sum_sin, 2));
         
         Processor::CALCULATION_RESULT localResult;        
         localResult.azimuth = viewpointAzimuth;
         localResult.E = E;
-        localResult.sum_cos = sums.sum_cos;
-        localResult.sum_sin = sums.sum_sin;
         
         result.push_back(localResult);
     }

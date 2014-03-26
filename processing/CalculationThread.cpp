@@ -9,7 +9,7 @@
 
 CalculationThread::CalculationThread(QObject *parent, 
         Processor::PARAMS params,
-        QList<RightTriangle> &model): QThread(parent) {
+        QList<QTriangle3D> &model): QThread(parent) {
     this->_params = params;
     this->_model = model;
 }
@@ -20,8 +20,8 @@ CalculationThread::~CalculationThread() {
 void CalculationThread::run() {
     double wavelength = Processor::LIGHTSPEED / _params.frequency;
     int iteration = 0;
-    for (double viewpointAzimuth = 0;
-            viewpointAzimuth < 2*M_PI;
+    for (double viewpointAzimuth = _params.viewpointStartAngle;
+            viewpointAzimuth <= _params.viewpointEndAngle;
             viewpointAzimuth += _params.viewpointRotationStep) {
         double x, y, z;
         y = _params.viewpointHeight;
@@ -31,19 +31,11 @@ void CalculationThread::run() {
         QVector3D viewpoint(x, y, z);
 //        std::cout<<"viewpoint: "<<viewpoint;
         
-        QList<RightTriangle> visibleTriangles = Processor::getVisibleTriangles(
-                _model, viewpoint);
-        
-        Processor::VIEWPOINT_SUMS sums = Processor::calculateViewpointSums(
-                visibleTriangles, viewpoint, wavelength);
-        
-        double E = sqrt(pow(sums.sum_cos, 2) + pow(sums.sum_sin, 2));
+        long double e = Processor::getE(viewpoint, _model, wavelength);
         
         Processor::CALCULATION_RESULT localResult;        
         localResult.azimuth = viewpointAzimuth;
-        localResult.E = E;
-        localResult.sum_cos = sums.sum_cos;
-        localResult.sum_sin = sums.sum_sin;
+        localResult.E = e;
         
         _results.push_back(localResult);
         iteration++;

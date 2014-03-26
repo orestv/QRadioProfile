@@ -27,8 +27,6 @@ public:
     struct CALCULATION_RESULT {
         double azimuth;
         double E;
-        double sum_sin;
-        double sum_cos;
     };
     
     struct VIEWPOINT_SUMS {
