@@ -328,6 +328,11 @@ Processor::getU(
     p = Processor::switchCoordinates(triangle.p(), basis, eCenter);
     q = Processor::switchCoordinates(triangle.q(), basis, eCenter);
     r = Processor::switchCoordinates(triangle.r(), basis, eCenter);
+    QTriangle3D newTriangle(QVector3D(p[0], p[1], p[2]),
+            QVector3D(q[0], q[1], q[2]),
+            QVector3D(r[0], r[1], r[2]));
+
+
     return 0;
 }
 

@@ -25,19 +25,49 @@ using namespace Eigen;
 
 #include <Qt3D/QTriangle3D>
 
-QVector3D point(1, 1, 0);
+bool _planeContains(const QPlane3D &plane, const QVector3D &point) {
+    QVector3D planeVector = point - plane.origin();
+    return QVector3D::dotProduct(plane.normal(), planeVector) == 0;
+}
 
-//double
-//g(double *k, size_t dim, void *params) {
-//    QTriangle3D triangle(QVector3D(0, 0, 0),
-//                         QVector3D(1, 0, 0),
-//                         QVector3D(0, 1, 0));
-//    double x = k[0], y = k[1];
-//    QVector3D v(x, y, 0);
-//    if (!triangleContains(triangle, v))
-//        return 0;
-//    return 1;
-//}
+bool _triangleContains(const QTriangle3D &triangle, const QVector3D &point) {
+    if (!_planeContains(triangle.plane(), point))
+        return false;
+    QVector3D v0 = triangle.r() - triangle.p(),
+            v1 = triangle.q() - triangle.p(),
+            v2 = point - triangle.p();
+
+    double dot00 = QVector3D::dotProduct(v0, v0);
+    double dot01 = QVector3D::dotProduct(v0, v1);
+    double dot02 = QVector3D::dotProduct(v0, v2);
+    double dot11 = QVector3D::dotProduct(v1, v1);
+    double dot12 = QVector3D::dotProduct(v1, v2);
+
+    double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+    double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+    double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+    return (u >= 0) && (v >= 0) && (u + v < 1);
+}
+
+
+struct PARAMS {
+    QTriangle3D triangle;
+};
+
+double
+g(double *k, size_t dim, void *params) {
+
+    PARAMS *calcParams = (PARAMS*)params;
+
+    QTriangle3D &triangle = calcParams->triangle;
+
+    double x = k[0], y = k[1];
+    QVector3D v(x, y, 0);
+    if (!_triangleContains(triangle, v))
+        return 0;
+    return 1;
+}
 
 
 int main(int argc, char *argv[]) {
@@ -45,49 +75,31 @@ int main(int argc, char *argv[]) {
     // initialize resources, if needed
     // Q_INIT_RESOURCE(resfile);
 
-    QTriangle3D triangle(QVector3D(-1, 0, 3),
-                         QVector3D(1, 0, 1),
-                         QVector3D(0, 1, 3));
+    double xl[2] = {0, 0};
+    double xu[2] = {1, 1};
+    double res, rerr;
 
-    Eigen::Matrix3d newBasis = Processor::getCoordinatesTransformationMatrix(triangle);
-    std::cout<<newBasis<<std::endl<<std::endl;
+    PARAMS params = {QTriangle3D(QVector3D(0, 0, 0),
+                     QVector3D(1, 0, 0),
+                     QVector3D(0, 0.5, 0))};
 
-    QVector3D newCenter = triangle.center();
+    const gsl_rng_type *T;
+    gsl_rng *r;
+    gsl_monte_function G = {&g, 2, &params};
+    size_t calls = 5000;
 
-    Vector3d eCenter = Processor::switchCoordinates(newCenter, newBasis);
-    eCenter = -eCenter;
+    T = gsl_rng_default;
+    r = gsl_rng_alloc(T);
 
-    std::cout<<eCenter<<std::endl<<std::endl;
-
-    QVector3D pt(0, 0, -2);
-    pt = triangle.q();
-    Vector3d ept = Processor::switchCoordinates(pt, newBasis, eCenter);
-
-    std::cout<<ept<<std::endl;
+    {
+        gsl_monte_plain_state *s = gsl_monte_plain_alloc(2);
+        gsl_monte_plain_integrate(&G, xl, xu, 2,
+                                  calls, r, s, &res, &rerr);
+        gsl_monte_plain_free(s);
+        std::cout<<"Result: "<<res;
+    };
 
     return 0;
-
-//    double xl[2] = {0, 0};
-//    double xu[2] = {1, 1};
-//    double res, rerr;
-
-//    const gsl_rng_type *T;
-//    gsl_rng *r;
-//    gsl_monte_function G = {&g, 2, 0};
-//    size_t calls = 5000;
-
-//    T = gsl_rng_default;
-//    r = gsl_rng_alloc(T);
-
-//    {
-//        gsl_monte_plain_state *s = gsl_monte_plain_alloc(2);
-//        gsl_monte_plain_integrate(&G, xl, xu, 2,
-//                                  calls, r, s, &res, &rerr);
-//        gsl_monte_plain_free(s);
-//        std::cout<<"Result: "<<res;
-//    };
-
-//    return 0;
 
     QApplication app(argc, argv);
 
