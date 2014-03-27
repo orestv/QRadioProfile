@@ -320,6 +320,14 @@ Processor::getU(
         const QTriangle3D &triangle,
         const double wavelength) {
 
+    Eigen::Matrix3d basis = getCoordinatesTransformationMatrix(triangle);
+    Eigen::Vector3d eCenter = - Processor::switchCoordinates(triangle.center(), basis);
+
+    Eigen::Vector3d newViewpoint = Processor::switchCoordinates(observationPoint, basis, eCenter);
+    Eigen::Vector3d p, q, r;
+    p = Processor::switchCoordinates(triangle.p(), basis, eCenter);
+    q = Processor::switchCoordinates(triangle.q(), basis, eCenter);
+    r = Processor::switchCoordinates(triangle.r(), basis, eCenter);
     return 0;
 }
 
