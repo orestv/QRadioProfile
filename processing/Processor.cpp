@@ -370,8 +370,8 @@ Processor::getCoordinatesTransformationMatrix(
 
     Eigen::Matrix3d result;
 
-    result<<X.x(), X.y(), X.z(),
-            Y.x(), Y.y(), Y.z(),
-            Z.x(), Z.y(), Z.z();
+    result<<X.x(), Y.x(), Z.x(),
+            X.y(), Y.y(), Z.y(),
+            X.z(), Y.z(), Z.z();
     return result;
 }
