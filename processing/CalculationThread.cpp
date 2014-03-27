@@ -31,7 +31,7 @@ void CalculationThread::run() {
         QVector3D viewpoint(x, y, z);
 //        std::cout<<"viewpoint: "<<viewpoint;
         
-        long double e = Processor::getE(viewpoint, _model, wavelength);
+        double e = Processor::getE(viewpoint, _model, wavelength);
         
         Processor::CALCULATION_RESULT localResult;        
         localResult.azimuth = viewpointAzimuth;
@@ -39,7 +39,7 @@ void CalculationThread::run() {
         
         _results.push_back(localResult);
         iteration++;
-        emit iterationFinished(iteration);
+        emit iterationFinished(viewpointAzimuth);
     }
 }
 

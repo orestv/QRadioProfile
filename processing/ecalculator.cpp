@@ -9,11 +9,12 @@ using namespace std;
 #include <gsl/gsl_monte_miser.h>
 #include <gsl/gsl_monte_vegas.h>
 
+#include <QDebug>
+
 ECalculator::ECalculator(
         const QVector3D &viewpoint,
         const QTriangle3D &triangle,
-        long double f,
-        long double wavelength) {
+        double wavelength) {
 
     this->_viewpoint = viewpoint;
     this->_triangle = triangle;
@@ -76,6 +77,8 @@ double calculateCos(double *k, size_t dim, void *params) {
 std::complex<double>
 ECalculator::calculateIntegral() const {
 
+    qDebug()<<"Calculating integral over "<<_triangle.p()<<_triangle.q()<<_triangle.r();
+
     std::complex<double> result;
 
     Eigen::Vector2d lowerBounds, upperBounds;
@@ -84,6 +87,7 @@ ECalculator::calculateIntegral() const {
 
     double xl[2] = {lowerBounds[0], lowerBounds[1]};
     double xu[2] = {upperBounds[0], upperBounds[1]};
+
     double res, rerr;
 
     PARAMS params = {_triangle, _viewpoint,_wavelength};

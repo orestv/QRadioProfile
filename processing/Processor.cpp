@@ -13,6 +13,7 @@
 #include <eigen3/Eigen/Eigen>
 
 #include "Processor.h"
+#include "ecalculator.h"
 #include <math.h>
 
 QDebug operator<< (QDebug d, RightTriangle &triangle) {
@@ -266,26 +267,47 @@ Processor::analyzeModel(QList<RightTriangle> &triangles,
     return result;
 }
 
-long double
+double
 Processor::getE(
         const QVector3D &viewPoint,
         QList<QTriangle3D> &model,
         const double wavelength) {    
+
+    qDebug()<<"GetE invoked";
+
     long double result = 0;
     long double k = 2*M_PI / wavelength;
     std::complex<long double> e;
+    int i = 0;
     for (auto triangle = model.begin(); triangle != model.end(); triangle++) {
+        i++;
         if (!isTriangleVisible(*triangle, model, viewPoint)) {
             qDebug()<<"("<<triangle->p()<<","<<triangle->q()<<","<<triangle->r()<<
                       ") is invisible, skipping.";
             continue;
         }
 
+
+//        qDebug()<<"GetE: processing triangle "<<
+//                  triangle->p()<<triangle->q()<<triangle->r();
+
+        qDebug()<<"Processing triangle "<<i<<"out of "<<model.count();
+
         double R = (viewPoint - triangle->center()).length();
-        std::complex<long double> local_e;
+        std::complex<double> local_e;
         local_e.real(cos(k*R));
         local_e.imag(sin(k*R));
-        e += getSigma(viewPoint, *triangle, R, wavelength) * local_e;
+
+//        qDebug()<<"Local E is "<<local_e.real()<<"+ i"<<local_e.imag();
+
+        double sigma = getSigma(viewPoint, *triangle, R, wavelength);
+
+//        qDebug()<<"Sigma = "<<sigma;
+
+        local_e *= sigma;
+
+        e += local_e;
+
     }
     result = abs(e);
     return result;
@@ -304,14 +326,18 @@ Processor::isTriangleVisible(
     return true;
 }
 
-long double
+double
 Processor::getSigma(
         const QVector3D &observationPoint,
         const QTriangle3D &triangle,
         const double R,
         const double wavelength) {
 
-    return sqrt(pow(R, 2) * getU(observationPoint, triangle, wavelength));
+    double u = getU(observationPoint, triangle, wavelength);
+
+    qDebug()<<"U = "<<u;
+
+    return sqrt(pow(R, 2) * u);
 }
 
 long double
@@ -331,9 +357,26 @@ Processor::getU(
     QTriangle3D newTriangle(QVector3D(p[0], p[1], p[2]),
             QVector3D(q[0], q[1], q[2]),
             QVector3D(r[0], r[1], r[2]));
+    QVector3D qNewViewpoint((float)newViewpoint[0],
+            (float)newViewpoint[1],
+            (float)newViewpoint[2]);
 
+    ECalculator calculator(qNewViewpoint, newTriangle, wavelength);
+    std::complex<double> integral = calculator.calculateIntegral();
 
-    return 0;
+    qDebug()<<"Integral calculated: "<<integral.real()<<" + i"<<integral.imag();
+
+    integral /= pow(2*M_PI, 2);
+
+    qDebug()<<"Integral transformed: "<<integral.real()<<" + i"<<integral.imag();
+
+    double integralAbs = std::abs(integral);
+
+    qDebug()<<"Integral abs: "<<integralAbs;
+
+    double result = integralAbs * pow(2*M_PI, 4) / pow(wavelength * newViewpoint[2], 2);
+
+    return result;
 }
 
 Eigen::Vector3d
@@ -368,10 +411,13 @@ Processor::getCoordinatesTransformationMatrix(
         const QTriangle3D &triangle) {
 
     QVector3D Y = projectOntoPlane(QVector3D(0, 1, 0), triangle.faceNormal()).normalized();
-    qDebug()<<triangle.faceNormal().normalized();
+    if (Y.isNull()) //triangle is horizontal; picking random direction
+        Y = QVector3D(1, 0, 0);
+
+    qDebug()<<"Y projected onto triangle plane is "<<Y;
+
     QVector3D Z = triangle.faceNormal().normalized();
     QVector3D X = QVector3D::crossProduct(Y, Z).normalized();
-    qDebug()<<X<<Y<<Z;
 
     Eigen::Matrix3d result;
 

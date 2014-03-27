@@ -18,14 +18,14 @@ public:
 
     ECalculator(const QVector3D &viewpoint,
                 const QTriangle3D &triangle,
-                long double f, long double wavelength);
+                double wavelength);
     std::complex<double> calculateIntegral() const;
     Eigen::Vector2d getLowerLeftBounds() const;
     Eigen::Vector2d getUpperRightBounds() const;
 
 private:
     QTriangle3D _triangle;
-    long double _wavelength;
+    double _wavelength;
     QVector3D _viewpoint;
 };
 
