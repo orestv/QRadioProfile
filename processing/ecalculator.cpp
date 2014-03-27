@@ -95,7 +95,7 @@ ECalculator::calculateIntegral() const {
     const gsl_rng_type *T;
     gsl_rng *r;
     gsl_monte_function G_cos = {&calculateCos, 2, &params};
-    size_t calls = 5000;
+    size_t calls = 500;
 
     T = gsl_rng_default;
     r = gsl_rng_alloc(T);

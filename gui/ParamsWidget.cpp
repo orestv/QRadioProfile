@@ -60,7 +60,7 @@ void ParamsWidget::initWidgets() {
     _spFrequency->setValue(95);
     
 #ifdef QT_DEBUG
-    _fpModel->setSelectedPath("/home/seth/dev/QRadioProfile/models/cub.obj");
+    _fpModel->setSelectedPath("/home/seth/dev/QRadioProfile/models/t72.obj");
     _fpResult->setSelectedPath("/home/seth/dev/QRadioProfile/output.csv");
     _spViewpointRotationStep->setValue(45);
 #endif

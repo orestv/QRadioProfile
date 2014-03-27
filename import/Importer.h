@@ -33,6 +33,8 @@ private:
     static QList<QList<QVector3D> > _generate_faces(QList<QVector3D> points, QList<QList<int> > face_indices);
     static QList<QTriangle3D> _generate_triangles(QList<QList<QVector3D> > faces);
     static QList<RightTriangle> _generate_right_triangles(QList<QList<QVector3D> > triangles);    
+
+    static bool _isTriangleAdequate(QVector3D &p, QVector3D &q, QVector3D &r);
     
     QString _filename;
 };

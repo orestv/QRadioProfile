@@ -136,7 +136,8 @@ QList<QTriangle3D> Importer::_generate_triangles(QList<QList<QVector3D> > faces)
         }
         if (face->length() == 3) {
             QVector3D p = (*face)[0], q = (*face)[1], r = (*face)[2];
-            triangles.push_back(QTriangle3D(p, q, r));
+            if (_isTriangleAdequate(p, q, r))
+                triangles.push_back(QTriangle3D(p, q, r));
             continue;
         }
         int triangle_indices_1[] = {0, 1, 2};
@@ -145,14 +146,40 @@ QList<QTriangle3D> Importer::_generate_triangles(QList<QList<QVector3D> > faces)
         p = face->at(triangle_indices_1[0]),
                 q = face->at(triangle_indices_1[1]),
                 r = face->at(triangle_indices_1[2]);
-        triangles.push_back(QTriangle3D(p, q, r));
+        if (_isTriangleAdequate(p, q, r))
+            triangles.push_back(QTriangle3D(p, q, r));
         p = face->at(triangle_indices_2[0]),
                 q = face->at(triangle_indices_2[1]),
                 r = face->at(triangle_indices_2[2]);
-        triangles.push_back(QTriangle3D(p, q, r));
+        if (_isTriangleAdequate(p, q, r))
+            triangles.push_back(QTriangle3D(p, q, r));
     }
     qDebug()<<faces.length()<<" faces converted to "<<triangles.length()<<" triangles.";
     return triangles;
+}
+
+bool Importer::_isTriangleAdequate(QVector3D &p, QVector3D &q, QVector3D &r) {
+    if (p == q || q == r || p == r)
+        return false;
+
+    double min_length = 0.01;
+    double max_cos = 0.95;
+
+    if ((p-q).lengthSquared() < min_length ||
+            (q-r).lengthSquared() < min_length ||
+            (p-r).lengthSquared() < min_length)
+        return false;
+
+    QVector3D pq = (p-q).normalized(),
+            qr = (q-r).normalized(),
+            pr = (p-r).normalized();
+
+    if (QVector3D::dotProduct(pq, qr) > max_cos ||
+            QVector3D::dotProduct(qr, pr) > max_cos ||
+            QVector3D::dotProduct(pq, pr) > max_cos)
+        return false;
+
+    return true;
 }
 
 QList<RightTriangle> Importer::_generate_right_triangles(QList<QList<QVector3D> > triangles) {

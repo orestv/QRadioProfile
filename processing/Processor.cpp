@@ -288,8 +288,8 @@ Processor::getE(
         }
 
 
-//        qDebug()<<"GetE: processing triangle "<<
-//                  triangle->p()<<triangle->q()<<triangle->r();
+        qDebug()<<"GetE: processing triangle "<<
+                  triangle->p()<<triangle->q()<<triangle->r();
 
         qDebug()<<"Processing triangle "<<i<<"out of "<<model.count();
 
@@ -319,7 +319,7 @@ Processor::isTriangleVisible(
         const QList<QTriangle3D> &model,
         const QVector3D &viewPoint) {
 
-    QVector3D viewVector = (triangle.center() - viewPoint);
+    QVector3D viewVector = (triangle.center() - viewPoint).normalized();
     if (QVector3D::dotProduct(viewVector, triangle.faceNormal()) < 0)
         return false;
 
