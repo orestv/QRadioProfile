@@ -12,6 +12,8 @@
 #include <QVector3D>
 #include <Qt3D/QTriangle3D>
 #include <complex>
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Dense>
 
 class Processor {
 public:
@@ -47,6 +49,9 @@ public:
     static bool isTriangleVisible(const QTriangle3D &triangle, const QList<QTriangle3D> &model, const QVector3D &viewPoint);
     static long double getSigma(const QVector3D &observationPoint, const QTriangle3D &triangle, const double R, const double wavelength);
     static long double getU(const QVector3D &observationPoint, const QTriangle3D &triangle, const double wavelength);
+    static Eigen::Matrix3d getCoordinatesTransformationMatrix(const QTriangle3D &triangle);
+    static Eigen::Vector3d switchCoordinates(const QVector3D &vector, const Eigen::Matrix3d &matrix, const Eigen::Vector3d &dCenter);
+    static Eigen::Vector3d switchCoordinates(const QVector3D &vector, const Eigen::Matrix3d &matrix);
     
     static QList<CALCULATION_RESULT> analyzeModel(QList<RightTriangle> &triangles,
         Processor::PARAMS parameters);
@@ -57,7 +62,7 @@ public:
     static VIEWPOINT_SUMS calculateViewpointSums(QList<RightTriangle> &triangles, QVector3D viewpoint, double wavelength);
     static TRIANGLE_ANGLES calculateTriangleAngles(RightTriangle &triangle, QVector3D &viewpoint);
     static TRIANGLE_ANGLES calculateTriangleAngles(QVector3D &triangleNormal, QVector3D planeNormal, QVector3D &viewVector);
-    static QVector3D projectOntoPlane(QVector3D &vector, QVector3D plane_normal);
+    static QVector3D projectOntoPlane(const QVector3D &vector, QVector3D plane_normal);
     static double calculateEn(TRIANGLE_ANGLES &angles, QVector3D &shortLeg, QVector3D &longLeg, double wavelength);
     
 private:

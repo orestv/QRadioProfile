@@ -8,6 +8,9 @@
 #include <QList>
 #include <QDebug>
 #include <iostream>
+#include <complex>
+#include <eigen3/Eigen/Geometry>
+#include <eigen3/Eigen/Eigen>
 
 #include "Processor.h"
 #include <math.h>
@@ -135,7 +138,7 @@ Processor::calculateTriangleAngles (
 
 QVector3D 
 Processor::projectOntoPlane(
-        QVector3D &vector, 
+        const QVector3D &vector,
         QVector3D plane_normal) {
     
     plane_normal.normalize();
@@ -267,8 +270,10 @@ long double
 Processor::getE(
         const QVector3D &viewPoint,
         QList<QTriangle3D> &model,
-        const double wavelength) {
+        const double wavelength) {    
     long double result = 0;
+    long double k = 2*M_PI / wavelength;
+    std::complex<long double> e;
     for (auto triangle = model.begin(); triangle != model.end(); triangle++) {
         if (!isTriangleVisible(*triangle, model, viewPoint)) {
             qDebug()<<"("<<triangle->p()<<","<<triangle->q()<<","<<triangle->r()<<
@@ -277,8 +282,12 @@ Processor::getE(
         }
 
         double R = (viewPoint - triangle->center()).length();
-        result += getSigma(viewPoint, *triangle, R, wavelength);
+        std::complex<long double> local_e;
+        local_e.real(cos(k*R));
+        local_e.imag(sin(k*R));
+        e += getSigma(viewPoint, *triangle, R, wavelength) * local_e;
     }
+    result = abs(e);
     return result;
 }
 
@@ -312,4 +321,49 @@ Processor::getU(
         const double wavelength) {
 
     return 0;
+}
+
+Eigen::Vector3d
+Processor::switchCoordinates(
+        const QVector3D &vector,
+        const Eigen::Matrix3d &matrix,
+        const Eigen::Vector3d &dCenter) {
+
+    Eigen::Vector3d eVector;
+    eVector<<(double)vector.x(), (double)vector.y(), (double)vector.z();
+
+    Eigen::ColPivHouseholderQR<Eigen::Matrix3d> solver(matrix);
+    Eigen::Vector3d eResult = solver.solve(eVector);
+
+    eResult += dCenter;
+
+    return eResult;
+}
+
+Eigen::Vector3d
+Processor::switchCoordinates(
+        const QVector3D &vector,
+        const Eigen::Matrix3d &matrix) {
+
+    Eigen::Vector3d zeroCenter;
+    zeroCenter<<0., 0., 0.;
+    return switchCoordinates(vector, matrix, zeroCenter);
+}
+
+Eigen::Matrix3d
+Processor::getCoordinatesTransformationMatrix(
+        const QTriangle3D &triangle) {
+
+    QVector3D Y = projectOntoPlane(QVector3D(0, 1, 0), triangle.faceNormal()).normalized();
+    qDebug()<<triangle.faceNormal().normalized();
+    QVector3D Z = triangle.faceNormal().normalized();
+    QVector3D X = QVector3D::crossProduct(Y, Z).normalized();
+    qDebug()<<X<<Y<<Z;
+
+    Eigen::Matrix3d result;
+
+    result<<X.x(), X.y(), X.z(),
+            Y.x(), Y.y(), Y.z(),
+            Z.x(), Z.y(), Z.z();
+    return result;
 }

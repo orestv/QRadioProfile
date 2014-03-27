@@ -18,6 +18,11 @@
 #include <gsl/gsl_monte_miser.h>
 #include <gsl/gsl_monte_vegas.h>
 
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Dense>
+
+using namespace Eigen;
+
 #include <Qt3D/QTriangle3D>
 
 bool planeContains(const QPlane3D &plane, const QVector3D &point) {
@@ -65,6 +70,24 @@ int main(int argc, char *argv[]) {
     
     // initialize resources, if needed
     // Q_INIT_RESOURCE(resfile);
+
+    QTriangle3D triangle(QVector3D(0, 0, 2),
+                         QVector3D(1, 0, 2),
+                         QVector3D(1, 1, 2));
+
+    Eigen::Matrix3d newBasis = Processor::getCoordinatesTransformationMatrix(triangle);
+    std::cout<<newBasis<<std::endl<<std::endl;
+
+    QVector3D newCenter = triangle.center();
+    Vector3d eNewCenter;
+    eNewCenter<<-newCenter.x(), -newCenter.y(), -newCenter.z();
+
+    Vector3d eCenter = Processor::switchCoordinates(newCenter, newBasis);
+    eCenter = -eCenter;
+
+    std::cout<<eCenter<<std::endl;
+
+    return 0;
 
     double xl[2] = {0, 0};
     double xu[2] = {1, 1};
