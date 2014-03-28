@@ -3,7 +3,7 @@
 
 #include "ICalculator.h"
 #include <QVector3D>
-#include <Qt3D/QTriangle3D>
+#include "geometry/triangle.h"
 #include <complex>
 #include <eigen3/Eigen/Core>
 
@@ -11,22 +11,22 @@ class ECalculator
 {
 public:
     struct PARAMS {
-        QTriangle3D triangle;
-        QVector3D viewpoint;
+        Triangle triangle;
+        Vector3d viewpoint;
         double wavelength;
     };
 
-    ECalculator(const QVector3D &viewpoint,
-                const QTriangle3D &triangle,
+    ECalculator(const Vector3d &viewpoint,
+                const Triangle &triangle,
                 double wavelength);
     std::complex<double> calculateIntegral() const;
     Eigen::Vector2d getLowerLeftBounds() const;
     Eigen::Vector2d getUpperRightBounds() const;
 
 private:
-    QTriangle3D _triangle;
+    Triangle _triangle;
     double _wavelength;
-    QVector3D _viewpoint;
+    Vector3d _viewpoint;
 };
 
 double calculateSin(double *k, size_t dim, void *params);

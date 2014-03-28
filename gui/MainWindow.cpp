@@ -12,7 +12,6 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QUrl>
-#include <Qt3D/QTriangle3D>
 
 #include <math.h>
 
@@ -89,7 +88,7 @@ void MainWindow::beginCalculation() {
             _paramsWidget->gatherParams();    
     Processor::PARAMS calculationParams = 
             MainWindow::convertParams(inputParams);
-    QList<QTriangle3D> model;
+    QList<Triangle> model;
     try {
         model = Importer::import(inputParams.inputPath);
     }

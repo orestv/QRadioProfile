@@ -11,9 +11,8 @@ using namespace std;
 
 #include <QDebug>
 
-ECalculator::ECalculator(
-        const QVector3D &viewpoint,
-        const QTriangle3D &triangle,
+ECalculator::ECalculator(const Vector3d &viewpoint,
+        const Triangle &triangle,
         double wavelength) {
 
     this->_viewpoint = viewpoint;
@@ -21,23 +20,24 @@ ECalculator::ECalculator(
     this->_wavelength = wavelength;
 }
 
-bool planeContains(const QPlane3D &plane, const QVector3D &point) {
-    QVector3D planeVector = point - plane.origin();
-    return QVector3D::dotProduct(plane.normal(), planeVector) == 0;
+bool planeContains(const Plane &plane, const Vector3d &point) {
+    Vector3d planeVector = point - plane.origin();
+    planeVector.normalize();
+    return plane.normal().dot(planeVector) == 0;
 }
 
-bool triangleContains(const QTriangle3D &triangle, const QVector3D &point) {
-    if (!planeContains(triangle.plane(), point))
-        return false;
-    QVector3D v0 = triangle.r() - triangle.p(),
+bool triangleContains(const Triangle &triangle, const Vector3d &point) {
+//    if (!planeContains(triangle.plane(), point))
+//        return false;
+    Vector3d v0 = triangle.r() - triangle.p(),
             v1 = triangle.q() - triangle.p(),
             v2 = point - triangle.p();
 
-    double dot00 = QVector3D::dotProduct(v0, v0);
-    double dot01 = QVector3D::dotProduct(v0, v1);
-    double dot02 = QVector3D::dotProduct(v0, v2);
-    double dot11 = QVector3D::dotProduct(v1, v1);
-    double dot12 = QVector3D::dotProduct(v1, v2);
+    double dot00 = v0.dot(v0);
+    double dot01 = v0.dot(v1);
+    double dot02 = v0.dot(v2);
+    double dot11 = v1.dot(v1);
+    double dot12 = v1.dot(v2);
 
     double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
     double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
@@ -48,36 +48,38 @@ bool triangleContains(const QTriangle3D &triangle, const QVector3D &point) {
 
 double calculateSin(double *k, size_t dim, void *params) {
     ECalculator::PARAMS *calcParams = (ECalculator::PARAMS*)params;
-    QTriangle3D &_triangle = calcParams->triangle;
-    QVector3D &_viewpoint = calcParams->viewpoint;
+    Triangle &_triangle = calcParams->triangle;
+    Vector3d &_viewpoint = calcParams->viewpoint;
     double _wavelength = calcParams->wavelength;
 
-    QVector3D point(k[0], k[1], 0);
+    Vector3d point;
+    point<<k[0], k[1], 0;
     if (!triangleContains(_triangle, point))
         return 0;
 
-    return sin(2*M_PI*_viewpoint.x()*k[0]/(_wavelength*_viewpoint.z()) +
-            2*M_PI*_viewpoint.y()*k[1]/(_wavelength*_viewpoint.z()));
+    return sin(2*M_PI*_viewpoint[0]*k[0]/(_wavelength*_viewpoint[2]) +
+            2*M_PI*_viewpoint[1]*k[1]/(_wavelength*_viewpoint[2]));
 }
 
 double calculateCos(double *k, size_t dim, void *params) {
     ECalculator::PARAMS *calcParams = (ECalculator::PARAMS*)params;
-    QTriangle3D &_triangle = calcParams->triangle;
-    QVector3D &_viewpoint = calcParams->viewpoint;
+    Triangle &_triangle = calcParams->triangle;
+    Vector3d &_viewpoint = calcParams->viewpoint;
     double _wavelength = calcParams->wavelength;
 
-    QVector3D point(k[0], k[1], 0);
+    Vector3d point;
+    point<<k[0], k[1], 0;
     if (!triangleContains(_triangle, point))
         return 0;
 
-    return cos(2*M_PI*_viewpoint.x()*k[0]/(_wavelength*_viewpoint.z()) +
-            2*M_PI*_viewpoint.y()*k[1]/(_wavelength*_viewpoint.z()));
+    return cos(2*M_PI*_viewpoint[0]*k[0]/(_wavelength*_viewpoint[2]) +
+            2*M_PI*_viewpoint[1]*k[1]/(_wavelength*_viewpoint[2]));
 }
 
 std::complex<double>
 ECalculator::calculateIntegral() const {
 
-    qDebug()<<"Calculating integral over "<<_triangle.p()<<_triangle.q()<<_triangle.r();
+//    qDebug()<<"Calculating integral over "<<_triangle.p()<<_triangle.q()<<_triangle.r();
 
     std::complex<double> result;
 
@@ -95,7 +97,7 @@ ECalculator::calculateIntegral() const {
     const gsl_rng_type *T;
     gsl_rng *r;
     gsl_monte_function G_cos = {&calculateCos, 2, &params};
-    size_t calls = 500;
+    size_t calls = 50000;
 
     T = gsl_rng_default;
     r = gsl_rng_alloc(T);
@@ -127,13 +129,13 @@ ECalculator::getLowerLeftBounds() const {
     Eigen::Vector2d result;
     result<<INFINITY, INFINITY;
 
-    result[0] = min(_triangle.p().x(), (float)result[0]);
-    result[0] = min(_triangle.q().x(), (float)result[0]);
-    result[0] = min(_triangle.r().x(), (float)result[0]);
+    result[0] = min(_triangle.p()[0], result[0]);
+    result[0] = min(_triangle.q()[0], result[0]);
+    result[0] = min(_triangle.r()[0], result[0]);
 
-    result[1] = min(_triangle.p().y(), (float)result[1]);
-    result[1] = min(_triangle.q().y(), (float)result[1]);
-    result[1] = min(_triangle.r().y(), (float)result[1]);
+    result[1] = min(_triangle.p()[1], result[1]);
+    result[1] = min(_triangle.q()[1], result[1]);
+    result[1] = min(_triangle.r()[1], result[1]);
 
     return result;
 }
@@ -144,13 +146,13 @@ ECalculator::getUpperRightBounds() const {
     Eigen::Vector2d result;
     result<<-INFINITY, -INFINITY;
 
-    result[0] = max(_triangle.p().x(), (float)result[0]);
-    result[0] = max(_triangle.q().x(), (float)result[0]);
-    result[0] = max(_triangle.r().x(), (float)result[0]);
+    result[0] = max(_triangle.p()[0], result[0]);
+    result[0] = max(_triangle.q()[0], result[0]);
+    result[0] = max(_triangle.r()[0], result[0]);
 
-    result[1] = max(_triangle.p().y(), (float)result[1]);
-    result[1] = max(_triangle.q().y(), (float)result[1]);
-    result[1] = max(_triangle.r().y(), (float)result[1]);
+    result[1] = max(_triangle.p()[1], result[1]);
+    result[1] = max(_triangle.q()[1], result[1]);
+    result[1] = max(_triangle.r()[1], result[1]);
 
     return result;
 }

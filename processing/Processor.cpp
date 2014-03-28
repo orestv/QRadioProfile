@@ -111,41 +111,41 @@ Processor::calculateTriangleAngles (
         QVector3D planeNormal, 
         QVector3D& viewVector) {
     
-    QVector3D vv_projection = projectOntoPlane(viewVector, 
-            planeNormal);
-    QVector3D vv_projection_unit = vv_projection.normalized();
+//    QVector3D vv_projection = projectOntoPlane(viewVector,
+//            planeNormal);
+//    QVector3D vv_projection_unit = vv_projection.normalized();
     
-    double cos_alpha = QVector3D::dotProduct(vv_projection_unit, 
-            triangleNormal);
-    if (cos_alpha < 0)
-        cos_alpha = QVector3D::dotProduct(vv_projection_unit, 
-            -triangleNormal);
-    double cos_beta = QVector3D::dotProduct(viewVector.normalized(), 
-            vv_projection_unit);
-    if (cos_beta < 0)
-        cos_beta = QVector3D::dotProduct(-viewVector.normalized(), 
-            vv_projection_unit);
+//    double cos_alpha = QVector3D::dotProduct(vv_projection_unit,
+//            triangleNormal);
+//    if (cos_alpha < 0)
+//        cos_alpha = QVector3D::dotProduct(vv_projection_unit,
+//            -triangleNormal);
+//    double cos_beta = QVector3D::dotProduct(viewVector.normalized(),
+//            vv_projection_unit);
+//    if (cos_beta < 0)
+//        cos_beta = QVector3D::dotProduct(-viewVector.normalized(),
+//            vv_projection_unit);
     
-    double alpha = acos(cos_alpha),
-            beta = acos(cos_beta);
-    TRIANGLE_ANGLES result;
-    result.cos_alpha = cos_alpha;
-    result.cos_beta = cos_beta;
-    result.sin_alpha = sin(alpha);
-    result.sin_beta = sin(beta);
+//    double alpha = acos(cos_alpha),
+//            beta = acos(cos_beta);
+//    TRIANGLE_ANGLES result;
+//    result.cos_alpha = cos_alpha;
+//    result.cos_beta = cos_beta;
+//    result.sin_alpha = sin(alpha);
+//    result.sin_beta = sin(beta);
     
-    return result;
+//    return result;
 }
 
-QVector3D 
+Vector3d
 Processor::projectOntoPlane(
-        const QVector3D &vector,
-        QVector3D plane_normal) {
+        const Vector3d &vector,
+        Vector3d plane_normal) {
     
     plane_normal.normalize();
     
-    QVector3D projection_onto_normal = plane_normal * 
-            QVector3D::dotProduct(plane_normal, vector);
+    Vector3d projection_onto_normal = plane_normal *
+            plane_normal.dot(vector);
     
     return vector - projection_onto_normal;
 }
@@ -270,7 +270,7 @@ Processor::analyzeModel(QList<RightTriangle> &triangles,
 double
 Processor::getE(
         const QVector3D &viewPoint,
-        QList<QTriangle3D> &model,
+        QList<Triangle> &model,
         const double wavelength) {    
 
     qDebug()<<"GetE invoked";
@@ -279,28 +279,33 @@ Processor::getE(
     long double k = 2*M_PI / wavelength;
     std::complex<long double> e;
     int i = 0;
+    Vector3d eViewpoint;
+    eViewpoint<<viewPoint.x(), viewPoint.y(), viewPoint.z();
     for (auto triangle = model.begin(); triangle != model.end(); triangle++) {
         i++;
-        if (!isTriangleVisible(*triangle, model, viewPoint)) {
-            qDebug()<<"("<<triangle->p()<<","<<triangle->q()<<","<<triangle->r()<<
-                      ") is invisible, skipping.";
+        if (!isTriangleVisible(*triangle, model, eViewpoint)) {
+//            qDebug()<<"("<<triangle->p()<<","<<triangle->q()<<","<<triangle->r()<<
+//                      ") is invisible, skipping.";
             continue;
         }
 
 
-        qDebug()<<"GetE: processing triangle "<<
-                  triangle->p()<<triangle->q()<<triangle->r();
+//        qDebug()<<"GetE: processing triangle "<<
+//                  triangle->p()<<triangle->q()<<triangle->r();
 
         qDebug()<<"Processing triangle "<<i<<"out of "<<model.count();
 
-        double R = (viewPoint - triangle->center()).length();
+        Vector3d eViewpoint;
+        eViewpoint<<viewPoint.x(), viewPoint.y(), viewPoint.z();
+
+        double R = (eViewpoint - triangle->center()).norm();
         std::complex<double> local_e;
         local_e.real(cos(k*R));
         local_e.imag(sin(k*R));
 
 //        qDebug()<<"Local E is "<<local_e.real()<<"+ i"<<local_e.imag();
 
-        double sigma = getSigma(viewPoint, *triangle, R, wavelength);
+        double sigma = getSigma(eViewpoint, *triangle, R, wavelength);
 
 //        qDebug()<<"Sigma = "<<sigma;
 
@@ -315,12 +320,14 @@ Processor::getE(
 
 bool
 Processor::isTriangleVisible(
-        const QTriangle3D &triangle,
-        const QList<QTriangle3D> &model,
-        const QVector3D &viewPoint) {
+        const Triangle &triangle,
+        const QList<Triangle> &model,
+        const Vector3d &viewPoint) {
 
-    QVector3D viewVector = (triangle.center() - viewPoint).normalized();
-    if (QVector3D::dotProduct(viewVector, triangle.faceNormal()) < 0)
+    Vector3d viewVector = (triangle.center() - viewPoint);
+    viewVector.normalize();
+
+    if (viewVector.dot(triangle.faceNormal()) < 0)
         return false;
 
     return true;
@@ -328,8 +335,8 @@ Processor::isTriangleVisible(
 
 double
 Processor::getSigma(
-        const QVector3D &observationPoint,
-        const QTriangle3D &triangle,
+        const Vector3d &observationPoint,
+        const Triangle &triangle,
         const double R,
         const double wavelength) {
 
@@ -342,8 +349,8 @@ Processor::getSigma(
 
 long double
 Processor::getU(
-        const QVector3D &observationPoint,
-        const QTriangle3D &triangle,
+        const Vector3d &observationPoint,
+        const Triangle &triangle,
         const double wavelength) {
 
     Eigen::Matrix3d basis = getCoordinatesTransformationMatrix(triangle);
@@ -354,25 +361,20 @@ Processor::getU(
     p = Processor::switchCoordinates(triangle.p(), basis, eCenter);
     q = Processor::switchCoordinates(triangle.q(), basis, eCenter);
     r = Processor::switchCoordinates(triangle.r(), basis, eCenter);
-    QTriangle3D newTriangle(QVector3D(p[0], p[1], p[2]),
-            QVector3D(q[0], q[1], q[2]),
-            QVector3D(r[0], r[1], r[2]));
-    QVector3D qNewViewpoint((float)newViewpoint[0],
-            (float)newViewpoint[1],
-            (float)newViewpoint[2]);
+    Triangle newTriangle(p, q, r);
 
-    ECalculator calculator(qNewViewpoint, newTriangle, wavelength);
+    ECalculator calculator(newViewpoint, newTriangle, wavelength);
     std::complex<double> integral = calculator.calculateIntegral();
 
-    qDebug()<<"Integral calculated: "<<integral.real()<<" + i"<<integral.imag();
+//    qDebug()<<"Integral calculated: "<<integral.real()<<" + i"<<integral.imag();
 
     integral /= pow(2*M_PI, 2);
 
-    qDebug()<<"Integral transformed: "<<integral.real()<<" + i"<<integral.imag();
+//    qDebug()<<"Integral transformed: "<<integral.real()<<" + i"<<integral.imag();
 
     double integralAbs = std::abs(integral);
 
-    qDebug()<<"Integral abs: "<<integralAbs;
+//    qDebug()<<"Integral abs: "<<integralAbs;
 
     double result = integralAbs * pow(2*M_PI, 4) / pow(wavelength * newViewpoint[2], 2);
 
@@ -381,15 +383,12 @@ Processor::getU(
 
 Eigen::Vector3d
 Processor::switchCoordinates(
-        const QVector3D &vector,
+        const Vector3d &vector,
         const Eigen::Matrix3d &matrix,
         const Eigen::Vector3d &dCenter) {
 
-    Eigen::Vector3d eVector;
-    eVector<<(double)vector.x(), (double)vector.y(), (double)vector.z();
-
     Eigen::ColPivHouseholderQR<Eigen::Matrix3d> solver(matrix);
-    Eigen::Vector3d eResult = solver.solve(eVector);
+    Eigen::Vector3d eResult = solver.solve(vector);
 
     eResult += dCenter;
 
@@ -398,7 +397,7 @@ Processor::switchCoordinates(
 
 Eigen::Vector3d
 Processor::switchCoordinates(
-        const QVector3D &vector,
+        const Vector3d &vector,
         const Eigen::Matrix3d &matrix) {
 
     Eigen::Vector3d zeroCenter;
@@ -408,16 +407,20 @@ Processor::switchCoordinates(
 
 Eigen::Matrix3d
 Processor::getCoordinatesTransformationMatrix(
-        const QTriangle3D &triangle) {
+        const Triangle &triangle) {
 
-    QVector3D Y = projectOntoPlane(QVector3D(0, 1, 0), triangle.faceNormal()).normalized();
-    if (Y.isNull()) //triangle is horizontal; picking random direction
-        Y = QVector3D(1, 0, 0);
+    Vector3d OY;
+    OY << 0, 1, 0;
+    Vector3d Y = projectOntoPlane(OY, triangle.faceNormal()).normalized();
+    if (Y.squaredNorm() == 0) { //triangle is horizontal; picking random direction
+        Y << 1, 0, 0;
+    }
 
-    qDebug()<<"Y projected onto triangle plane is "<<Y;
+//    qDebug()<<"Y projected onto triangle plane is "<<Y;
 
-    QVector3D Z = triangle.faceNormal().normalized();
-    QVector3D X = QVector3D::crossProduct(Y, Z).normalized();
+    Vector3d Z = triangle.faceNormal();
+    Vector3d X = Y.cross(Z);
+    X.normalize();
 
     Eigen::Matrix3d result;
 

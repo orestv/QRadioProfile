@@ -12,11 +12,11 @@
 #include <iostream>
 #include <math.h>
 
-QList<QTriangle3D> Importer::import(QString path) {
+QList<Triangle> Importer::import(QString path) {
     QList<QVector3D> points = Importer::_read_vertices(path);
     QList<QList<int> > face_indices = Importer::_read_indices(path);
     QList<QList<QVector3D> > faces = Importer::_generate_faces(points, face_indices);
-    QList<QTriangle3D> triangles = Importer::_generate_triangles(faces);
+    QList<Triangle> triangles = Importer::_generate_triangles(faces);
     return triangles;
 }
 
@@ -122,8 +122,8 @@ QList<QList<QVector3D>> Importer::_generate_faces(QList<QVector3D> points, QList
     return faces;
 }
 
-QList<QTriangle3D> Importer::_generate_triangles(QList<QList<QVector3D> > faces) {
-    QList<QTriangle3D> triangles;
+QList<Triangle> Importer::_generate_triangles(QList<QList<QVector3D> > faces) {
+    QList<Triangle> triangles;
 
     for (auto face = faces.begin(); face != faces.end(); face++) {
         if (face->length() < 3) {
@@ -137,7 +137,7 @@ QList<QTriangle3D> Importer::_generate_triangles(QList<QList<QVector3D> > faces)
         if (face->length() == 3) {
             QVector3D p = (*face)[0], q = (*face)[1], r = (*face)[2];
             if (_isTriangleAdequate(p, q, r))
-                triangles.push_back(QTriangle3D(p, q, r));
+                triangles.push_back(Triangle(p, q, r));
             continue;
         }
         int triangle_indices_1[] = {0, 1, 2};
@@ -147,12 +147,12 @@ QList<QTriangle3D> Importer::_generate_triangles(QList<QList<QVector3D> > faces)
                 q = face->at(triangle_indices_1[1]),
                 r = face->at(triangle_indices_1[2]);
         if (_isTriangleAdequate(p, q, r))
-            triangles.push_back(QTriangle3D(p, q, r));
+            triangles.push_back(Triangle(p, q, r));
         p = face->at(triangle_indices_2[0]),
                 q = face->at(triangle_indices_2[1]),
                 r = face->at(triangle_indices_2[2]);
         if (_isTriangleAdequate(p, q, r))
-            triangles.push_back(QTriangle3D(p, q, r));
+            triangles.push_back(Triangle(p, q, r));
     }
     qDebug()<<faces.length()<<" faces converted to "<<triangles.length()<<" triangles.";
     return triangles;

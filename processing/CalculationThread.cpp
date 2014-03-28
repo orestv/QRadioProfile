@@ -9,7 +9,7 @@
 
 CalculationThread::CalculationThread(QObject *parent, 
         Processor::PARAMS params,
-        QList<QTriangle3D> &model): QThread(parent) {
+        QList<Triangle> &model): QThread(parent) {
     this->_params = params;
     this->_model = model;
 }
