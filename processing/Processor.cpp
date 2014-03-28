@@ -239,7 +239,6 @@ Processor::analyzeModel(QList<RightTriangle> &triangles,
     for (double viewpointAzimuth = 0;
             viewpointAzimuth < 2*M_PI;
             viewpointAzimuth += params.viewpointRotationStep) {
-        std::cout<<viewpointAzimuth;
         
         double x, y, z;
         y = params.viewpointHeight;
@@ -269,35 +268,37 @@ Processor::analyzeModel(QList<RightTriangle> &triangles,
 
 double
 Processor::getE(
-        const QVector3D &viewPoint,
+        const Vector3d &viewPoint,
         QList<Triangle> &model,
         const double wavelength) {    
 
 //    qDebug()<<"GetE invoked";
 
-    long double result = 0;
-    long double k = 2*M_PI / wavelength;
-    std::complex<long double> e;
+    double result = 0;
+    double k = 2*M_PI / wavelength;
+    std::complex<double> e;
+
+//    std::cout<<"Viewpoint: "<<viewPoint<<std::endl<<std::endl;
+
     int i = 0;
     Vector3d eViewpoint;
     eViewpoint<<viewPoint.x(), viewPoint.y(), viewPoint.z();
     for (auto triangle = model.begin(); triangle != model.end(); triangle++) {
         i++;
         if (!isTriangleVisible(*triangle, model, eViewpoint)) {
-//            qDebug()<<"("<<triangle->p()<<","<<triangle->q()<<","<<triangle->r()<<
+//            std::cout<<"("<<triangle->p()<<","<<triangle->q()<<","<<triangle->r()<<
 //                      ") is invisible, skipping.";
             continue;
         }
 
 
-//        qDebug()<<"GetE: processing triangle "<<
-//                  triangle->p()<<triangle->q()<<triangle->r();
+//        std::cout<<"GetE: processing triangle "<<
+//                   triangle->p()<<std::endl<<"-"<<std::endl<<
+//                   triangle->q()<<std::endl<<"-"<<std::endl<<
+//                   triangle->r()<<std::endl;
 
-        if (i % 1000 == 0)
+        if (i % 100 == 0)
             qDebug()<<"Processing triangle "<<i<<"out of "<<model.count();
-
-        Vector3d eViewpoint;
-        eViewpoint<<viewPoint.x(), viewPoint.y(), viewPoint.z();
 
         double R = (eViewpoint - triangle->center()).norm();
         std::complex<double> local_e;
@@ -311,8 +312,11 @@ Processor::getE(
 //        qDebug()<<"Sigma = "<<sigma;
 
         local_e *= sigma;
+        local_e /= pow(R, 2);
 
         e += local_e;
+
+//        qDebug()<<"So far e is "<<abs(e);
 
     }
     result = abs(e);
@@ -325,10 +329,16 @@ Processor::isTriangleVisible(
         const QList<Triangle> &model,
         const Vector3d &viewPoint) {
 
-    Vector3d viewVector = (triangle.center() - viewPoint);
+    Vector3d viewVector = (viewPoint - triangle.center());
+//    std::cout<<"View vector: "<<viewVector<<std::endl<<std::endl;
     viewVector.normalize();
 
-    if (viewVector.dot(triangle.faceNormal()) < 0)
+
+    double dot = viewVector.dot(triangle.faceNormal());
+
+
+//    std::cout<<"Dot: "<<dot<<std::endl;
+    if (dot < 0 || isnan(dot))
         return false;
 
     return true;
@@ -355,6 +365,7 @@ Processor::getU(
         const double wavelength) {
 
     Eigen::Matrix3d basis = getCoordinatesTransformationMatrix(triangle);
+
     Eigen::Vector3d eCenter = - Processor::switchCoordinates(triangle.center(), basis);
 
     Eigen::Vector3d newViewpoint = Processor::switchCoordinates(observationPoint, basis, eCenter);
@@ -413,15 +424,18 @@ Processor::getCoordinatesTransformationMatrix(
     Vector3d OY;
     OY << 0, 1, 0;
     Vector3d Y = projectOntoPlane(OY, triangle.faceNormal()).normalized();
-    if (Y.squaredNorm() == 0) { //triangle is horizontal; picking random direction
+//    std::cout<<"Triangle face normal: "<<triangle.faceNormal()<<std::endl;
+
+    if (Y.squaredNorm() == 0 || isnan(Y.squaredNorm())) { //triangle is horizontal; picking random direction
         Y << 1, 0, 0;
     }
 
-//    qDebug()<<"Y projected onto triangle plane is "<<Y;
-
     Vector3d Z = triangle.faceNormal();
+
     Vector3d X = Y.cross(Z);
     X.normalize();
+
+//    std::cout<<"X: "<<X<<std::endl<<"Y:"<<Y<<std::endl<<"Z:"<<Z<<std::endl;
 
     Eigen::Matrix3d result;
 

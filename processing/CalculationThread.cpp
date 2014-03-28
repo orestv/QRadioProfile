@@ -28,7 +28,8 @@ void CalculationThread::run() {
         z = _params.viewpointDistance * cos(viewpointAzimuth);
         x = _params.viewpointDistance * sin(viewpointAzimuth);
         
-        QVector3D viewpoint(x, y, z);
+        Eigen::Vector3d viewpoint;
+        viewpoint<<x, y, z;
 //        std::cout<<"viewpoint: "<<viewpoint;
         
         double e = Processor::getE(viewpoint, _model, wavelength);
@@ -39,7 +40,7 @@ void CalculationThread::run() {
         
         _results.push_back(localResult);
         iteration++;
-        emit iterationFinished(viewpointAzimuth);
+        emit iterationFinished(iteration);
     }
 }
 

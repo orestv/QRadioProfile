@@ -17,6 +17,8 @@
 #include <gsl/gsl_monte_miser.h>
 #include <gsl/gsl_monte_vegas.h>
 
+#include "geometry/triangle.h"
+
 
 double f(double *k, size_t dim, void *params) {
     double x = k[0], y = k[1];
@@ -58,8 +60,38 @@ void calc() {
     qDebug()<<res_f<<res_g;
 }
 
+bool _triangleContains(const Triangle &triangle, const Vector3d &point) {
+    Vector3d v0 = triangle.v0(),
+            v1 = triangle.v1(),
+            v2 = point - triangle.p();
+
+    double dot00 = v0.dot(v0);
+    double dot01 = v0.dot(v1);
+    double dot02 = v0.dot(v2);
+    double dot11 = v1.dot(v1);
+    double dot12 = v1.dot(v2);
+
+    double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+    double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+    double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+    return (u >= 0) && (v >= 0) && (u + v < 1);
+}
+
 
 int main(int argc, char *argv[]) {
+
+//    Vector3d p, q, r;
+//    p<<0, 0, 0;
+//    q<<1, 0, 0;
+//    r<<0, 2, 0;
+//    Triangle t(p, q, r);
+//    std::cout<<t.center()<<std::endl<<std::endl<<t.faceNormal()<<std::endl;
+//    Vector3d z;
+
+//    z<<0.5, 0.2, 10;
+//    std::cout<<_triangleContains(t, z);
+//    return 0;
 
 //    calc();
 //    return 0;

@@ -1,4 +1,5 @@
 #include "ecalculator.h"
+#include <iostream>
 
 #include <math.h>
 using namespace std;
@@ -32,8 +33,8 @@ bool triangleContains(const Triangle &triangle, const Vector3d &point) {
 //    Vector3d v0 = triangle.r() - triangle.p(),
 //            v1 = triangle.q() - triangle.p(),
 //            v2 = point - triangle.p();
-    Vector3d v0 = triangle.v0(),
-            v1 = triangle.v1(),
+    Vector3d v0 = triangle.r() - triangle.p(),
+            v1 = triangle.q() - triangle.p(),
             v2 = point - triangle.p();
 
     double dot00 = v0.dot(v0);
@@ -51,32 +52,32 @@ bool triangleContains(const Triangle &triangle, const Vector3d &point) {
 
 double calculateSin(double *k, size_t dim, void *params) {
     ECalculator::PARAMS *calcParams = (ECalculator::PARAMS*)params;
-    Triangle &_triangle = calcParams->triangle;
-    Vector3d &_viewpoint = calcParams->viewpoint;
+    const Triangle *_triangle = calcParams->triangle;
+    const Vector3d *_viewpoint = calcParams->viewpoint;
     double _wavelength = calcParams->wavelength;
 
     Vector3d point;
     point<<k[0], k[1], 0;
-    if (!triangleContains(_triangle, point))
+    if (!triangleContains(*_triangle, point))
         return 0;
 
-    return sin(2*M_PI*_viewpoint[0]*k[0]/(_wavelength*_viewpoint[2]) +
-            2*M_PI*_viewpoint[1]*k[1]/(_wavelength*_viewpoint[2]));
+    return sin(2*M_PI*(*_viewpoint)[0]*k[0]/(_wavelength*(*_viewpoint)[2]) +
+            2*M_PI*(*_viewpoint)[1]*k[1]/(_wavelength*(*_viewpoint)[2]));
 }
 
 double calculateCos(double *k, size_t dim, void *params) {
     ECalculator::PARAMS *calcParams = (ECalculator::PARAMS*)params;
-    Triangle &_triangle = calcParams->triangle;
-    Vector3d &_viewpoint = calcParams->viewpoint;
+    const Triangle *_triangle = calcParams->triangle;
+    const Vector3d *_viewpoint = calcParams->viewpoint;
     double _wavelength = calcParams->wavelength;
 
     Vector3d point;
     point<<k[0], k[1], 0;
-    if (!triangleContains(_triangle, point))
+    if (!triangleContains(*_triangle, point))
         return 0;
 
-    return cos(2*M_PI*_viewpoint[0]*k[0]/(_wavelength*_viewpoint[2]) +
-            2*M_PI*_viewpoint[1]*k[1]/(_wavelength*_viewpoint[2]));
+    return cos(2*M_PI*(*_viewpoint)[0]*k[0]/(_wavelength*(*_viewpoint)[2]) +
+            2*M_PI*(*_viewpoint)[1]*k[1]/(_wavelength*(*_viewpoint)[2]));
 }
 
 std::complex<double>
@@ -93,9 +94,14 @@ ECalculator::calculateIntegral() const {
     double xl[2] = {lowerBounds[0], lowerBounds[1]};
     double xu[2] = {upperBounds[0], upperBounds[1]};
 
-    double res, res_sin, res_cos, rerr;
+//    cout<<"Triangle: "<<_triangle.p()<<endl<<_triangle.q()<<endl<<_triangle.r()<<endl;
 
-    PARAMS params = {_triangle, _viewpoint,_wavelength};
+//    cout<<"Upper bounds:"<<upperBounds<<endl;
+//    cout<<"Lower bounds:"<<lowerBounds<<endl;
+
+    double res_sin, res_cos, rerr;
+
+    PARAMS params = {&_triangle, &_viewpoint, _wavelength};
 
     const gsl_rng_type *T;
     gsl_rng *r;

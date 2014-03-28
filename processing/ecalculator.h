@@ -11,8 +11,8 @@ class ECalculator
 {
 public:
     struct PARAMS {
-        Triangle triangle;
-        Vector3d viewpoint;
+        const Triangle *triangle;
+        const Vector3d *viewpoint;
         double wavelength;
     };
 

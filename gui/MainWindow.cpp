@@ -73,8 +73,8 @@ MainWindow::convertParams(
     ParamsWidget::CALCULATION_PARAMS params) {
     Processor::PARAMS result;
     
-    result.viewpointStartAngle = params.viewpointStartAngle;
-    result.viewpointEndAngle = params.viewpointEndAngle;
+    result.viewpointStartAngle = params.viewpointStartAngle * M_PI / 180;
+    result.viewpointEndAngle = params.viewpointEndAngle * M_PI / 180;
     result.viewpointHeight = params.viewpointHeight;
     result.viewpointDistance = params.viewpointDistance;
     result.frequency = params.frequency * pow(10, 9);
@@ -96,8 +96,12 @@ void MainWindow::beginCalculation() {
         QMessageBox::critical(this, tr("Помилка"), tr("Не вдалось відкрити файл моделі!"));
         return;
     }
-    _progressBar->setValue(calculationParams.viewpointStartAngle);
-    _progressBar->setMaximum(calculationParams.viewpointEndAngle);
+    qDebug()<<calculationParams.viewpointStartAngle<<calculationParams.viewpointEndAngle<<calculationParams.viewpointRotationStep;
+    int iterations = (calculationParams.viewpointEndAngle - calculationParams.viewpointStartAngle) /
+            calculationParams.viewpointRotationStep;
+    qDebug()<<"Number of iterations: "<<iterations;
+    _progressBar->setValue(0);
+    _progressBar->setMaximum(iterations);
     _calculationThread = new CalculationThread(this, calculationParams, model);
     
     QObject::connect(_calculationThread, &CalculationThread::iterationFinished,
@@ -120,11 +124,19 @@ void MainWindow::threadFinished() {
     this->_progressBar->setVisible(false);
     ParamsWidget::CALCULATION_PARAMS inputParams = 
             _paramsWidget->gatherParams();   
-    try {
-        Importer::exportToFile(inputParams.resultPath, _calculationThread->results());
-    } catch (char const *exceptionMessage) {
-        QMessageBox::critical(this, tr("Помилка"), tr("Не вдалось зберегти файл результату."));
-        return;
+    bool retry = true, success = false;
+    while (retry && !success) {
+        try {
+            Importer::exportToFile(inputParams.resultPath, _calculationThread->results());
+            success = true;
+        } catch (char const *exceptionMessage) {
+            QMessageBox::critical(this, tr("Помилка"), tr("Не вдалось зберегти файл результату. Спробувати ще раз?"));
+            QMessageBox::StandardButton response = QMessageBox::question(this, tr("Модель проаналізовано!"),
+                    tr("Спробувати запис в файл ще раз??"),
+                    QMessageBox::StandardButton::Yes|QMessageBox::StandardButton::No,
+                    QMessageBox::StandardButton::Yes);
+            retry = (response == QMessageBox::StandardButton::Yes);
+        }
     }
 
     qDebug()<<"File saved";

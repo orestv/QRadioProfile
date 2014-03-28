@@ -1,11 +1,13 @@
 #include "triangle.h"
+#include <iostream>
+using namespace std;
 
 Triangle::Triangle(QVector3D &p, QVector3D &q, QVector3D &r) {
     _p<<p.x(), p.y(), p.z();
-    _p<<q.x(), q.y(), q.z();
+    _q<<q.x(), q.y(), q.z();
     _r<<r.x(), r.y(), p.z();
 
-    _center = (_p + _q + _r)/3;
+    init();
 }
 
 Triangle::Triangle(Vector3d &p, Vector3d &q, Vector3d &r) {
@@ -13,10 +15,7 @@ Triangle::Triangle(Vector3d &p, Vector3d &q, Vector3d &r) {
     _q = q;
     _r = r;
 
-    _center = (_p + _q + _r)/3;
-    _faceNormal = (_q-_p).cross(_r-_p);
-    _v0 = _r - _p;
-    _v1 = _q - _p;
+    init();
 }
 
 Triangle::Triangle(const Triangle &other)
@@ -25,8 +24,16 @@ Triangle::Triangle(const Triangle &other)
     _q = other._q;
     _r = other._r;
 
-    _center = other._center;
-    _faceNormal = (_q-_p).cross(_r-_p);
+    init();
+}
+
+void Triangle::init() {
+    _center = (_p + _q + _r)/3;
+//    cout<<"Calculating normal"<<endl;
+//    cout<<"q - p = "<<_q - _p<<endl;
+//    cout<<"r - p = "<<_r - _p<<endl;
+//    cout<<"Cross = "<<(_q-_p).cross(_r-_p)<<endl;
+    _faceNormal = (_q-_p).cross(_r-_p).normalized();
     _v0 = _r - _p;
     _v1 = _q - _p;
 }

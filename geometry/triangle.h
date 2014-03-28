@@ -27,6 +27,8 @@ public:
     Vector3d center() const;
 
 private:
+    void init();
+
     Vector3d _p;
     Vector3d _q;
     Vector3d _r;

@@ -40,6 +40,7 @@ void ParamsWidget::initWidgets() {
     _spViewpointRotationStep->setMaximum(1);
     _spViewpointRotationStep->setSingleStep(0.001);
     _spViewpointRotationStep->setValue(0.1);
+    _spViewpointRotationStep->setDecimals(3);
 
     _spViewpointRotationStartAngle->setMinimum(0);
     _spViewpointRotationStartAngle->setMaximum(360);
@@ -60,7 +61,7 @@ void ParamsWidget::initWidgets() {
     _spFrequency->setValue(95);
     
 #ifdef QT_DEBUG
-    _fpModel->setSelectedPath("/home/seth/dev/QRadioProfile/models/t72.obj");
+    _fpModel->setSelectedPath("/home/seth/dev/QRadioProfile/models/cub.obj");
     _fpResult->setSelectedPath("/home/seth/dev/QRadioProfile/output.csv");
     _spViewpointRotationStep->setValue(45);
 #endif
