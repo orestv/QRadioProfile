@@ -29,8 +29,11 @@ bool planeContains(const Plane &plane, const Vector3d &point) {
 bool triangleContains(const Triangle &triangle, const Vector3d &point) {
 //    if (!planeContains(triangle.plane(), point))
 //        return false;
-    Vector3d v0 = triangle.r() - triangle.p(),
-            v1 = triangle.q() - triangle.p(),
+//    Vector3d v0 = triangle.r() - triangle.p(),
+//            v1 = triangle.q() - triangle.p(),
+//            v2 = point - triangle.p();
+    Vector3d v0 = triangle.v0(),
+            v1 = triangle.v1(),
             v2 = point - triangle.p();
 
     double dot00 = v0.dot(v0);
@@ -90,14 +93,15 @@ ECalculator::calculateIntegral() const {
     double xl[2] = {lowerBounds[0], lowerBounds[1]};
     double xu[2] = {upperBounds[0], upperBounds[1]};
 
-    double res, rerr;
+    double res, res_sin, res_cos, rerr;
 
     PARAMS params = {_triangle, _viewpoint,_wavelength};
 
     const gsl_rng_type *T;
     gsl_rng *r;
     gsl_monte_function G_cos = {&calculateCos, 2, &params};
-    size_t calls = 50000;
+    gsl_monte_function G_sin = {&calculateSin, 2, &params};
+    size_t calls = 5000;
 
     T = gsl_rng_default;
     r = gsl_rng_alloc(T);
@@ -105,19 +109,12 @@ ECalculator::calculateIntegral() const {
     {
         gsl_monte_plain_state *s = gsl_monte_plain_alloc(2);
         gsl_monte_plain_integrate(&G_cos, xl, xu, 2,
-                                  calls, r, s, &res, &rerr);
-        gsl_monte_plain_free(s);
-        result.real(res);
-    }
-
-    r = gsl_rng_alloc(T);
-    gsl_monte_function G_sin = {&calculateSin, 2, &params};
-    {
-        gsl_monte_plain_state *s = gsl_monte_plain_alloc(2);
+                                  calls, r, s, &res_cos, &rerr);
         gsl_monte_plain_integrate(&G_sin, xl, xu, 2,
-                                  calls, r, s, &res, &rerr);
+                                  calls, r, s, &res_sin, &rerr);
         gsl_monte_plain_free(s);
-        result.imag(res);
+        result.real(res_cos);
+        result.imag(res_sin);
     }
 
     return result;

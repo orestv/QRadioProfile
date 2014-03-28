@@ -273,7 +273,7 @@ Processor::getE(
         QList<Triangle> &model,
         const double wavelength) {    
 
-    qDebug()<<"GetE invoked";
+//    qDebug()<<"GetE invoked";
 
     long double result = 0;
     long double k = 2*M_PI / wavelength;
@@ -293,7 +293,8 @@ Processor::getE(
 //        qDebug()<<"GetE: processing triangle "<<
 //                  triangle->p()<<triangle->q()<<triangle->r();
 
-        qDebug()<<"Processing triangle "<<i<<"out of "<<model.count();
+        if (i % 1000 == 0)
+            qDebug()<<"Processing triangle "<<i<<"out of "<<model.count();
 
         Vector3d eViewpoint;
         eViewpoint<<viewPoint.x(), viewPoint.y(), viewPoint.z();
@@ -342,7 +343,7 @@ Processor::getSigma(
 
     double u = getU(observationPoint, triangle, wavelength);
 
-    qDebug()<<"U = "<<u;
+//    qDebug()<<"U = "<<u;
 
     return sqrt(pow(R, 2) * u);
 }

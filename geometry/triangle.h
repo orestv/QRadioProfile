@@ -20,6 +20,9 @@ public:
     Vector3d q() const;
     Vector3d r() const;
 
+    Vector3d v0() const;
+    Vector3d v1() const;
+
     Vector3d faceNormal() const;
     Vector3d center() const;
 
@@ -27,6 +30,8 @@ private:
     Vector3d _p;
     Vector3d _q;
     Vector3d _r;
+
+    Vector3d _v0, _v1;
 
     Vector3d _faceNormal;
     Vector3d _center;
