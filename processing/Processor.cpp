@@ -266,7 +266,7 @@ Processor::analyzeModel(QList<RightTriangle> &triangles,
     return result;
 }
 
-double
+std::complex<double>
 Processor::getE(
         const Vector3d &viewPoint,
         QList<Triangle> &model,
@@ -274,7 +274,6 @@ Processor::getE(
 
 //    qDebug()<<"GetE invoked";
 
-    double result = 0;
     double k = 2*M_PI / wavelength;
     std::complex<double> e;
 
@@ -319,8 +318,7 @@ Processor::getE(
 //        qDebug()<<"So far e is "<<abs(e);
 
     }
-    result = abs(e);
-    return result;
+    return e;
 }
 
 bool

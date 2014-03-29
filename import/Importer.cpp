@@ -254,10 +254,12 @@ void Importer::exportToFile(
         throw "Failed to open file";
     QTextStream strm(&file);
     strm.setCodec("UTF-8");
-    strm<<QString::fromUtf8("Азимут;Е\n");
+    strm<<QString::fromUtf8("Азимут;Е;cos(φ);sin(φ)\n");
     for (auto result = results.begin(); result != results.end(); result++) {
         strm<<QString::number(result->azimuth, 'f')<<";"
-                <<QString::number(result->E, 'f')
+                <<QString::number(result->E, 'f')<<";"
+                <<QString::number(result->eComplex.real(), 'f')<<";"
+                <<QString::number(result->eComplex.imag(), 'f')
                 <<"\n";
     }
     

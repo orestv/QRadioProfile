@@ -35,11 +35,12 @@ void CalculationThread::run() {
         viewpoint<<x, y, z;
 //        std::cout<<"viewpoint: "<<viewpoint;
         
-        double e = Processor::getE(viewpoint, _model, wavelength);
+        std::complex<double> e = Processor::getE(viewpoint, _model, wavelength);
         
         Processor::CALCULATION_RESULT localResult;        
         localResult.azimuth = viewpointAzimuth;
-        localResult.E = e;
+        localResult.E = std::abs(e);
+        localResult.eComplex = e;
         
         _results.push_back(localResult);
         iteration++;
