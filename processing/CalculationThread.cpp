@@ -12,6 +12,7 @@ CalculationThread::CalculationThread(QObject *parent,
         QList<Triangle> &model): QThread(parent) {
     this->_params = params;
     this->_model = model;
+    this->_cancelled = false;
 }
 
 CalculationThread::~CalculationThread() {
@@ -23,6 +24,8 @@ void CalculationThread::run() {
     for (double viewpointAzimuth = _params.viewpointStartAngle;
             viewpointAzimuth <= _params.viewpointEndAngle;
             viewpointAzimuth += _params.viewpointRotationStep) {
+        if (_cancelled)
+            return;
         double x, y, z;
         y = _params.viewpointHeight;
         z = _params.viewpointDistance * cos(viewpointAzimuth);
@@ -46,4 +49,8 @@ void CalculationThread::run() {
 
 QList<Processor::CALCULATION_RESULT> CalculationThread::results() const {
     return _results;
+}
+
+void CalculationThread::cancel() {
+    _cancelled = true;
 }

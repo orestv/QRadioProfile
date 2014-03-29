@@ -8,6 +8,7 @@
 #include "MainWindow.h"
 
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QDebug>
 #include <QMessageBox>
 #include <QDesktopServices>
@@ -35,17 +36,24 @@ void MainWindow::initWidgets() {
     _paramsWidget = new ParamsWidget();
     _btnCalculate = new QPushButton(tr("Обчислити"));
     _progressBar = new QProgressBar();
-        
+    _btnCancel = new QPushButton(tr("Відмінити"));
+    _btnCancel->setEnabled(true);
+
     QVBoxLayout *layout = new QVBoxLayout();
+    QHBoxLayout *progressLayout = new QHBoxLayout();
+
+    progressLayout->addWidget(_progressBar);
+    progressLayout->addWidget(_btnCancel);
     
     layout->addWidget(_paramsWidget);
     layout->addStretch();
-    layout->addWidget(_progressBar);
+    layout->addLayout(progressLayout);
     layout->addWidget(_btnCalculate);    
     
     setLayout(layout);
     
     _progressBar->setHidden(true);
+    _btnCancel->setHidden(true);
 }
 
 void MainWindow::initSignals() {
@@ -53,6 +61,8 @@ void MainWindow::initSignals() {
             this, &MainWindow::paramsWidgetUpdated);
     QObject::connect(_btnCalculate, &QPushButton::clicked, 
             this, &MainWindow::calculateClicked);
+    QObject::connect(_btnCancel, &QPushButton::clicked,
+                     this, &MainWindow::btnCancelClicked);
 }
 
 void MainWindow::paramsWidgetUpdated() {
@@ -109,8 +119,10 @@ void MainWindow::beginCalculation() {
     QObject::connect(_calculationThread, &CalculationThread::finished,
             this, &MainWindow::threadFinished);
    
-    this->setDisabled(true);
+    this->_paramsWidget->setDisabled(true);
+    this->_btnCalculate->setDisabled(true);
     this->_progressBar->setVisible(true);
+    this->_btnCancel->setVisible(true);
     
     _calculationThread->start();
 }
@@ -120,8 +132,8 @@ void MainWindow::threadIterationFinished(int iteration) {
 }
 
 void MainWindow::threadFinished() {
-    this->_progressBar->setHidden(true);
     this->_progressBar->setVisible(false);
+    this->_btnCancel->setVisible(false);
     ParamsWidget::CALCULATION_PARAMS inputParams = 
             _paramsWidget->gatherParams();   
     bool retry = true, success = false;
@@ -145,6 +157,12 @@ void MainWindow::threadFinished() {
             QMessageBox::StandardButton::Yes|QMessageBox::StandardButton::No,
             QMessageBox::StandardButton::Yes);
     if (response == QMessageBox::StandardButton::Yes)
-        QDesktopServices::openUrl(QUrl(inputParams.resultPath));    
-    this->setEnabled(true);
+        QDesktopServices::openUrl(QUrl(inputParams.resultPath));
+    this->_paramsWidget->setDisabled(false);
+    this->_btnCalculate->setDisabled(false);
+}
+
+void MainWindow::btnCancelClicked() {
+    if (_calculationThread)
+        _calculationThread->cancel();
 }

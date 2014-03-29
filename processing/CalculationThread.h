@@ -27,10 +27,15 @@ public:
 signals:
     void iterationFinished(int numIteration);
 
+public slots:
+    void cancel();
+
 private:
     Processor::PARAMS _params;
     QList<Processor::CALCULATION_RESULT> _results;
     QList<Triangle> _model;
+
+    bool _cancelled;
 };
 
 #endif	/* CALCULATIONTHREAD_H */

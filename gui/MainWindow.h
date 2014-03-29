@@ -26,6 +26,7 @@ private slots:
     void calculateClicked();
     void threadIterationFinished(int iteration);
     void threadFinished();
+    void btnCancelClicked();
     
 private:
     void initWidgets();
@@ -38,6 +39,7 @@ private:
     
     ParamsWidget *_paramsWidget;
     QProgressBar *_progressBar;
+    QPushButton *_btnCancel;
     QPushButton *_btnCalculate;    
     CalculationThread *_calculationThread;
 };
