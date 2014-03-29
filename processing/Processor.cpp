@@ -336,7 +336,7 @@ Processor::isTriangleVisible(
 
 
 //    std::cout<<"Dot: "<<dot<<std::endl;
-    if (dot < 0 || isnan(dot))
+    if (dot <= 0 || isnan(dot))
         return false;
 
     return true;
