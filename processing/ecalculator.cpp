@@ -27,7 +27,30 @@ bool planeContains(const Plane &plane, const Vector3d &point) {
     return plane.normal().dot(planeVector) == 0;
 }
 
+float sign(const Vector3d &p1, const Vector3d &p2, const Vector3d &p3)
+{
+  return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1]);
+}
+
+bool
+PointInTriangle(
+        const Vector3d &pt,
+        const Vector3d &v1,
+        const Vector3d &v2,
+        const Vector3d &v3)
+{
+  bool b1, b2, b3;
+
+  b1 = sign(pt, v1, v2) < 0.0f;
+  b2 = sign(pt, v2, v3) < 0.0f;
+  b3 = sign(pt, v3, v1) < 0.0f;
+
+  return ((b1 == b2) && (b2 == b3));
+}
+
+
 bool triangleContains(const Triangle &triangle, const Vector3d &point) {
+    return PointInTriangle(point, triangle.p(), triangle.q(), triangle.r());
 //    if (!planeContains(triangle.plane(), point))
 //        return false;
 //    Vector3d v0 = triangle.r() - triangle.p(),
@@ -61,8 +84,11 @@ double calculateSin(double *k, size_t dim, void *params) {
     if (!triangleContains(*_triangle, point))
         return 0;
 
-    return sin(2*M_PI*(*_viewpoint)[0]*k[0]/(_wavelength*(*_viewpoint)[2]) +
-            2*M_PI*(*_viewpoint)[1]*k[1]/(_wavelength*(*_viewpoint)[2]));
+    double x = k[0], y = k[1];
+    double X = (*_viewpoint)[0], Y = (*_viewpoint)[1], Z = (*_viewpoint)[2];
+
+    double result = 2*M_PI*(X*x + Y*y)/(_wavelength*Z);
+    return sin(result);
 }
 
 double calculateCos(double *k, size_t dim, void *params) {
@@ -76,8 +102,11 @@ double calculateCos(double *k, size_t dim, void *params) {
     if (!triangleContains(*_triangle, point))
         return 0;
 
-    return cos(2*M_PI*(*_viewpoint)[0]*k[0]/(_wavelength*(*_viewpoint)[2]) +
-            2*M_PI*(*_viewpoint)[1]*k[1]/(_wavelength*(*_viewpoint)[2]));
+    double x = k[0], y = k[1];
+    double X = (*_viewpoint)[0], Y = (*_viewpoint)[1], Z = (*_viewpoint)[2];
+
+    double result = 2*M_PI*(X*x + Y*y)/(_wavelength*Z);
+    return cos(result);
 }
 
 std::complex<double>
@@ -113,14 +142,14 @@ ECalculator::calculateIntegral() const {
     r = gsl_rng_alloc(T);
 
     {
-        gsl_monte_plain_state *s = gsl_monte_plain_alloc(2);
-        gsl_monte_plain_integrate(&G_cos, xl, xu, 2,
+        gsl_monte_miser_state *s = gsl_monte_miser_alloc(2);
+        gsl_monte_miser_integrate(&G_cos, xl, xu, 2,
                                   calls, r, s, &res_cos, &rerr);
-        gsl_monte_plain_integrate(&G_sin, xl, xu, 2,
+        gsl_monte_miser_integrate(&G_sin, xl, xu, 2,
                                   calls, r, s, &res_sin, &rerr);
-        gsl_monte_plain_free(s);
+        gsl_monte_miser_free(s);
         result.real(res_cos);
-        result.imag(res_sin);
+        result.imag(-res_sin);
     }
 
     return result;

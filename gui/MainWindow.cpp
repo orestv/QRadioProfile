@@ -108,7 +108,7 @@ void MainWindow::beginCalculation() {
     }
     qDebug()<<calculationParams.viewpointStartAngle<<calculationParams.viewpointEndAngle<<calculationParams.viewpointRotationStep;
     int iterations = (calculationParams.viewpointEndAngle - calculationParams.viewpointStartAngle) /
-            calculationParams.viewpointRotationStep;
+            calculationParams.viewpointRotationStep + 1;
     qDebug()<<"Number of iterations: "<<iterations;
     _progressBar->setValue(0);
     _progressBar->setMaximum(iterations);

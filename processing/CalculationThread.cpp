@@ -5,6 +5,7 @@
  * Created on February 6, 2014, 9:39 PM
  */
 
+#include <iostream>
 #include "CalculationThread.h"
 
 CalculationThread::CalculationThread(QObject *parent, 
@@ -20,6 +21,7 @@ CalculationThread::~CalculationThread() {
 
 void CalculationThread::run() {
     double wavelength = Processor::LIGHTSPEED / _params.frequency;
+    std::cout<<"Start angle: "<<_params.viewpointStartAngle<<", end angle: "<<_params.viewpointEndAngle<<std::endl;
     int iteration = 0;
     for (double viewpointAzimuth = _params.viewpointStartAngle;
             viewpointAzimuth <= _params.viewpointEndAngle;

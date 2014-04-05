@@ -18,6 +18,7 @@
 #include <gsl/gsl_monte_vegas.h>
 
 #include "geometry/triangle.h"
+#include <complex>
 
 
 double f(double *k, size_t dim, void *params) {

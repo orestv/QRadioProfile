@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   Processor.cpp
  * Author: seth
- * 
+ *
  * Created on February 3, 2014, 10:02 PM
  */
 
@@ -23,23 +23,23 @@ QDebug operator<< (QDebug d, RightTriangle &triangle) {
 
 const double ANGLE_PRECISION = 0.01;
 
-QList<RightTriangle> 
+QList<RightTriangle>
 Processor::getVisibleTriangles(
         QList<RightTriangle> &triangles,
         QVector3D viewpoint) {
     QList<RightTriangle> result;
-    
+
     for (auto t = triangles.begin(); t != triangles.end(); t++) {
         if (Processor::isTriangleVisible(*t, viewpoint))
             result.push_back(*t);
     }
-    
+
     return result;
 }
 
-bool 
+bool
 Processor::isTriangleVisible(
-        RightTriangle triangle, 
+        RightTriangle triangle,
         QVector3D viewpoint) {
     QVector3D viewVector =  viewpoint - triangle.vertex();
     viewVector.normalize();
@@ -50,41 +50,41 @@ Processor::isTriangleVisible(
 Processor::VIEWPOINT_SUMS
 Processor::calculateViewpointSums(
         QList<RightTriangle> &triangles,
-        QVector3D viewpoint, 
+        QVector3D viewpoint,
         double wavelength) {
-    
+
     VIEWPOINT_SUMS result;
     result.sum_cos = 0;
     result.sum_sin = 0;
     double k = 2 * M_PI / wavelength;
-    
+
     for (auto t = triangles.begin(); t != triangles.end(); t++) {
         TRIANGLE_ANGLES angles = calculateTriangleAngles(*t, viewpoint);
-        QVector3D shortLeg = t->shortLeg(), 
+        QVector3D shortLeg = t->shortLeg(),
             longLeg = t->longLeg();
         double En = calculateEn(angles, shortLeg, longLeg, wavelength);
-        double R = (viewpoint - t->vertex()).length();  
-        
+        double R = (viewpoint - t->vertex()).length();
+
 //        std::cout<<"En for "<<*t<<" = "<<En;
-        
+
         result.sum_cos += En * cos(k*R);
         result.sum_sin += En * sin(k*R);
     }
-        
+
     return result;
 }
 
 Processor::TRIANGLE_ANGLES
 Processor::calculateTriangleAngles(
-        RightTriangle &triangle, 
+        RightTriangle &triangle,
         QVector3D &viewpoint) {
-    
-    QVector3D viewVector = viewpoint - triangle.vertex();    
+
+    QVector3D viewVector = viewpoint - triangle.vertex();
     QVector3D triangleNormal = triangle.normal();
-    
+
     TRIANGLE_ANGLES result;
-    
-    if (abs(triangle.leg_1().lengthSquared() - 
+
+    if (abs(triangle.leg_1().lengthSquared() -
             triangle.leg_2().lengthSquared()) > 0.01) {
         QVector3D shortLegPlaneNormal = triangle.longLeg().normalized();
         result = calculateTriangleAngles(triangleNormal, shortLegPlaneNormal, viewVector);
@@ -95,26 +95,26 @@ Processor::calculateTriangleAngles(
                         normal_1, viewVector),
                 result_2 = calculateTriangleAngles(triangleNormal,
                         normal_2, viewVector);
-        
+
 //        std::cout<<"Alphas:"<<result_1.alpha<<result_2.alpha<<std::endl;
 //        std::cout<<"betas:"<<result_1.beta<<result_2.beta<<std::endl;
-        
+
         result.cos_alpha = fmin(result_1.cos_alpha, result_2.cos_alpha);
         result.cos_beta = fmin(result_1.cos_beta, result_2.cos_beta);
-    }    
+    }
     return result;
 }
 
 Processor::TRIANGLE_ANGLES
 Processor::calculateTriangleAngles (
         QVector3D& triangleNormal,
-        QVector3D planeNormal, 
+        QVector3D planeNormal,
         QVector3D& viewVector) {
-    
+
 //    QVector3D vv_projection = projectOntoPlane(viewVector,
 //            planeNormal);
 //    QVector3D vv_projection_unit = vv_projection.normalized();
-    
+
 //    double cos_alpha = QVector3D::dotProduct(vv_projection_unit,
 //            triangleNormal);
 //    if (cos_alpha < 0)
@@ -125,7 +125,7 @@ Processor::calculateTriangleAngles (
 //    if (cos_beta < 0)
 //        cos_beta = QVector3D::dotProduct(-viewVector.normalized(),
 //            vv_projection_unit);
-    
+
 //    double alpha = acos(cos_alpha),
 //            beta = acos(cos_beta);
 //    TRIANGLE_ANGLES result;
@@ -133,7 +133,7 @@ Processor::calculateTriangleAngles (
 //    result.cos_beta = cos_beta;
 //    result.sin_alpha = sin(alpha);
 //    result.sin_beta = sin(beta);
-    
+
 //    return result;
 }
 
@@ -141,24 +141,24 @@ Vector3d
 Processor::projectOntoPlane(
         const Vector3d &vector,
         Vector3d plane_normal) {
-    
+
     plane_normal.normalize();
-    
+
     Vector3d projection_onto_normal = plane_normal *
             plane_normal.dot(vector);
-    
+
     return vector - projection_onto_normal;
 }
 
-double 
+double
 Processor::calculateEn(
-        TRIANGLE_ANGLES& angles, 
-        QVector3D& shortLeg, 
+        TRIANGLE_ANGLES& angles,
+        QVector3D& shortLeg,
         QVector3D& longLeg,
         double wavelength) {
-    
+
     double result;
-    
+
     double cos_alpha = angles.cos_alpha, cos_beta = angles.cos_beta,
             sin_alpha = angles.sin_alpha, sin_beta = angles.sin_beta;
 //    if (sin_alpha < ANGLE_PRECISION) {
@@ -171,24 +171,24 @@ Processor::calculateEn(
 //    }
     double a = shortLeg.length();
     double b = longLeg.length();
-    
-    double sigma = 4 * M_PI * 
+
+    double sigma = 4 * M_PI *
                 shortLeg.lengthSquared() * longLeg.lengthSquared() / (
                 pow(wavelength, 2));
     double k = 2 * M_PI / wavelength;
-    
+
 //    std::cout<<alpha<<beta<<a<<b<<sigma<<k<<wavelength;
-    
+
     if (sin_alpha == 0 && sin_beta == 0) {
         result = sigma;
     } else if (sin_beta == 0) {
-        result = sigma * pow(cos_alpha, 2) * 
+        result = sigma * pow(cos_alpha, 2) *
                 pow((sin(k*a*cos_alpha)) / (k*a*sin_alpha), 4);
     } else if (sin_alpha == 0) {
         double kbsinb = k * b * sin_beta;
-        result = sigma * pow(cos_beta, 2) * 
+        result = sigma * pow(cos_beta, 2) *
                 (
-                    pow(sin(kbsinb)/kbsinb, 4) + 
+                    pow(sin(kbsinb)/kbsinb, 4) +
                     pow(((1 - (sin(2*kbsinb))/(kbsinb)) / (kbsinb)), 2)
                 );
     } else {
@@ -208,14 +208,14 @@ Processor::calculateEn(
 //        std::cout<<"Ridiculously large:"<<k*a*sin(alpha)*cos(beta)<<std::endl;
         e2_1_1 *= e2_1_1;
         e2_1_2 *= e2_1_2;
-        
+
 //        std::cout<<"e2_1 parts: "<<e2_1_1<<e2_1_2<<std::endl;
-        
+
         e2_1 = pow(e2_1_1 - e2_1_2, 2);
         double e2_2 = pow(k*b*sin_beta, 2);
         double e2_3 = sin(2*k*a*sin_alpha*cos_beta)/(2*k*a*sin_alpha*cos_beta);
         double e2_4 = sin(2*k*b*sin_beta)/(2*k*b*sin_beta);
-        
+
 //        std::cout<<"e2_1="<<e2_1<<"e2_2="<<e2_2;
 
         double e2_03 = pow(e2_3 - e2_4, 2);
@@ -225,7 +225,7 @@ Processor::calculateEn(
         double e3 = e1 * e2;
         result = e3;
     }
-    
+
     return result;
 }
 
@@ -233,21 +233,21 @@ QList<Processor::CALCULATION_RESULT>
 Processor::analyzeModel(QList<RightTriangle> &triangles,
         Processor::PARAMS params) {
     QList<Processor::CALCULATION_RESULT> result;
-    
+
     double wavelength = Processor::LIGHTSPEED / params.frequency;
-    
+
     for (double viewpointAzimuth = 0;
             viewpointAzimuth < 2*M_PI;
             viewpointAzimuth += params.viewpointRotationStep) {
-        
+
         double x, y, z;
         y = params.viewpointHeight;
         z = params.viewpointDistance * cos(viewpointAzimuth);
         x = params.viewpointDistance * sin(viewpointAzimuth);
-        
+
         QVector3D viewpoint(x, y, z);
 //        std::cout<<"viewpoint: "<<viewpoint;
-        
+
         QList<RightTriangle> visibleTriangles = Processor::getVisibleTriangles(
                 triangles, viewpoint);
 
@@ -255,14 +255,14 @@ Processor::analyzeModel(QList<RightTriangle> &triangles,
                 visibleTriangles, viewpoint, wavelength);
 
         double E = sqrt(pow(sums.sum_cos, 2) + pow(sums.sum_sin, 2));
-        
-        Processor::CALCULATION_RESULT localResult;        
+
+        Processor::CALCULATION_RESULT localResult;
         localResult.azimuth = viewpointAzimuth;
         localResult.E = E;
-        
+
         result.push_back(localResult);
     }
-    
+
     return result;
 }
 
@@ -270,7 +270,7 @@ std::complex<double>
 Processor::getE(
         const Vector3d &viewPoint,
         QList<Triangle> &model,
-        const double wavelength) {    
+        const double wavelength) {
 
 //    qDebug()<<"GetE invoked";
 
@@ -280,45 +280,36 @@ Processor::getE(
 //    std::cout<<"Viewpoint: "<<viewPoint<<std::endl<<std::endl;
 
     int i = 0;
+    double sum_cos = 0, sum_sin = 0;
+
     Vector3d eViewpoint;
     eViewpoint<<viewPoint.x(), viewPoint.y(), viewPoint.z();
     for (auto triangle = model.begin(); triangle != model.end(); triangle++) {
         i++;
         if (!isTriangleVisible(*triangle, model, eViewpoint)) {
-//            std::cout<<"("<<triangle->p()<<","<<triangle->q()<<","<<triangle->r()<<
-//                      ") is invisible, skipping.";
             continue;
         }
 
-
-//        std::cout<<"GetE: processing triangle "<<
-//                   triangle->p()<<std::endl<<"-"<<std::endl<<
-//                   triangle->q()<<std::endl<<"-"<<std::endl<<
-//                   triangle->r()<<std::endl;
-
-        if (i % 100 == 0)
+        if (i % 10000 == 0)
             qDebug()<<"Processing triangle "<<i<<"out of "<<model.count();
 
         double R = (eViewpoint - triangle->center()).norm();
-        std::complex<double> local_e;
-        local_e.real(cos(k*R));
-        local_e.imag(sin(k*R));
 
-//        qDebug()<<"Local E is "<<local_e.real()<<"+ i"<<local_e.imag();
+        double SR = getSigma(eViewpoint, *triangle, wavelength) / R;
+//        std::cout<<"Sr = "<<SR<<std::endl;
+        sum_cos += SR * cos(k*R);
+        sum_sin += SR * sin(k*R);
 
-        double sigma = getSigma(eViewpoint, *triangle, R, wavelength);
 
-//        qDebug()<<"Sigma = "<<sigma;
-
-        local_e *= sigma;
-        local_e /= pow(R, 2);
-
-        e += local_e;
-
-//        qDebug()<<"So far e is "<<abs(e);
-
+//        std::cout<<"sum_cos: "<<sum_cos<<", sum_sin: "<<sum_sin<<std::endl;
+        if (std::isnan(sum_cos) || std::isnan(sum_sin)) {
+            std::cout<<"NAN processing triangle "<<std::endl;
+        }
     }
-    return e;
+
+//    std::cout<<"sum_cos: "<<sum_cos<<", sum_sin: "<<sum_sin<<std::endl;
+    return std::complex<double>(sum_cos, sum_sin);
+//    return sqrt(pow(sum_cos, 2) + pow(sum_sin, 2));
 }
 
 bool
@@ -346,14 +337,99 @@ double
 Processor::getSigma(
         const Vector3d &observationPoint,
         const Triangle &triangle,
-        const double R,
         const double wavelength) {
 
-    double u = getU(observationPoint, triangle, wavelength);
+    std::complex<double> E0 = Processor::getE0(observationPoint, triangle, wavelength);
+//    std::cout<<"E0 = "<<E0<<std::endl;
+    if (std::isnan(E0.real()) || std::isnan(E0.imag())) {
+        std::cout<<"IsNAN in getSigma!"<<std::endl;
+    }
+    E0 /= wavelength;
+    return 2*sqrt(M_PI)*std::abs(E0);
+}
 
-//    qDebug()<<"U = "<<u;
+std::complex<double>
+Processor::getE0(
+        const Vector3d &viewpoint,
+        const Triangle &triangle,
+        const double wavelength) {
 
-    return sqrt(pow(R, 2) * u);
+    Eigen::Matrix3d basis = getCoordinatesTransformationMatrix(triangle);
+
+    Eigen::Vector3d eCenter = - Processor::switchCoordinates(triangle.center(), basis);
+
+    Eigen::Vector3d newViewpoint = Processor::switchCoordinates(viewpoint, basis, eCenter);
+    Eigen::Vector3d p, q, r;
+    p = Processor::switchCoordinates(triangle.p(), basis, eCenter);
+    q = Processor::switchCoordinates(triangle.q(), basis, eCenter);
+    r = Processor::switchCoordinates(triangle.r(), basis, eCenter);
+    Triangle newTriangle(p, q, r);
+
+    double x1,y1, x2,y2, x3,y3;
+    double xc = newViewpoint[0],
+           yc = newViewpoint[1],
+           zc = newViewpoint[2];
+
+    if (std::abs(xc) < 0.000001)
+        xc = 0.000001;
+    if (std::abs(yc) < 0.000001)
+        yc = 0.000001;
+
+    double minX, maxX;
+    minX = std::min(newTriangle.p()[0], std::min(newTriangle.q()[0], newTriangle.r()[0]));
+    maxX = std::max(newTriangle.p()[0], std::max(newTriangle.q()[0], newTriangle.r()[0]));
+
+    x1 = maxX;
+    x2 = minX;
+    if (newTriangle.p()[0] == minX)
+        y2 = newTriangle.p()[1];
+    else if (newTriangle.p()[0] == maxX)
+        y1 = newTriangle.p()[1];
+    else {
+        x3 = newTriangle.p()[0];
+        y3 = newTriangle.p()[1];
+    }
+
+    if (newTriangle.q()[0] == minX)
+        y2 = newTriangle.q()[1];
+    else if (newTriangle.q()[0] == maxX)
+        y1 = newTriangle.q()[1];
+    else {
+        x3 = newTriangle.q()[0];
+        y3 = newTriangle.q()[1];
+    }
+
+    if (newTriangle.r()[0] == minX)
+        y2 = newTriangle.r()[1];
+    else if (newTriangle.r()[0] == maxX)
+        y1 = newTriangle.r()[1];
+    else {
+        x3 = newTriangle.r()[0];
+        y3 = newTriangle.r()[1];
+    }
+
+    std::complex<double> result = (-x3*y2 - y1*x2 + y1*x3 + x1*y2 + y3*x2 - x1*y3);
+
+//    std::cout<<result<<std::endl;
+    result *= std::exp(std::complex<double>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc))) *
+                (-xc*x3 + xc*x1 - yc*y3 + yc*y1) -
+            std::exp(std::complex<double>(0, -2*M_PI*(xc*x3 + yc*y3)/(wavelength*zc)))*
+                (-xc*x2 + xc*x1 - yc*y2 + yc*y1) -
+            std::exp(std::complex<double>(0, -2*M_PI*(xc*x1 + yc*y1)/(wavelength*zc)))*
+                (xc*x2 - xc*x3 + yc*y2 - yc*y3);
+//    std::cout<<result<<std::endl;
+    result *= zc*zc*wavelength*wavelength;
+//    std::cout<<result<<std::endl;
+    result /= -4;
+//    std::cout<<result<<std::endl;
+    result /= (-xc*x3 + xc*x1 - yc*y3 + yc*y1) *
+            (-xc*x2 + xc*x1 - yc*y2 + yc*y1) *
+            (xc*x2 - xc*x3 + yc*y2 - yc*y3)*M_PI*M_PI;
+//    std::cout<<result<<std::endl;
+    if (isnan(result.real()) || isnan(result.imag())) {
+        std::cout<<"Result is NAN in getE0!"<<std::endl;
+    }
+    return result;
 }
 
 long double

@@ -52,8 +52,9 @@ public:
     constexpr static double LIGHTSPEED = 299792458;
 
     static std::complex<double> getE(const Vector3d &viewPoint, QList<Triangle> &model, const double wavelength);
+    static std::complex<double> getE0(const Vector3d &viewpoint, const Triangle &triangle, const double wavelength);
     static bool isTriangleVisible(const Triangle &triangle, const QList<Triangle> &model, const Vector3d &viewPoint);
-    static double getSigma(const Vector3d &observationPoint, const Triangle &triangle, const double R, const double wavelength);
+    static double getSigma(const Vector3d &observationPoint, const Triangle &triangle, const double wavelength);
     static long double getU(const Vector3d &observationPoint, const Triangle &triangle, const double wavelength);
     static Eigen::Matrix3d getCoordinatesTransformationMatrix(const Triangle &triangle);
     static Eigen::Vector3d switchCoordinates(const Vector3d &vector, const Eigen::Matrix3d &matrix, const Eigen::Vector3d &dCenter);
