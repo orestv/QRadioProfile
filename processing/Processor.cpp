@@ -267,6 +267,12 @@ Processor::analyzeModel(QList<RightTriangle> &triangles,
 }
 
 std::complex<double>
+Processor::getE(const E_CALCULATION_PARAMS params) {
+
+    return getE(params.viewpoint, params.model, params.wavelength);
+}
+
+std::complex<double>
 Processor::getE(
         const Vector3d &viewPoint,
         QList<Triangle> &model,
@@ -407,6 +413,12 @@ Processor::getE0(
         x3 = newTriangle.r()[0];
         y3 = newTriangle.r()[1];
     }
+
+//    std::cout<<"x[1]:="<<x1<<";y[1]:="<<y1<<";"<<std::endl;
+//    std::cout<<"x[2]:="<<x2<<";y[2]:="<<y2<<";"<<std::endl;
+//    std::cout<<"x[3]:="<<x3<<";y[3]:="<<y3<<";"<<std::endl;
+
+//    std::cout<<"x[c]:="<<xc<<";y[c]:="<<yc<<";z:="<<zc<<";"<<std::endl;
 
     std::complex<double> result = (-x3*y2 - y1*x2 + y1*x3 + x1*y2 + y3*x2 - x1*y3);
 

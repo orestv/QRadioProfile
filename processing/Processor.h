@@ -17,6 +17,12 @@
 
 class Processor {
 public:
+    struct E_CALCULATION_PARAMS {
+        Vector3d viewpoint;
+        QList<Triangle> &model;
+        double wavelength;
+    };
+
     struct PARAMS {
         double viewpointHeight;
         double viewpointDistance;
@@ -51,6 +57,7 @@ public:
     
     constexpr static double LIGHTSPEED = 299792458;
 
+    static std::complex<double> getE(const E_CALCULATION_PARAMS params);
     static std::complex<double> getE(const Vector3d &viewPoint, QList<Triangle> &model, const double wavelength);
     static std::complex<double> getE0(const Vector3d &viewpoint, const Triangle &triangle, const double wavelength);
     static bool isTriangleVisible(const Triangle &triangle, const QList<Triangle> &model, const Vector3d &viewPoint);

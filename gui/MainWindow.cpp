@@ -123,6 +123,7 @@ void MainWindow::beginCalculation() {
     this->_btnCalculate->setDisabled(true);
     this->_progressBar->setVisible(true);
     this->_btnCancel->setVisible(true);
+    this->_btnCancel->setEnabled(true);
     
     _calculationThread->start();
 }
@@ -165,4 +166,5 @@ void MainWindow::threadFinished() {
 void MainWindow::btnCancelClicked() {
     if (_calculationThread)
         _calculationThread->cancel();
+    _btnCancel->setDisabled(true);
 }
