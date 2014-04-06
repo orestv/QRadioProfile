@@ -73,19 +73,23 @@ Vector3d Triangle::center() const
 
 Vector3d Triangle::leftMost() const {
     Vector3d result = _p;
-    if (_q[0] <= result[0] && _q[1] <= result[1])
-        result = _q;
+    if (_q[0] <= result[0])
+        if (_q[0] < result[0] || _q[1] <= result[1])
+            result = _q;
     if (_r[0] <= result[0] && _r[1] <= result[1])
-        result = _r;
+        if (_r[0] < result[0] || _r[1] <= result[1])
+            result = _r;
     return result;
 }
 
 Vector3d Triangle::rightMost() const {
     Vector3d result = _p;
-    if (_q[0] >= result[0] && _q[1] >= result[1])
-        result = _q;
+    if (_q[0] >= result[0])
+        if (_q[0] > result[0] || _q[1] >= result[1])
+            result = _q;
     if (_r[0] >= result[0] && _r[1] >= result[1])
-        result = _r;
+        if (_r[0] > result[0] || _r[1] >= result[1])
+            result = _r;
     return result;
 }
 

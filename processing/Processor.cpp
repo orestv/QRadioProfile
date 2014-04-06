@@ -302,7 +302,11 @@ Processor::getE(
         double R = (eViewpoint - triangle->center()).norm();
 
         double SR = getSigma(eViewpoint, *triangle, wavelength) / R;
+
 //        std::cout<<"Sr = "<<SR<<std::endl;
+
+//        std::cout<<"cos(kR) = "<<cos(k*R)<<", sin(kR) = "<<sin(k*R)<<std::endl;
+
         sum_cos += SR * cos(k*R);
         sum_sin += SR * sin(k*R);
 
@@ -311,6 +315,7 @@ Processor::getE(
         if (std::isnan(sum_cos) || std::isnan(sum_sin)) {
             std::cout<<"NAN processing triangle "<<std::endl;
         }
+        std::cout<<std::endl<<std::endl;
     }
 
 //    std::cout<<"sum_cos: "<<sum_cos<<", sum_sin: "<<sum_sin<<std::endl;
@@ -381,6 +386,10 @@ Processor::getE0(
     if (std::abs(yc) < 0.000001)
         yc = 0.000001;
 
+//    std::cout<<"P:"<<std::endl<<newTriangle.p()<<std::endl<<std::endl;
+//    std::cout<<"Q:"<<std::endl<<newTriangle.q()<<std::endl<<std::endl;
+//    std::cout<<"R:"<<std::endl<<newTriangle.r()<<std::endl<<std::endl;
+
     Vector3d leftMost, rightMost, middle;
     leftMost = newTriangle.leftMost();
     rightMost = newTriangle.rightMost();
@@ -398,22 +407,23 @@ Processor::getE0(
 
     std::complex<double> result = (-x3*y2 - y1*x2 + y1*x3 + x1*y2 + y3*x2 - x1*y3);
 
-//    std::cout<<result<<std::endl;
+//    std::cout<<"1: "<<result<<std::endl;
+
     result *= std::exp(std::complex<double>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc))) *
                 (-xc*x3 + xc*x1 - yc*y3 + yc*y1) -
             std::exp(std::complex<double>(0, -2*M_PI*(xc*x3 + yc*y3)/(wavelength*zc)))*
                 (-xc*x2 + xc*x1 - yc*y2 + yc*y1) -
             std::exp(std::complex<double>(0, -2*M_PI*(xc*x1 + yc*y1)/(wavelength*zc)))*
                 (xc*x2 - xc*x3 + yc*y2 - yc*y3);
-//    std::cout<<result<<std::endl;
+//    std::cout<<"2: "<<result<<std::endl;
     result *= zc*zc*wavelength*wavelength;
-//    std::cout<<result<<std::endl;
+//    std::cout<<"3: "<<result<<std::endl;
     result /= -4;
-//    std::cout<<result<<std::endl;
+//    std::cout<<"4: "<<result<<std::endl;
     result /= (-xc*x3 + xc*x1 - yc*y3 + yc*y1) *
             (-xc*x2 + xc*x1 - yc*y2 + yc*y1) *
             (xc*x2 - xc*x3 + yc*y2 - yc*y3)*M_PI*M_PI;
-//    std::cout<<result<<std::endl;
+//    std::cout<<"5: "<<result<<std::endl;
     if (std::isnan(result.real()) || std::isnan(result.imag())) {
         std::cout<<"Result is NAN in getE0!"<<std::endl;
     }
