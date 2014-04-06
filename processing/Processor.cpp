@@ -381,38 +381,14 @@ Processor::getE0(
     if (std::abs(yc) < 0.000001)
         yc = 0.000001;
 
-    double minX, maxX;
-    minX = std::min(newTriangle.p()[0], std::min(newTriangle.q()[0], newTriangle.r()[0]));
-    maxX = std::max(newTriangle.p()[0], std::max(newTriangle.q()[0], newTriangle.r()[0]));
+    Vector3d leftMost, rightMost, middle;
+    leftMost = newTriangle.leftMost();
+    rightMost = newTriangle.rightMost();
+    middle = newTriangle.middle();
 
-    x1 = maxX;
-    x2 = minX;
-    if (newTriangle.p()[0] == minX)
-        y2 = newTriangle.p()[1];
-    else if (newTriangle.p()[0] == maxX)
-        y1 = newTriangle.p()[1];
-    else {
-        x3 = newTriangle.p()[0];
-        y3 = newTriangle.p()[1];
-    }
-
-    if (newTriangle.q()[0] == minX)
-        y2 = newTriangle.q()[1];
-    else if (newTriangle.q()[0] == maxX)
-        y1 = newTriangle.q()[1];
-    else {
-        x3 = newTriangle.q()[0];
-        y3 = newTriangle.q()[1];
-    }
-
-    if (newTriangle.r()[0] == minX)
-        y2 = newTriangle.r()[1];
-    else if (newTriangle.r()[0] == maxX)
-        y1 = newTriangle.r()[1];
-    else {
-        x3 = newTriangle.r()[0];
-        y3 = newTriangle.r()[1];
-    }
+    x1 = rightMost[0], y1 = rightMost[1];
+    x2 = leftMost[0], y2 = leftMost[1];
+    x3 = middle[0], y3 = middle[1];
 
 //    std::cout<<"x[1]:="<<x1<<";y[1]:="<<y1<<";"<<std::endl;
 //    std::cout<<"x[2]:="<<x2<<";y[2]:="<<y2<<";"<<std::endl;

@@ -71,6 +71,32 @@ Vector3d Triangle::center() const
     return _center;
 }
 
+Vector3d Triangle::leftMost() const {
+    Vector3d result = _p;
+    if (_q[0] <= result[0] && _q[1] <= result[1])
+        result = _q;
+    if (_r[0] <= result[0] && _r[1] <= result[1])
+        result = _r;
+    return result;
+}
+
+Vector3d Triangle::rightMost() const {
+    Vector3d result = _p;
+    if (_q[0] >= result[0] && _q[1] >= result[1])
+        result = _q;
+    if (_r[0] >= result[0] && _r[1] >= result[1])
+        result = _r;
+    return result;
+}
+
+Vector3d Triangle::middle() const {
+    if (_p != leftMost() && _p != rightMost())
+        return _p;
+    if (_q != leftMost() && _q != rightMost())
+        return _q;
+    if (_r != leftMost() && _r != rightMost())
+        return _r;
+}
 
 Plane::Plane(Vector3d &origin, Vector3d &norm)
 {

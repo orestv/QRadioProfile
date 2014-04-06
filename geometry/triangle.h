@@ -23,6 +23,10 @@ public:
     Vector3d v0() const;
     Vector3d v1() const;
 
+    Vector3d leftMost() const;
+    Vector3d rightMost() const;
+    Vector3d middle() const;
+
     Vector3d faceNormal() const;
     Vector3d center() const;
 
