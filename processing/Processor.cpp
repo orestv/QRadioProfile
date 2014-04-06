@@ -333,7 +333,7 @@ Processor::isTriangleVisible(
 
 
 //    std::cout<<"Dot: "<<dot<<std::endl;
-    if (dot <= 0 || isnan(dot))
+    if (dot <= 0 || std::isnan(dot))
         return false;
 
     return true;
@@ -438,7 +438,7 @@ Processor::getE0(
             (-xc*x2 + xc*x1 - yc*y2 + yc*y1) *
             (xc*x2 - xc*x3 + yc*y2 - yc*y3)*M_PI*M_PI;
 //    std::cout<<result<<std::endl;
-    if (isnan(result.real()) || isnan(result.imag())) {
+    if (std::isnan(result.real()) || std::isnan(result.imag())) {
         std::cout<<"Result is NAN in getE0!"<<std::endl;
     }
     return result;
@@ -512,7 +512,7 @@ Processor::getCoordinatesTransformationMatrix(
     Vector3d Y = projectOntoPlane(OY, triangle.faceNormal()).normalized();
 //    std::cout<<"Triangle face normal: "<<triangle.faceNormal()<<std::endl;
 
-    if (Y.squaredNorm() == 0 || isnan(Y.squaredNorm())) { //triangle is horizontal; picking random direction
+    if (Y.squaredNorm() == 0 || std::isnan(Y.squaredNorm())) { //triangle is horizontal; picking random direction
         Y << 1, 0, 0;
     }
 
