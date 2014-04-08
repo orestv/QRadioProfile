@@ -9,7 +9,9 @@ DEFINES += DEBUG_OUTPUT
 
 TEMPLATE = app
 
-LIBS += -lgsl -lgslcblas -lm
+LIBS += -L"C:\\Program Files\\GnuWin32\\bin" -lgsl -L"C:\\Program Files\\GnuWin32\\bin" -lgslcblas -lm
+
+INCLUDEPATH += C:\\ "C:\\Program Files\\GnuWin32\\include"
 
 SOURCES += main.cpp \
     geometry/RightTriangle.cpp \
