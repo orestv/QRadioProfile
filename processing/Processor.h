@@ -23,6 +23,24 @@ public:
         double wavelength;
     };
 
+    struct E0_CALCULATION_RESULT {
+        std::complex<double> e;
+        std::complex<double> e1;
+        std::complex<double> e2;
+        std::complex<double> e3;
+        std::complex<double> e4;
+        std::complex<double> e5;
+        Triangle newTriangle;
+        Eigen::Matrix3d newBasis;
+        Eigen::Vector3d newViewpoint;
+        double x1, y1, x2, y2, x3, y3;
+    };
+
+    struct SIGMA_CALCULATION_RESULT {
+        E0_CALCULATION_RESULT e;
+        double sigma;
+    };
+
     struct PARAMS {
         double viewpointHeight;
         double viewpointDistance;
@@ -36,11 +54,6 @@ public:
         double azimuth;
         std::complex<double> eComplex;
         double E;
-    };
-
-    struct LOCAL_CALCULATION_RESULT {
-        double E;
-
     };
     
     struct VIEWPOINT_SUMS {
@@ -61,7 +74,7 @@ public:
     static std::complex<double> getE(const Vector3d &viewPoint, QList<Triangle> &model, const double wavelength);
     static std::complex<double> getE0(const Vector3d &viewpoint, const Triangle &triangle, const double wavelength);
     static bool isTriangleVisible(const Triangle &triangle, const QList<Triangle> &model, const Vector3d &viewPoint);
-    static double getSigma(const Vector3d &observationPoint, const Triangle &triangle, const double wavelength);
+    static double getSigma(const Vector3d &observationPoint, const Triangle &triangle, const double R, const double wavelength);
     static long double getU(const Vector3d &observationPoint, const Triangle &triangle, const double wavelength);
     static Eigen::Matrix3d getCoordinatesTransformationMatrix(const Triangle &triangle);
     static Eigen::Vector3d switchCoordinates(const Vector3d &vector, const Eigen::Matrix3d &matrix, const Eigen::Vector3d &dCenter);

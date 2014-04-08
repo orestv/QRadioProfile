@@ -278,12 +278,13 @@ Processor::getE(
         QList<Triangle> &model,
         const double wavelength) {
 
-//    qDebug()<<"GetE invoked";
-
     double k = 2*M_PI / wavelength;
     std::complex<double> e;
 
-//    std::cout<<"Viewpoint: "<<viewPoint<<std::endl<<std::endl;
+#ifdef DEBUG_OUTPUT
+    std::cout<<"Wavelength = "<<wavelength<<std::endl;
+    std::cout<<"k = "<<k<<std::endl;
+#endif
 
     int i = 0;
     double sum_cos = 0, sum_sin = 0;
@@ -300,27 +301,37 @@ Processor::getE(
             qDebug()<<"Processing triangle "<<i<<"out of "<<model.count();
 
         double R = (eViewpoint - triangle->center()).norm();
-
-        double SR = getSigma(eViewpoint, *triangle, wavelength) / R;
-
-//        std::cout<<"Sr = "<<SR<<std::endl;
-
-//        std::cout<<"cos(kR) = "<<cos(k*R)<<", sin(kR) = "<<sin(k*R)<<std::endl;
+#ifdef DEBUG_OUTPUT
+        std::cout<<"Processing triangle"<<std::endl<<
+                   triangle->p()<<std::endl<<std::endl<<
+                   triangle->q()<<std::endl<<std::endl<<
+                   triangle->r()<<std::endl<<std::endl;
+        std::cout<<"R = "<<R<<std::endl;
+#endif
+        double sigma = getSigma(eViewpoint, *triangle, R, wavelength);
+        double SR = sigma / pow(R, 2);
 
         sum_cos += SR * cos(k*R);
         sum_sin += SR * sin(k*R);
 
+#ifdef DEBUG_OUTPUT
+        std::cout<<"sigma = "<<sigma<<std::endl;
+        std::cout<<"k*R = "<<k*R<<std::endl;
+        std::cout<<"sin(k*R) = "<<sin(k*R)<<std::endl;
+        std::cout<<"cos(k*R) = "<<cos(k*R)<<std::endl;
+        std::cout<<"sigma*cos(k*R)/(R^2) = "<<SR*cos(k*R)<<std::endl;
+        std::cout<<"sigma*sin(k*R)/(R^2) = "<<SR*sin(k*R)<<std::endl;
+        std::cout<<"sum_cos = "<<sum_cos<<std::endl;
+        std::cout<<"sum_sin = "<<sum_sin<<std::endl;
+#endif
 
-//        std::cout<<"sum_cos: "<<sum_cos<<", sum_sin: "<<sum_sin<<std::endl;
         if (std::isnan(sum_cos) || std::isnan(sum_sin)) {
             std::cout<<"NAN processing triangle "<<std::endl;
         }
         std::cout<<std::endl<<std::endl;
     }
 
-//    std::cout<<"sum_cos: "<<sum_cos<<", sum_sin: "<<sum_sin<<std::endl;
     return std::complex<double>(sum_cos, sum_sin);
-//    return sqrt(pow(sum_cos, 2) + pow(sum_sin, 2));
 }
 
 bool
@@ -341,22 +352,22 @@ Processor::isTriangleVisible(
     if (dot <= 0 || std::isnan(dot))
         return false;
 
-    return true;
+    return true;\
 }
 
 double
 Processor::getSigma(
         const Vector3d &observationPoint,
         const Triangle &triangle,
+        const double R,
         const double wavelength) {
 
     std::complex<double> E0 = Processor::getE0(observationPoint, triangle, wavelength);
-//    std::cout<<"E0 = "<<E0<<std::endl;
     if (std::isnan(E0.real()) || std::isnan(E0.imag())) {
         std::cout<<"IsNAN in getSigma!"<<std::endl;
     }
     E0 /= wavelength;
-    return 2*sqrt(M_PI)*std::abs(E0);
+    return 2*sqrt(M_PI)*R*std::abs(E0);
 }
 
 std::complex<double>
@@ -405,25 +416,44 @@ Processor::getE0(
 
 //    std::cout<<"x[c]:="<<xc<<";y[c]:="<<yc<<";z:="<<zc<<";"<<std::endl;
 
-    std::complex<double> result = (-x3*y2 - y1*x2 + y1*x3 + x1*y2 + y3*x2 - x1*y3);
-
-//    std::cout<<"1: "<<result<<std::endl;
-
-    result *= std::exp(std::complex<double>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc))) *
-                (-xc*x3 + xc*x1 - yc*y3 + yc*y1) -
-            std::exp(std::complex<double>(0, -2*M_PI*(xc*x3 + yc*y3)/(wavelength*zc)))*
-                (-xc*x2 + xc*x1 - yc*y2 + yc*y1) -
-            std::exp(std::complex<double>(0, -2*M_PI*(xc*x1 + yc*y1)/(wavelength*zc)))*
-                (xc*x2 - xc*x3 + yc*y2 - yc*y3);
-//    std::cout<<"2: "<<result<<std::endl;
-    result *= zc*zc*wavelength*wavelength;
-//    std::cout<<"3: "<<result<<std::endl;
-    result /= -4;
-//    std::cout<<"4: "<<result<<std::endl;
-    result /= (-xc*x3 + xc*x1 - yc*y3 + yc*y1) *
+    std::complex<double> e1 = (-x3*y2 - y1*x2 + y1*x3 + x1*y2 + y3*x2 - x1*y3);
+    std::complex<double> e2 = std::exp(std::complex<double>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc))) *
+            (-xc*x3 + xc*x1 - yc*y3 + yc*y1);
+    std::complex<double> e3 = std::exp(std::complex<double>(0, -2*M_PI*(xc*x3 + yc*y3)/(wavelength*zc)))*
+            (-xc*x2 + xc*x1 - yc*y2 + yc*y1);
+    std::complex<double> e4 = std::exp(std::complex<double>(0, -2*M_PI*(xc*x1 + yc*y1)/(wavelength*zc)))*
+            (xc*x2 - xc*x3 + yc*y2 - yc*y3);
+    double e5 = zc*zc*wavelength*wavelength;
+    double e6 = -4*(-xc*x3 + xc*x1 - yc*y3 + yc*y1) *
             (-xc*x2 + xc*x1 - yc*y2 + yc*y1) *
             (xc*x2 - xc*x3 + yc*y2 - yc*y3)*M_PI*M_PI;
-//    std::cout<<"5: "<<result<<std::endl;
+
+    std::complex<double> result = e1 * (e2 - e3 - e4) * e5 / e6;
+
+#ifdef DEBUG_OUTPUT
+    std::cout<<"New basis: "<<std::endl<<
+               basis<<std::endl<<std::endl;
+    std::cout<<"Triangle vertices in local coordinates:"<<std::endl<<
+               newTriangle.p()<<std::endl<<std::endl<<
+               newTriangle.q()<<std::endl<<std::endl<<
+               newTriangle.r()<<std::endl<<std::endl;
+    std::cout<<"Triangle centroid in local coordinates:"<<std::endl<<
+               newTriangle.center()<<std::endl<<std::endl;
+    std::cout<<"Viewpoint in local coordinates: "<<std::endl<<
+               newViewpoint<<std::endl<<std::endl;
+    std::cout<<"x1, y1 = "<<x1<<"\t"<<y1<<std::endl;
+    std::cout<<"x2, y2 = "<<x2<<"\t"<<y2<<std::endl;
+    std::cout<<"x3, y3 = "<<x3<<"\t"<<y3<<std::endl<<std::endl;
+
+    std::cout<<"E0 = "<<result<<std::endl;
+    std::cout<<"e1 =\t"<<e1<<std::endl;
+    std::cout<<"e2 =\t"<<e2<<std::endl;
+    std::cout<<"e3 =\t"<<e3<<std::endl;
+    std::cout<<"e4 =\t"<<e4<<std::endl;
+    std::cout<<"e5 =\t"<<e5<<std::endl;
+    std::cout<<"e6 =\t"<<e6<<std::endl;
+#endif
+
     if (std::isnan(result.real()) || std::isnan(result.imag())) {
         std::cout<<"Result is NAN in getE0!"<<std::endl;
     }

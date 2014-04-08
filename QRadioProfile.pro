@@ -5,6 +5,8 @@ CONFIG   += app_bundle
 
 QMAKE_CXXFLAGS = -std=c++0x
 
+DEFINES += DEBUG_OUTPUT
+
 TEMPLATE = app
 
 LIBS += -lgsl -lgslcblas -lm
