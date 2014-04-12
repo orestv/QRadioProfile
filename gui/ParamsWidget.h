@@ -22,12 +22,12 @@ public:
     struct CALCULATION_PARAMS {
         QString inputPath;
         QString resultPath;
-        double viewpointHeight;
-        double viewpointDistance;
-        double viewpointRotationStep;       //degrees
-        double viewpointStartAngle;
-        double viewpointEndAngle;
-        double frequency;                   //GHz
+        long double viewpointHeight;
+        long double viewpointDistance;
+        long double viewpointRotationStep;       //degrees
+        long double viewpointStartAngle;
+        long double viewpointEndAngle;
+        long double frequency;                   //GHz
     };    
     
     ParamsWidget();

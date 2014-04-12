@@ -5,13 +5,9 @@ CONFIG   += app_bundle console
 
 QMAKE_CXXFLAGS = -std=c++0x
 
-DEFINES += DEBUG_OUTPUT
+DEFINES -= DEBUG_OUTPUT
 
 TEMPLATE = app
-
-LIBS += -L"C:\\Program Files\\GnuWin32\\bin" -lgsl -L"C:\\Program Files\\GnuWin32\\bin" -lgslcblas -lm
-
-INCLUDEPATH += C:\\ "C:\\Program Files\\GnuWin32\\include"
 
 SOURCES += main.cpp \
     geometry/RightTriangle.cpp \
@@ -22,8 +18,7 @@ SOURCES += main.cpp \
     processing/ProcessParams.cpp \
     processing/Processor.cpp \
     processing/CalculationThread.cpp \
-    geometry/triangle.cpp \
-    processing/ecalculator.cpp
+    geometry/triangle.cpp
 
 HEADERS += \
     geometry/RightTriangle.h \
@@ -35,6 +30,5 @@ HEADERS += \
     processing/Processor.h \
     processing/CalculationThread.h \
     geometry/triangle.h \
-    processing/ICalculator.h \
-    processing/ecalculator.h
+    geometry/mmatrix.h
 

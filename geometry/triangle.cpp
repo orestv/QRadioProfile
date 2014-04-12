@@ -10,7 +10,7 @@ Triangle::Triangle(QVector3D &p, QVector3D &q, QVector3D &r) {
     init();
 }
 
-Triangle::Triangle(Vector3d &p, Vector3d &q, Vector3d &r) {
+Triangle::Triangle(MVector &p, MVector &q, MVector &r) {
     _p = p;
     _q = q;
     _r = r;
@@ -38,41 +38,41 @@ void Triangle::init() {
     _v1 = _q - _p;
 }
 
-Vector3d Triangle::p() const
+MVector Triangle::p() const
 {
     return _p;
 }
 
-Vector3d Triangle::q() const
+MVector Triangle::q() const
 {
     return _q;
 }
 
-Vector3d Triangle::r() const
+MVector Triangle::r() const
 {
     return _r;
 }
 
-Vector3d Triangle::v0() const {
+MVector Triangle::v0() const {
     return _v0;
 }
 
-Vector3d Triangle::v1() const {
+MVector Triangle::v1() const {
     return _v1;
 }
 
-Vector3d Triangle::faceNormal() const
+MVector Triangle::faceNormal() const
 {
     return _faceNormal;
 }
 
-Vector3d Triangle::center() const
+MVector Triangle::center() const
 {
     return _center;
 }
 
-Vector3d Triangle::leftMost() const {
-    Vector3d result = _p;
+MVector Triangle::leftMost() const {
+    MVector result = _p;
     if (_q[0] <= result[0])
         if (_q[0] < result[0] || _q[1] <= result[1])
             result = _q;
@@ -82,8 +82,8 @@ Vector3d Triangle::leftMost() const {
     return result;
 }
 
-Vector3d Triangle::rightMost() const {
-    Vector3d result = _p;
+MVector Triangle::rightMost() const {
+    MVector result = _p;
     if (_q[0] >= result[0])
         if (_q[0] > result[0] || _q[1] >= result[1])
             result = _q;
@@ -93,7 +93,7 @@ Vector3d Triangle::rightMost() const {
     return result;
 }
 
-Vector3d Triangle::middle() const {
+MVector Triangle::middle() const {
     if (_p != leftMost() && _p != rightMost())
         return _p;
     if (_q != leftMost() && _q != rightMost())
@@ -102,7 +102,7 @@ Vector3d Triangle::middle() const {
         return _r;
 }
 
-Plane::Plane(Vector3d &origin, Vector3d &norm)
+Plane::Plane(MVector &origin, MVector &norm)
 {
     _origin = origin;
     _norm = norm;
@@ -113,10 +113,10 @@ Plane::Plane(const Plane &other) {
     _norm = other._norm;
 }
 
-Vector3d Plane::normal() const {
+MVector Plane::normal() const {
     return _norm;
 }
 
-Vector3d Plane::origin() const {
+MVector Plane::origin() const {
     return _origin;
 }

@@ -10,9 +10,9 @@
 #include "gui/MainWindow.h"
 #include <QDebug>
 
-QList<double> convertToDoubles(QString &sourceString) {
+QList<long double> convertToDoubles(QString &sourceString) {
     auto coords = sourceString.remove("(").remove(")").split(";");
-    QList<double> values;
+    QList<long double> values;
     bool ok;
     for (auto s = coords.begin(); s != coords.end(); s++) {
         values<<s->toDouble(&ok);
@@ -26,11 +26,11 @@ QList<double> convertToDoubles(QString &sourceString) {
 }
 
 Triangle getTriangle(QString &sourceString) {
-    QList<Vector3d> vectors;
+    QList<MVector> vectors;
     QList<QString> vertices = sourceString.split(",");
     for (auto vertexString = vertices.begin(); vertexString != vertices.end(); vertexString++) {
-        QList<double> values = convertToDoubles(*vertexString);
-        Vector3d vertex;
+        QList<long double> values = convertToDoubles(*vertexString);
+        MVector vertex;
         vertex<<values[0], values[1], values[2];
         vectors.push_back(vertex);
     }
@@ -38,19 +38,19 @@ Triangle getTriangle(QString &sourceString) {
     return Triangle(vectors[0], vectors[1], vectors[2]);
 }
 
-Vector3d getViewpoint(QString &sourceString) {
+MVector getViewpoint(QString &sourceString) {
     qDebug()<<sourceString;
-    Vector3d result;
-    QList<double> values = convertToDoubles(sourceString);
+    MVector result;
+    QList<long double> values = convertToDoubles(sourceString);
     if (values.length() != 3)
-        throw QString("Error converting " + sourceString + " into a vector");
+        throw QString("Error converting " + sourceString + " into a MVector");
     result<<values[0], values[1], values[2];
     return result;
 }
 
-void printVector(const Vector3d &vector) {
+void printVector(const MVector &MVector) {
     for (int i = 0; i < 3; i++)
-        std::cout<<vector.data()[i]<<"\t";
+        std::cout<<MVector.data()[i]<<"\t";
     std::cout<<std::endl;
 }
 
@@ -82,8 +82,8 @@ int main(int argc, char *argv[]) {
     QString optFrequency = args[3];
 
     Triangle globalTriangle;
-    Vector3d globalViewpoint;
-    double frequency;
+    MVector globalViewpoint;
+    long double frequency;
 
     try {
         globalTriangle = getTriangle(optTriangle);
@@ -94,12 +94,14 @@ int main(int argc, char *argv[]) {
         qDebug()<<"Виникла помилка:"<<error;
         return 0;
     }
-    double wavelength = Processor::LIGHTSPEED / frequency;
+    long double wavelength = Processor::LIGHTSPEED / (frequency * pow(10, 9));
     if (!Processor::isTriangleVisible(globalTriangle, QList<Triangle>(), globalViewpoint)) {
         std::cout<<"Triangle is invisible from this viewpoint, exiting..."<<std::endl;
         return 0;
     }
 
-    std::complex<double> e = Processor::getE0(globalViewpoint, globalTriangle, wavelength);
+    QList<Triangle> model;
+    model.push_back(globalTriangle);
+    std::complex<long double> e = Processor::getE(globalViewpoint, model, wavelength);
 #endif
 }
