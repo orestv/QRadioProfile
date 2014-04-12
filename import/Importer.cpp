@@ -75,7 +75,7 @@ QVector3D Importer::_parse_vertex_line(QByteArray line) {
     line = line.trimmed();
     QList<QByteArray> coordinates = line.split(' ');
     auto iter = coordinates.begin();
-    double x, y, z;
+    long double x, y, z;
     x = (*iter).toDouble();iter++;
     y = (*iter).toDouble();iter++;
     z = (*iter).toDouble();iter++;
@@ -162,8 +162,8 @@ bool Importer::_isTriangleAdequate(QVector3D &p, QVector3D &q, QVector3D &r) {
     if (p == q || q == r || p == r)
         return false;
 
-    double min_length = 0.01;
-    double max_cos = 0.95;
+    long double min_length = 0.01;
+    long double max_cos = 0.95;
 
     if ((p-q).lengthSquared() < min_length ||
             (q-r).lengthSquared() < min_length ||
@@ -201,7 +201,7 @@ QList<RightTriangle> Importer::generateRightTriangles(QList<QVector3D> triangle)
     QVector<QVector3D> t = triangle.toVector();
     QList<RightTriangle> result;
     int side_indices[][3] = { {0, 1, 2}, {1, 2, 0}, {2, 0, 1} };
-    double max_length = 0;
+    long double max_length = 0;
     int max_length_index = -1;
     for (int i = 0; i < 3; i++) {
         int *side_i = side_indices[i];
@@ -256,10 +256,10 @@ void Importer::exportToFile(
     strm.setCodec("UTF-8");
     strm<<QString::fromUtf8("Азимут;Е;cos(φ);sin(φ)\n");
     for (auto result = results.begin(); result != results.end(); result++) {
-        strm<<QString::number(result->azimuth, 'f')<<";"
-                <<QString::number(result->E, 'f')<<";"
-                <<QString::number(result->eComplex.real(), 'f')<<";"
-                <<QString::number(result->eComplex.imag(), 'f')
+        strm<<QString::number(result->azimuth, 'f', 15)<<";"
+                <<QString::number(result->E, 'f', 15)<<";"
+                <<QString::number(result->eComplex.real(), 'f', 15)<<";"
+                <<QString::number(result->eComplex.imag(), 'f', 15)
                 <<"\n";
     }
     

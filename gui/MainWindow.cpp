@@ -106,10 +106,8 @@ void MainWindow::beginCalculation() {
         QMessageBox::critical(this, tr("Помилка"), tr("Не вдалось відкрити файл моделі!"));
         return;
     }
-    qDebug()<<calculationParams.viewpointStartAngle<<calculationParams.viewpointEndAngle<<calculationParams.viewpointRotationStep;
     int iterations = (calculationParams.viewpointEndAngle - calculationParams.viewpointStartAngle) /
             calculationParams.viewpointRotationStep + 1;
-    qDebug()<<"Number of iterations: "<<iterations;
     _progressBar->setValue(0);
     _progressBar->setMaximum(iterations);
     _calculationThread = new CalculationThread(this, calculationParams, model);

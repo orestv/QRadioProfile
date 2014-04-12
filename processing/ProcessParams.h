@@ -17,7 +17,7 @@ public:
     virtual ~ProcessParams();
 private:
     
-    double _wavelength;
+    long double _wavelength;
     QVector3D _viewpoint;
     
 

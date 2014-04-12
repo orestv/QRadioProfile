@@ -5,11 +5,9 @@ CONFIG   += app_bundle
 
 QMAKE_CXXFLAGS = -std=c++0x
 
-DEFINES += DEBUG_OUTPUT
+DEFINES -= DEBUG_OUTPUT
 
 TEMPLATE = app
-
-LIBS += -lgsl -lgslcblas -lm
 
 SOURCES += main.cpp \
     geometry/RightTriangle.cpp \
@@ -20,8 +18,7 @@ SOURCES += main.cpp \
     processing/ProcessParams.cpp \
     processing/Processor.cpp \
     processing/CalculationThread.cpp \
-    geometry/triangle.cpp \
-    processing/ecalculator.cpp
+    geometry/triangle.cpp
 
 HEADERS += \
     geometry/RightTriangle.h \
@@ -33,6 +30,5 @@ HEADERS += \
     processing/Processor.h \
     processing/CalculationThread.h \
     geometry/triangle.h \
-    processing/ICalculator.h \
-    processing/ecalculator.h
+    geometry/mmatrix.h
 

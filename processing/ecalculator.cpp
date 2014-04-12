@@ -12,32 +12,32 @@ using namespace std;
 
 #include <QDebug>
 
-ECalculator::ECalculator(const Vector3d &viewpoint,
+ECalculator::ECalculator(const MVector &viewpoint,
         const Triangle &triangle,
-        double wavelength) {
+        long double wavelength) {
 
     this->_viewpoint = viewpoint;
     this->_triangle = triangle;
     this->_wavelength = wavelength;
 }
 
-bool planeContains(const Plane &plane, const Vector3d &point) {
-    Vector3d planeVector = point - plane.origin();
+bool planeContains(const Plane &plane, const MVector &point) {
+    MVector planeVector = point - plane.origin();
     planeVector.normalize();
     return plane.normal().dot(planeVector) == 0;
 }
 
-float sign(const Vector3d &p1, const Vector3d &p2, const Vector3d &p3)
+float sign(const MVector &p1, const MVector &p2, const MVector &p3)
 {
   return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1]);
 }
 
 bool
 PointInTriangle(
-        const Vector3d &pt,
-        const Vector3d &v1,
-        const Vector3d &v2,
-        const Vector3d &v3)
+        const MVector &pt,
+        const MVector &v1,
+        const MVector &v2,
+        const MVector &v3)
 {
   bool b1, b2, b3;
 
@@ -49,86 +49,86 @@ PointInTriangle(
 }
 
 
-bool triangleContains(const Triangle &triangle, const Vector3d &point) {
+bool triangleContains(const Triangle &triangle, const MVector &point) {
     return PointInTriangle(point, triangle.p(), triangle.q(), triangle.r());
 //    if (!planeContains(triangle.plane(), point))
 //        return false;
-//    Vector3d v0 = triangle.r() - triangle.p(),
+//    MVector v0 = triangle.r() - triangle.p(),
 //            v1 = triangle.q() - triangle.p(),
 //            v2 = point - triangle.p();
-    Vector3d v0 = triangle.r() - triangle.p(),
+    MVector v0 = triangle.r() - triangle.p(),
             v1 = triangle.q() - triangle.p(),
             v2 = point - triangle.p();
 
-    double dot00 = v0.dot(v0);
-    double dot01 = v0.dot(v1);
-    double dot02 = v0.dot(v2);
-    double dot11 = v1.dot(v1);
-    double dot12 = v1.dot(v2);
+    long double dot00 = v0.dot(v0);
+    long double dot01 = v0.dot(v1);
+    long double dot02 = v0.dot(v2);
+    long double dot11 = v1.dot(v1);
+    long double dot12 = v1.dot(v2);
 
-    double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-    double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-    double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+    long double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+    long double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+    long double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
     return (u >= 0) && (v >= 0) && (u + v < 1);
 }
 
-double calculateSin(double *k, size_t dim, void *params) {
+long double calculateSin(long double *k, size_t dim, void *params) {
     ECalculator::PARAMS *calcParams = (ECalculator::PARAMS*)params;
     const Triangle *_triangle = calcParams->triangle;
-    const Vector3d *_viewpoint = calcParams->viewpoint;
-    double _wavelength = calcParams->wavelength;
+    const MVector *_viewpoint = calcParams->viewpoint;
+    long double _wavelength = calcParams->wavelength;
 
-    Vector3d point;
+    MVector point;
     point<<k[0], k[1], 0;
     if (!triangleContains(*_triangle, point))
         return 0;
 
-    double x = k[0], y = k[1];
-    double X = (*_viewpoint)[0], Y = (*_viewpoint)[1], Z = (*_viewpoint)[2];
+    long double x = k[0], y = k[1];
+    long double X = (*_viewpoint)[0], Y = (*_viewpoint)[1], Z = (*_viewpoint)[2];
 
-    double result = 2*M_PI*(X*x + Y*y)/(_wavelength*Z);
+    long double result = 2*M_PI*(X*x + Y*y)/(_wavelength*Z);
     return sin(result);
 }
 
-double calculateCos(double *k, size_t dim, void *params) {
+long double calculateCos(long double *k, size_t dim, void *params) {
     ECalculator::PARAMS *calcParams = (ECalculator::PARAMS*)params;
     const Triangle *_triangle = calcParams->triangle;
-    const Vector3d *_viewpoint = calcParams->viewpoint;
-    double _wavelength = calcParams->wavelength;
+    const MVector *_viewpoint = calcParams->viewpoint;
+    long double _wavelength = calcParams->wavelength;
 
-    Vector3d point;
+    MVector point;
     point<<k[0], k[1], 0;
     if (!triangleContains(*_triangle, point))
         return 0;
 
-    double x = k[0], y = k[1];
-    double X = (*_viewpoint)[0], Y = (*_viewpoint)[1], Z = (*_viewpoint)[2];
+    long double x = k[0], y = k[1];
+    long double X = (*_viewpoint)[0], Y = (*_viewpoint)[1], Z = (*_viewpoint)[2];
 
-    double result = 2*M_PI*(X*x + Y*y)/(_wavelength*Z);
+    long double result = 2*M_PI*(X*x + Y*y)/(_wavelength*Z);
     return cos(result);
 }
 
-std::complex<double>
+std::complex<long double>
 ECalculator::calculateIntegral() const {
 
 //    qDebug()<<"Calculating integral over "<<_triangle.p()<<_triangle.q()<<_triangle.r();
 
-    std::complex<double> result;
+    std::complex<long double> result;
 
     Eigen::Vector2d lowerBounds, upperBounds;
     lowerBounds = getLowerLeftBounds();
     upperBounds = getUpperRightBounds();
 
-    double xl[2] = {lowerBounds[0], lowerBounds[1]};
-    double xu[2] = {upperBounds[0], upperBounds[1]};
+    long double xl[2] = {lowerBounds[0], lowerBounds[1]};
+    long double xu[2] = {upperBounds[0], upperBounds[1]};
 
 //    cout<<"Triangle: "<<_triangle.p()<<endl<<_triangle.q()<<endl<<_triangle.r()<<endl;
 
-//    cout<<"Upper bounds:"<<upperBounds<<endl;
+/    cout<<"Upper bounds:"<<upperBounds<<endl;
 //    cout<<"Lower bounds:"<<lowerBounds<<endl;
 
-    double res_sin, res_cos, rerr;
+    long double res_sin, res_cos, rerr;
 
     PARAMS params = {&_triangle, &_viewpoint, _wavelength};
 

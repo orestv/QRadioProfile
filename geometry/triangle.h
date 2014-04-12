@@ -5,6 +5,8 @@
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 
+#include "geometry/mmatrix.h"
+
 using namespace Eigen;
 
 class Triangle
@@ -12,48 +14,48 @@ class Triangle
 public:
     Triangle() {};
     Triangle(QVector3D &p, QVector3D &q, QVector3D &r);
-    Triangle(Vector3d &p, Vector3d &q, Vector3d &r);
+    Triangle(MVector &p, MVector &q, MVector &r);
 
     Triangle(const Triangle &other);
 
-    Vector3d p() const;
-    Vector3d q() const;
-    Vector3d r() const;
+    MVector p() const;
+    MVector q() const;
+    MVector r() const;
 
-    Vector3d v0() const;
-    Vector3d v1() const;
+    MVector v0() const;
+    MVector v1() const;
 
-    Vector3d leftMost() const;
-    Vector3d rightMost() const;
-    Vector3d middle() const;
+    MVector leftMost() const;
+    MVector rightMost() const;
+    MVector middle() const;
 
-    Vector3d faceNormal() const;
-    Vector3d center() const;
+    MVector faceNormal() const;
+    MVector center() const;
 
 private:
     void init();
 
-    Vector3d _p;
-    Vector3d _q;
-    Vector3d _r;
+    MVector _p;
+    MVector _q;
+    MVector _r;
 
-    Vector3d _v0, _v1;
+    MVector _v0, _v1;
 
-    Vector3d _faceNormal;
-    Vector3d _center;
+    MVector _faceNormal;
+    MVector _center;
 };
 
 class Plane {
 public:
-    Plane(Vector3d &origin, Vector3d &norm);
+    Plane(MVector &origin, MVector &norm);
     Plane(const Plane &other);
 
-    Vector3d origin() const;
-    Vector3d normal() const;
+    MVector origin() const;
+    MVector normal() const;
 
 private:
-    Vector3d _origin;
-    Vector3d _norm;
+    MVector _origin;
+    MVector _norm;
 };
 
 #endif // TRIANGLE_H
