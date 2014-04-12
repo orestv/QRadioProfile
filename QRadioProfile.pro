@@ -1,7 +1,7 @@
 QT       += core gui widgets
 
 TARGET = RadioProfile
-CONFIG   += app_bundle
+CONFIG   += app_bundle console
 
 QMAKE_CXXFLAGS = -std=c++0x
 
