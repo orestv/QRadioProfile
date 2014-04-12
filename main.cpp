@@ -94,12 +94,14 @@ int main(int argc, char *argv[]) {
         qDebug()<<"Виникла помилка:"<<error;
         return 0;
     }
-    double wavelength = Processor::LIGHTSPEED / frequency;
+    double wavelength = Processor::LIGHTSPEED / (frequency * pow(10, 9));
     if (!Processor::isTriangleVisible(globalTriangle, QList<Triangle>(), globalViewpoint)) {
         std::cout<<"Triangle is invisible from this viewpoint, exiting..."<<std::endl;
         return 0;
     }
 
-    std::complex<double> e = Processor::getE0(globalViewpoint, globalTriangle, wavelength);
+    QList<Triangle> model;
+    model.push_back(globalTriangle);
+    std::complex<double> e = Processor::getE(globalViewpoint, model, wavelength);
 #endif
 }

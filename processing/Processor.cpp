@@ -417,8 +417,11 @@ Processor::getE0(
 //    std::cout<<"x[c]:="<<xc<<";y[c]:="<<yc<<";z:="<<zc<<";"<<std::endl;
 
     std::complex<double> e1 = (-x3*y2 - y1*x2 + y1*x3 + x1*y2 + y3*x2 - x1*y3);
-    std::complex<double> e2 = std::exp(std::complex<double>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc))) *
-            (-xc*x3 + xc*x1 - yc*y3 + yc*y1);
+//    std::complex<double> e2 = std::exp(std::complex<double>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc))) *
+//            (-xc*x3 + xc*x1 - yc*y3 + yc*y1);
+    std::complex<double> e2_1 = (-xc*x3 + xc*x1 - yc*y3 + yc*y1);
+    std::complex<double> e2_2 = std::exp(std::complex<double>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc)));
+    std::complex<double> e2 = e2_1 * e2_2;
     std::complex<double> e3 = std::exp(std::complex<double>(0, -2*M_PI*(xc*x3 + yc*y3)/(wavelength*zc)))*
             (-xc*x2 + xc*x1 - yc*y2 + yc*y1);
     std::complex<double> e4 = std::exp(std::complex<double>(0, -2*M_PI*(xc*x1 + yc*y1)/(wavelength*zc)))*
@@ -439,15 +442,19 @@ Processor::getE0(
                newTriangle.r()<<std::endl<<std::endl;
     std::cout<<"Triangle centroid in local coordinates:"<<std::endl<<
                newTriangle.center()<<std::endl<<std::endl;
-    std::cout<<"Viewpoint in local coordinates: "<<std::endl<<
-               newViewpoint<<std::endl<<std::endl;
-    std::cout<<"x1, y1 = "<<x1<<"\t"<<y1<<std::endl;
-    std::cout<<"x2, y2 = "<<x2<<"\t"<<y2<<std::endl;
-    std::cout<<"x3, y3 = "<<x3<<"\t"<<y3<<std::endl<<std::endl;
+//    std::cout<<"Viewpoint in local coordinates: "<<std::endl<<
+//               newViewpoint<<std::endl<<std::endl;
+    std::cout.precision(15);
+    std::cout<<"x[1]:="<<x1<<";\ty[1]:="<<y1<<";"<<std::endl;
+    std::cout<<"x[2]:="<<x2<<";\ty[2]:="<<y2<<";"<<std::endl;
+    std::cout<<"x[3]:="<<x3<<";\ty[3]:="<<y3<<";"<<std::endl<<std::endl;
+    std::cout<<"x[c]:="<<newViewpoint[0]<<";"<<std::endl;
+    std::cout<<"y[c]:="<<newViewpoint[1]<<";"<<std::endl;
+    std::cout<<"z[c]:="<<newViewpoint[2]<<";"<<std::endl<<std::endl;
 
     std::cout<<"E0 = "<<result<<std::endl;
     std::cout<<"e1 =\t"<<e1<<std::endl;
-    std::cout<<"e2 =\t"<<e2<<std::endl;
+    std::cout<<"e2 = \t"<<e2<<std::endl;
     std::cout<<"e3 =\t"<<e3<<std::endl;
     std::cout<<"e4 =\t"<<e4<<std::endl;
     std::cout<<"e5 =\t"<<e5<<std::endl;
