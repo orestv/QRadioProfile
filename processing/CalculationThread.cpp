@@ -25,9 +25,7 @@ void CalculationThread::run() {
     long double wavelength = Processor::LIGHTSPEED / _params.frequency;
     std::cout<<"Start angle: "<<_params.viewpointStartAngle<<", end angle: "<<_params.viewpointEndAngle<<std::endl;
     int iteration = 0;
-    QList<Processor::E_CALCULATION_PARAMS> paramsList;
 
-    QList<QPair<long double, QFuture<std::complex<long double> > > > futureList;
     for (long double viewpointAzimuth = _params.viewpointStartAngle;
             viewpointAzimuth <= _params.viewpointEndAngle;
             viewpointAzimuth += _params.viewpointRotationStep) {
@@ -41,7 +39,10 @@ void CalculationThread::run() {
         MVector viewpoint;
         viewpoint<<x, y, z;
 
-        std::complex<long double> e = Processor::getE(viewpoint, _model, wavelength);
+        std::complex<long double> e = Processor::getE(viewpoint,
+                                                      _model,
+                                                      wavelength,
+                                                      _params.amplitude);
 
         Processor::CALCULATION_RESULT localResult;
         localResult.azimuth = viewpointAzimuth;
@@ -51,39 +52,7 @@ void CalculationThread::run() {
         _results.push_back(localResult);
         iteration++;
         emit iterationFinished(iteration);
-
-//        std::cout<<"viewpoint: "<<viewpoint;
-//        Processor::E_CALCULATION_PARAMS params = {viewpoint, _model, wavelength};
-//        paramsList.append(params);
-
-//        QFuture<std::complex<long double> > future = QtConcurrent::run(Processor::getE, params);
-//        futureList.append(QPair<long double, QFuture<std::complex<long double> > >(viewpointAzimuth, future));
     }
-
-//    for (auto future = futureList.begin(); future != futureList.end(); future++) {
-//        QPair<long double, QFuture<std::complex<long double> > > p = *future;
-//        std::complex<long double> e = p.second;
-//        Processor::CALCULATION_RESULT localResult;
-//        localResult.azimuth = p.first;
-//        localResult.E = std::abs(e);
-//        localResult.eComplex = e;
-
-//        _results.push_back(localResult);
-
-//        iteration++;
-//        emit iterationFinished(iteration);
-//    }
-
-//    std::complex<long double> e = Processor::getE(viewpoint, _model, wavelength);
-
-//    Processor::CALCULATION_RESULT localResult;
-//    localResult.azimuth = viewpointAzimuth;
-//    localResult.E = std::abs(e);
-//    localResult.eComplex = e;
-
-//    _results.push_back(localResult);
-//    iteration++;
-//    emit iterationFinished(iteration);
 }
 
 QList<Processor::CALCULATION_RESULT> CalculationThread::results() const {

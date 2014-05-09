@@ -28,6 +28,7 @@ public:
         long double viewpointStartAngle;
         long double viewpointEndAngle;
         long double frequency;                   //GHz
+        long double amplitude;
     };    
     
     ParamsWidget();
@@ -57,6 +58,7 @@ private:
     QDoubleSpinBox *_spViewpointRotationStartAngle;
     QDoubleSpinBox *_spViewpointRotationEndAngle;
     QDoubleSpinBox *_spFrequency;
+    QDoubleSpinBox *_spAmplitude;
 };
 
 #endif	/* PARAMSWIDGET_H */

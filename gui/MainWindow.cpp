@@ -89,6 +89,7 @@ MainWindow::convertParams(
     result.viewpointDistance = params.viewpointDistance;
     result.frequency = params.frequency * pow(10, 9);
     result.viewpointRotationStep = params.viewpointRotationStep * M_PI / 180.;
+    result.amplitude =  params.amplitude;
     
     return result;
 }

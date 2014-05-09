@@ -185,16 +185,11 @@ Processor::switchCoordinates(
 }
 
 std::complex<long double>
-Processor::getE(const E_CALCULATION_PARAMS params) {
-
-    return getE(params.viewpoint, params.model, params.wavelength);
-}
-
-std::complex<long double>
 Processor::getE(
         const MVector &viewPoint,
         QList<Triangle> &model,
-        const long double wavelength) {
+        const long double wavelength,
+        const long double amplitude) {
 
     long double k = 2*M_PI / wavelength;
     std::complex<long double> e;

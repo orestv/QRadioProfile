@@ -27,6 +27,7 @@ void ParamsWidget::initWidgets() {
     _spViewpointRotationStartAngle = new QDoubleSpinBox();
     _spViewpointRotationEndAngle = new QDoubleSpinBox();
     _spFrequency = new QDoubleSpinBox();
+    _spAmplitude = new QDoubleSpinBox();
     
     _spViewpointHeight->setMinimum(0);
     _spViewpointHeight->setMaximum(INFINITY);
@@ -59,6 +60,10 @@ void ParamsWidget::initWidgets() {
     _spFrequency->setMinimum(0);
     _spFrequency->setSingleStep(0.1);
     _spFrequency->setValue(95);
+
+    _spAmplitude->setMinimum(0.1);
+    _spAmplitude->setMaximum(10);
+    _spAmplitude->setValue(1);
     
 #ifdef QT_DEBUG
     _fpModel->setSelectedPath("/home/seth/dev/QRadioProfile/models/cub.obj");
@@ -76,6 +81,7 @@ void ParamsWidget::initWidgets() {
     addWidget(*layout, tr("Початковий азимут ТС, °"), _spViewpointRotationStartAngle);
     addWidget(*layout, tr("Кінцевий азимут ТС, °"), _spViewpointRotationEndAngle);
     addWidget(*layout, tr("Частота скануючого сигналу, ГГц"), _spFrequency);
+    addWidget(*layout, tr("Амплітуда, у.о."), _spAmplitude);
 
     setLayout(layout);
 }
@@ -119,6 +125,7 @@ ParamsWidget::gatherParams() const {
     result.viewpointStartAngle = _spViewpointRotationStartAngle->value();
     result.viewpointEndAngle = _spViewpointRotationEndAngle->value();
     result.frequency = _spFrequency->value();
+    result.amplitude = _spAmplitude->value();
     
     return result;
 }

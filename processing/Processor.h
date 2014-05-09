@@ -16,11 +16,6 @@
 
 class Processor {
 public:
-    struct E_CALCULATION_PARAMS {
-        MVector viewpoint;
-        QList<Triangle> &model;
-        long double wavelength;
-    };
 
     struct E0_CALCULATION_RESULT {
         std::complex<long double> e;
@@ -47,6 +42,7 @@ public:
         long double viewpointStartAngle;
         long double viewpointEndAngle;
         long double frequency;
+        long double amplitude;
     };
     
     struct CALCULATION_RESULT {
@@ -69,8 +65,7 @@ public:
     
     constexpr static long double LIGHTSPEED = 299792458;
 
-    static std::complex<long double> getE(const E_CALCULATION_PARAMS params);
-    static std::complex<long double> getE(const MVector &viewPoint, QList<Triangle> &model, const long double wavelength);
+    static std::complex<long double> getE(const MVector &viewPoint, QList<Triangle> &model, const long double wavelength, const long double amplitude);
     static std::complex<long double> getE0(const MVector &viewpoint, const Triangle &triangle, const long double wavelength);
     static bool isTriangleVisible(const Triangle &triangle, const QList<Triangle> &model, const MVector &viewPoint);
     static long double getSigma(const MVector &observationPoint, const Triangle &triangle, const long double R, const long double wavelength);
