@@ -47,7 +47,7 @@ Processor::isTriangleVisible(
     if (dot <= 0 || isnan(dot))
         return false;
 
-    return true;\
+    return true;
 }
 
 complex<mdouble>
