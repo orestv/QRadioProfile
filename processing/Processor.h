@@ -42,6 +42,8 @@ public:
     static MVector switchCoordinates(const MVector &vector, const MMatrix &matrix, const MVector &dCenter);
     static MVector switchCoordinates(const MVector &vector, const MMatrix &matrix);
 
+    static mdouble getAngleBisectionLength(const Triangle &triangle, int angleIndex);
+
     static QVector3D projectOntoPlane(const QVector3D &vector, QVector3D plane_normal);
     static MVector projectOntoPlane(const MVector &point, MVector plane_normal);
     

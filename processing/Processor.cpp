@@ -91,6 +91,21 @@ Processor::getEs(
     x2 = leftMost[0], y2 = leftMost[1];
     x3 = middle[0], y3 = middle[1];
 
+    mdouble longestBisect = 0;
+    for (int i = 0; i < 3; i++) {
+        mdouble bisectLength = Processor::getAngleBisectionLength(newTriangle, i);
+        longestBisect = max(bisectLength, longestBisect);
+    }
+
+    if (zc / 10 > M_PIl * longestBisect * longestBisect / wavelength) {
+#ifdef DEBUG_OUTPUT
+        cout<<"z == "<<zc<<endl;
+        cout<<"pi*a^2/lambda = "<<M_PIl * longestBisect * longestBisect / wavelength<<endl;
+        cout<<"Skipping this triangle."<<endl<<endl;
+#endif
+        return complex<mdouble>(0, 0);
+    }
+
     complex<mdouble> e_0(0,
                 (-1/16.)*(
                 -x3*y2-y1*x2+y1*x3+x1*y2+y3*x2-x1*y3)*
@@ -128,7 +143,10 @@ Processor::getEs(
 
     complex<mdouble> e = e_0 * e_1 / e_2;
 
+    mdouble L1 = (-x3*y2 + x3*y1 - y1*x2 + x1*y2) / (x1 - x2);
     complex<mdouble> result = e;
+    if (y3 < L1)
+        result *= -1;
 
 #ifdef DEBUG_OUTPUT
     cout<<"New basis: "<<endl<<
@@ -153,7 +171,10 @@ Processor::getEs(
     cout<<"y[c]:="<<newViewpoint[1]<<";"<<endl;
     cout<<"z:="<<newViewpoint[2]<<";"<<endl<<endl;
 
-    cout<<"Es = "<<e<<endl;
+    cout<<"Longest bisect = "<<longestBisect<<endl;
+    cout<<"z == "<<zc<<endl;
+    cout<<"pi*a^2/lambda = "<<M_PIl * longestBisect * longestBisect / wavelength<<endl<<endl;
+
     cout<<"e_0 = "<<e_0<<endl;
     cout<<"e_1 = "<<e_1<<endl;
     cout<<"e_2 = "<<e_2<<endl;
@@ -169,10 +190,12 @@ Processor::getEs(
     cout<<"e_1_3 = "<<e_1_3<<endl;
     cout<<"e_1_3_1 = "<<e_1_3_1<<endl;
     cout<<"e_1_3_2_imag = "<<e_1_3_2_imag<<endl;
+
+    cout<<"L1 = "<<L1<<"; y3 = "<<y3<<endl;
 #endif
 
     if (isnan(result.real()) || isnan(result.imag())) {
-        cout<<"Result is NAN in getE0!"<<endl;
+        cout<<"Result is NAN in getEs!"<<endl;
     }
     return result;
 }
@@ -232,14 +255,13 @@ Processor::getE(
         if (i % 10000 == 0)
             qDebug()<<"Processing triangle "<<i<<"out of "<<model.count();
 
-        mdouble R = (eViewpoint - triangle->center()).norm();
 #ifdef DEBUG_OUTPUT
         cout<<"Processing triangle"<<endl<<
                    triangle->p()<<endl<<endl<<
                    triangle->q()<<endl<<endl<<
                    triangle->r()<<endl<<endl;
-        cout<<"R = "<<R<<endl;
 #endif
+
         complex<mdouble> Es = getEs(eViewpoint, *triangle, wavelength, amplitude);
 
 #ifdef DEBUG_OUTPUT
@@ -279,4 +301,21 @@ Processor::getCoordinatesTransformationMatrix(
             X.y(), Y.y(), Z.y(),
             X.z(), Y.z(), Z.z();
     return result;
+}
+
+mdouble
+Processor::getAngleBisectionLength(
+        const Triangle &triangle,
+        int angleIndex) {
+    MVector a = triangle[angleIndex],
+            b = triangle[angleIndex+1],
+            c = triangle[angleIndex + 2];
+
+    MVector bc = c - b;
+    mdouble proportion = (b - a).norm() / (c - a).norm();
+    mdouble cd_norm = bc.norm() / (proportion + 1);
+    MVector cd = (-bc).normalized() * cd_norm;
+    MVector d = c + cd;
+
+    return (d - a).norm();
 }
