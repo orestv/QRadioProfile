@@ -63,13 +63,15 @@ Processor::getEs(
 
     MMatrix basis = getCoordinatesTransformationMatrix(triangle);
 
-    MVector eCenter = - Processor::switchCoordinates(triangle.center(), basis);
+    Eigen::FullPivLU<MMatrix> basisLU(basis);
 
-    MVector newViewpoint = Processor::switchCoordinates(viewpoint, basis, eCenter);
+    MVector eCenter = - Processor::switchCoordinates(triangle.center(), basisLU);
+
+    MVector newViewpoint = Processor::switchCoordinates(viewpoint, basisLU, eCenter);
     MVector p, q, r;
-    p = Processor::switchCoordinates(triangle.p(), basis, eCenter);
-    q = Processor::switchCoordinates(triangle.q(), basis, eCenter);
-    r = Processor::switchCoordinates(triangle.r(), basis, eCenter);
+    p = Processor::switchCoordinates(triangle.p(), basisLU, eCenter);
+    q = Processor::switchCoordinates(triangle.q(), basisLU, eCenter);
+    r = Processor::switchCoordinates(triangle.r(), basisLU, eCenter);
     Triangle newTriangle(p, q, r);
 
     mdouble x1,y1, x2,y2, x3,y3;
@@ -207,11 +209,10 @@ Processor::getEs(
 MVector
 Processor::switchCoordinates(
         const MVector &vector,
-        const MMatrix &matrix,
+        const Eigen::FullPivLU<MMatrix> &matrixLU,
         const MVector &dCenter) {
 
-    Eigen::ColPivHouseholderQR<MMatrix> solver(matrix);
-    MVector eResult = solver.solve(vector);
+    MVector eResult = matrixLU.solve(vector);
 
     eResult += dCenter;
 
@@ -221,11 +222,11 @@ Processor::switchCoordinates(
 MVector
 Processor::switchCoordinates(
         const MVector &vector,
-        const MMatrix &matrix) {
+        const Eigen::FullPivLU<MMatrix> &matrixLU) {
 
     MVector zeroCenter;
     zeroCenter<<0., 0., 0.;
-    return switchCoordinates(vector, matrix, zeroCenter);
+    return switchCoordinates(vector, matrixLU, zeroCenter);
 }
 
 complex<mdouble>
