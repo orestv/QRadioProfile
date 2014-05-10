@@ -192,11 +192,11 @@ Processor::getEs(
     cout<<"e_1_3_2_imag = "<<e_1_3_2_imag<<endl;
 
     cout<<"L1 = "<<L1<<"; y3 = "<<y3<<endl;
-#endif
 
     if (isnan(result.real()) || isnan(result.imag())) {
         cout<<"Result is NAN in getEs!"<<endl;
     }
+#endif
     return result;
 }
 
