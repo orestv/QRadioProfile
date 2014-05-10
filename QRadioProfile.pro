@@ -15,7 +15,6 @@ SOURCES += main.cpp \
     gui/MainWindow.cpp \
     gui/FilePicker.cpp \
     import/Importer.cpp \
-    processing/ProcessParams.cpp \
     processing/Processor.cpp \
     processing/CalculationThread.cpp \
     geometry/triangle.cpp
@@ -26,9 +25,8 @@ HEADERS += \
     gui/MainWindow.h \
     gui/FilePicker.h \
     import/Importer.h \
-    processing/ProcessParams.h \
     processing/Processor.h \
     processing/CalculationThread.h \
     geometry/triangle.h \
-    geometry/mmatrix.h
+    geometry/mtypes.h
 

@@ -10,9 +10,9 @@
 #include "gui/MainWindow.h"
 #include <QDebug>
 
-QList<long double> convertToDoubles(QString &sourceString) {
+QList<mdouble> convertToDoubles(QString &sourceString) {
     auto coords = sourceString.remove("(").remove(")").split(";");
-    QList<long double> values;
+    QList<mdouble> values;
     bool ok;
     for (auto s = coords.begin(); s != coords.end(); s++) {
         values<<s->toDouble(&ok);
@@ -29,7 +29,7 @@ Triangle getTriangle(QString &sourceString) {
     QList<MVector> vectors;
     QList<QString> vertices = sourceString.split(",");
     for (auto vertexString = vertices.begin(); vertexString != vertices.end(); vertexString++) {
-        QList<long double> values = convertToDoubles(*vertexString);
+        QList<mdouble> values = convertToDoubles(*vertexString);
         MVector vertex;
         vertex<<values[0], values[1], values[2];
         vectors.push_back(vertex);
@@ -41,7 +41,7 @@ Triangle getTriangle(QString &sourceString) {
 MVector getViewpoint(QString &sourceString) {
     qDebug()<<sourceString;
     MVector result;
-    QList<long double> values = convertToDoubles(sourceString);
+    QList<mdouble> values = convertToDoubles(sourceString);
     if (values.length() != 3)
         throw QString("Error converting " + sourceString + " into a MVector");
     result<<values[0], values[1], values[2];
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 
     Triangle globalTriangle;
     MVector globalViewpoint;
-    long double frequency;
+    mdouble frequency;
 
     try {
         globalTriangle = getTriangle(optTriangle);
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
         qDebug()<<"Виникла помилка:"<<error;
         return 0;
     }
-    long double wavelength = Processor::LIGHTSPEED / (frequency * pow(10, 9));
+    mdouble wavelength = Processor::LIGHTSPEED / (frequency * pow(10, 9));
     if (!Processor::isTriangleVisible(globalTriangle, QList<Triangle>(), globalViewpoint)) {
         std::cout<<"Triangle is invisible from this viewpoint, exiting..."<<std::endl;
         return 0;
@@ -102,6 +102,6 @@ int main(int argc, char *argv[]) {
 
     QList<Triangle> model;
     model.push_back(globalTriangle);
-    std::complex<long double> e = Processor::getE(globalViewpoint, model, wavelength);
+    std::complex<mdouble> e = Processor::getE(globalViewpoint, model, wavelength);
 #endif
 }

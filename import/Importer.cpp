@@ -75,7 +75,7 @@ QVector3D Importer::_parse_vertex_line(QByteArray line) {
     line = line.trimmed();
     QList<QByteArray> coordinates = line.split(' ');
     auto iter = coordinates.begin();
-    long double x, y, z;
+    mdouble x, y, z;
     x = (*iter).toDouble();iter++;
     y = (*iter).toDouble();iter++;
     z = (*iter).toDouble();iter++;
@@ -162,8 +162,8 @@ bool Importer::_isTriangleAdequate(QVector3D &p, QVector3D &q, QVector3D &r) {
     if (p == q || q == r || p == r)
         return false;
 
-    long double min_length = 0.01;
-    long double max_cos = 0.95;
+    mdouble min_length = 0.01;
+    mdouble max_cos = 0.95;
 
     if ((p-q).lengthSquared() < min_length ||
             (q-r).lengthSquared() < min_length ||
@@ -201,7 +201,7 @@ QList<RightTriangle> Importer::generateRightTriangles(QList<QVector3D> triangle)
     QVector<QVector3D> t = triangle.toVector();
     QList<RightTriangle> result;
     int side_indices[][3] = { {0, 1, 2}, {1, 2, 0}, {2, 0, 1} };
-    long double max_length = 0;
+    mdouble max_length = 0;
     int max_length_index = -1;
     for (int i = 0; i < 3; i++) {
         int *side_i = side_indices[i];

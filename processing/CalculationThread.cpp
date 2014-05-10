@@ -22,16 +22,16 @@ CalculationThread::~CalculationThread() {
 }
 
 void CalculationThread::run() {
-    long double wavelength = Processor::LIGHTSPEED / _params.frequency;
+    mdouble wavelength = Processor::LIGHTSPEED / _params.frequency;
     std::cout<<"Start angle: "<<_params.viewpointStartAngle<<", end angle: "<<_params.viewpointEndAngle<<std::endl;
     int iteration = 0;
 
-    for (long double viewpointAzimuth = _params.viewpointStartAngle;
+    for (mdouble viewpointAzimuth = _params.viewpointStartAngle;
             viewpointAzimuth <= _params.viewpointEndAngle;
             viewpointAzimuth += _params.viewpointRotationStep) {
         if (_cancelled)
             return;
-        long double x, y, z;
+        mdouble x, y, z;
         y = _params.viewpointHeight;
         z = _params.viewpointDistance * cos(viewpointAzimuth);
         x = _params.viewpointDistance * sin(viewpointAzimuth);
@@ -39,7 +39,7 @@ void CalculationThread::run() {
         MVector viewpoint;
         viewpoint<<x, y, z;
 
-        std::complex<long double> e = Processor::getE(viewpoint,
+        std::complex<mdouble> e = Processor::getE(viewpoint,
                                                       _model,
                                                       wavelength,
                                                       _params.amplitude);

@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <iostream>
 #include <complex>
-#include "geometry/mmatrix.h"
+#include "geometry/mtypes.h"
 
 #include "Processor.h"
 #include <math.h>
@@ -38,7 +38,7 @@ Processor::isTriangleVisible(
     viewVector.normalize();
 
 
-    long double dot = viewVector.dot(triangle.faceNormal());
+    mdouble dot = viewVector.dot(triangle.faceNormal());
 
 
 //    std::cout<<"Dot: "<<dot<<std::endl;
@@ -48,14 +48,14 @@ Processor::isTriangleVisible(
     return true;\
 }
 
-long double
+mdouble
 Processor::getSigma(
         const MVector &observationPoint,
         const Triangle &triangle,
-        const long double R,
-        const long double wavelength) {
+        const mdouble R,
+        const mdouble wavelength) {
 
-    std::complex<long double> E0 = Processor::getE0(observationPoint, triangle, wavelength);
+    std::complex<mdouble> E0 = Processor::getE0(observationPoint, triangle, wavelength);
     if (std::isnan(E0.real()) || std::isnan(E0.imag())) {
         std::cout<<"IsNAN in getSigma!"<<std::endl;
     }
@@ -63,11 +63,11 @@ Processor::getSigma(
     return 2*sqrt(M_PI)*R*std::abs(E0);
 }
 
-std::complex<long double>
+std::complex<mdouble>
 Processor::getE0(
         const MVector &viewpoint,
         const Triangle &triangle,
-        const long double wavelength) {
+        const mdouble wavelength) {
 
     MMatrix basis = getCoordinatesTransformationMatrix(triangle);
 
@@ -80,8 +80,8 @@ Processor::getE0(
     r = Processor::switchCoordinates(triangle.r(), basis, eCenter);
     Triangle newTriangle(p, q, r);
 
-    long double x1,y1, x2,y2, x3,y3;
-    long double xc = newViewpoint[0],
+    mdouble x1,y1, x2,y2, x3,y3;
+    mdouble xc = newViewpoint[0],
            yc = newViewpoint[1],
            zc = newViewpoint[2];
 
@@ -109,22 +109,22 @@ Processor::getE0(
 
 //    std::cout<<"x[c]:="<<xc<<";y[c]:="<<yc<<";z:="<<zc<<";"<<std::endl;
 
-    std::complex<long double> e1 = (-x3*y2 - y1*x2 + y1*x3 + x1*y2 + y3*x2 - x1*y3);
-//    std::complex<long double> e2 = std::exp(std::complex<long double>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc))) *
+    std::complex<mdouble> e1 = (-x3*y2 - y1*x2 + y1*x3 + x1*y2 + y3*x2 - x1*y3);
+//    std::complex<mdouble> e2 = std::exp(std::complex<mdouble>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc))) *
 //            (-xc*x3 + xc*x1 - yc*y3 + yc*y1);
-    std::complex<long double> e2_1 = (-xc*x3 + xc*x1 - yc*y3 + yc*y1);
-    std::complex<long double> e2_2 = std::exp(std::complex<long double>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc)));
-    std::complex<long double> e2 = e2_1 * e2_2;
-    std::complex<long double> e3 = std::exp(std::complex<long double>(0, -2*M_PI*(xc*x3 + yc*y3)/(wavelength*zc)))*
+    std::complex<mdouble> e2_1 = (-xc*x3 + xc*x1 - yc*y3 + yc*y1);
+    std::complex<mdouble> e2_2 = std::exp(std::complex<mdouble>(0, -2*M_PI*(xc*x2 + yc*y2)/(wavelength*zc)));
+    std::complex<mdouble> e2 = e2_1 * e2_2;
+    std::complex<mdouble> e3 = std::exp(std::complex<mdouble>(0, -2*M_PI*(xc*x3 + yc*y3)/(wavelength*zc)))*
             (-xc*x2 + xc*x1 - yc*y2 + yc*y1);
-    std::complex<long double> e4 = std::exp(std::complex<long double>(0, -2*M_PI*(xc*x1 + yc*y1)/(wavelength*zc)))*
+    std::complex<mdouble> e4 = std::exp(std::complex<mdouble>(0, -2*M_PI*(xc*x1 + yc*y1)/(wavelength*zc)))*
             (xc*x2 - xc*x3 + yc*y2 - yc*y3);
-    long double e5 = zc*zc*wavelength*wavelength;
-    long double e6 = -4*(-xc*x3 + xc*x1 - yc*y3 + yc*y1) *
+    mdouble e5 = zc*zc*wavelength*wavelength;
+    mdouble e6 = -4*(-xc*x3 + xc*x1 - yc*y3 + yc*y1) *
             (-xc*x2 + xc*x1 - yc*y2 + yc*y1) *
             (xc*x2 - xc*x3 + yc*y2 - yc*y3)*M_PI*M_PI;
 
-    std::complex<long double> result = e1 * (e2 - e3 - e4) * e5 / e6;
+    std::complex<mdouble> result = e1 * (e2 - e3 - e4) * e5 / e6;
 
 #ifdef DEBUG_OUTPUT
     std::cout<<"New basis: "<<std::endl<<
@@ -184,15 +184,15 @@ Processor::switchCoordinates(
     return switchCoordinates(vector, matrix, zeroCenter);
 }
 
-std::complex<long double>
+std::complex<mdouble>
 Processor::getE(
         const MVector &viewPoint,
         QList<Triangle> &model,
-        const long double wavelength,
-        const long double amplitude) {
+        const mdouble wavelength,
+        const mdouble amplitude) {
 
-    long double k = 2*M_PI / wavelength;
-    std::complex<long double> e;
+    mdouble k = 2*M_PI / wavelength;
+    std::complex<mdouble> e;
 
 #ifdef DEBUG_OUTPUT
     std::cout<<"Wavelength = "<<wavelength<<std::endl;
@@ -200,7 +200,7 @@ Processor::getE(
 #endif
 
     int i = 0;
-    long double sum_cos = 0, sum_sin = 0;
+    mdouble sum_cos = 0, sum_sin = 0;
 
     MVector eViewpoint;
     eViewpoint<<viewPoint.x(), viewPoint.y(), viewPoint.z();
@@ -213,7 +213,7 @@ Processor::getE(
         if (i % 10000 == 0)
             qDebug()<<"Processing triangle "<<i<<"out of "<<model.count();
 
-        long double R = (eViewpoint - triangle->center()).norm();
+        mdouble R = (eViewpoint - triangle->center()).norm();
 #ifdef DEBUG_OUTPUT
         std::cout<<"Processing triangle"<<std::endl<<
                    triangle->p()<<std::endl<<std::endl<<
@@ -221,8 +221,8 @@ Processor::getE(
                    triangle->r()<<std::endl<<std::endl;
         std::cout<<"R = "<<R<<std::endl;
 #endif
-        long double sigma = getSigma(eViewpoint, *triangle, R, wavelength);
-        long double SR = sigma / pow(R, 2);
+        mdouble sigma = getSigma(eViewpoint, *triangle, R, wavelength);
+        mdouble SR = sigma / pow(R, 2);
 
         sum_cos += SR * cos(k*R);
         sum_sin += SR * sin(k*R);
@@ -244,7 +244,7 @@ Processor::getE(
         std::cout<<std::endl<<std::endl;
     }
 
-    return std::complex<long double>(sum_cos, sum_sin);
+    return std::complex<mdouble>(sum_cos, sum_sin);
 }
 
 MMatrix

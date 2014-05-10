@@ -5,7 +5,7 @@
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 
-#include "geometry/mmatrix.h"
+#include "geometry/mtypes.h"
 
 using namespace Eigen;
 

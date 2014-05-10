@@ -15,6 +15,8 @@
 
 #include "FilePicker.h"
 
+#include "geometry/mtypes.h"
+
 class ParamsWidget : public QWidget{
     Q_OBJECT
 public:
@@ -22,13 +24,13 @@ public:
     struct CALCULATION_PARAMS {
         QString inputPath;
         QString resultPath;
-        long double viewpointHeight;
-        long double viewpointDistance;
-        long double viewpointRotationStep;       //degrees
-        long double viewpointStartAngle;
-        long double viewpointEndAngle;
-        long double frequency;                   //GHz
-        long double amplitude;
+        mdouble viewpointHeight;
+        mdouble viewpointDistance;
+        mdouble viewpointRotationStep;       //degrees
+        mdouble viewpointStartAngle;
+        mdouble viewpointEndAngle;
+        mdouble frequency;                   //GHz
+        mdouble amplitude;
     };    
     
     ParamsWidget();

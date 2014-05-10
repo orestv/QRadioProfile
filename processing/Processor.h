@@ -12,70 +12,70 @@
 #include <QVector3D>
 #include "geometry/triangle.h"
 #include <complex>
-#include "geometry/mmatrix.h"
+#include "geometry/mtypes.h"
 
 class Processor {
 public:
 
     struct E0_CALCULATION_RESULT {
-        std::complex<long double> e;
-        std::complex<long double> e1;
-        std::complex<long double> e2;
-        std::complex<long double> e3;
-        std::complex<long double> e4;
-        std::complex<long double> e5;
+        std::complex<mdouble> e;
+        std::complex<mdouble> e1;
+        std::complex<mdouble> e2;
+        std::complex<mdouble> e3;
+        std::complex<mdouble> e4;
+        std::complex<mdouble> e5;
         Triangle newTriangle;
         MMatrix newBasis;
         MVector newViewpoint;
-        long double x1, y1, x2, y2, x3, y3;
+        mdouble x1, y1, x2, y2, x3, y3;
     };
 
     struct SIGMA_CALCULATION_RESULT {
         E0_CALCULATION_RESULT e;
-        long double sigma;
+        mdouble sigma;
     };
 
     struct PARAMS {
-        long double viewpointHeight;
-        long double viewpointDistance;
-        long double viewpointRotationStep;
-        long double viewpointStartAngle;
-        long double viewpointEndAngle;
-        long double frequency;
-        long double amplitude;
+        mdouble viewpointHeight;
+        mdouble viewpointDistance;
+        mdouble viewpointRotationStep;
+        mdouble viewpointStartAngle;
+        mdouble viewpointEndAngle;
+        mdouble frequency;
+        mdouble amplitude;
     };
     
     struct CALCULATION_RESULT {
-        long double azimuth;
-        std::complex<long double> eComplex;
-        long double E;
+        mdouble azimuth;
+        std::complex<mdouble> eComplex;
+        mdouble E;
     };
     
     struct VIEWPOINT_SUMS {
-        long double sum_cos;
-        long double sum_sin;
+        mdouble sum_cos;
+        mdouble sum_sin;
     };
     
     struct TRIANGLE_ANGLES {
-        long double cos_alpha;
-        long double cos_beta;
-        long double sin_alpha;
-        long double sin_beta;
+        mdouble cos_alpha;
+        mdouble cos_beta;
+        mdouble sin_alpha;
+        mdouble sin_beta;
     };
     
-    constexpr static long double LIGHTSPEED = 299792458;
+    constexpr static mdouble LIGHTSPEED = 299792458;
 
-    static std::complex<long double> getE(const MVector &viewPoint, QList<Triangle> &model, const long double wavelength, const long double amplitude);
-    static std::complex<long double> getE0(const MVector &viewpoint, const Triangle &triangle, const long double wavelength);
+    static std::complex<mdouble> getE(const MVector &viewPoint, QList<Triangle> &model, const mdouble wavelength, const mdouble amplitude);
+    static std::complex<mdouble> getE0(const MVector &viewpoint, const Triangle &triangle, const mdouble wavelength);
     static bool isTriangleVisible(const Triangle &triangle, const QList<Triangle> &model, const MVector &viewPoint);
-    static long double getSigma(const MVector &observationPoint, const Triangle &triangle, const long double R, const long double wavelength);
+    static mdouble getSigma(const MVector &observationPoint, const Triangle &triangle, const mdouble R, const mdouble wavelength);
     static MMatrix getCoordinatesTransformationMatrix(const Triangle &triangle);
     static MVector switchCoordinates(const MVector &vector, const MMatrix &matrix, const MVector &dCenter);
     static MVector switchCoordinates(const MVector &vector, const MMatrix &matrix);
 
     static QVector3D projectOntoPlane(const QVector3D &vector, QVector3D plane_normal);
     static MVector projectOntoPlane(const MVector &point, MVector plane_normal);
-    static long double calculateEn(TRIANGLE_ANGLES &angles, QVector3D &shortLeg, QVector3D &longLeg, long double wavelength);
+    static mdouble calculateEn(TRIANGLE_ANGLES &angles, QVector3D &shortLeg, QVector3D &longLeg, mdouble wavelength);
     
 private:
 
