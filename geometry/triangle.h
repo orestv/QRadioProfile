@@ -22,9 +22,6 @@ public:
     MVector q() const;
     MVector r() const;
 
-    MVector v0() const;
-    MVector v1() const;
-
     MVector leftMost() const;
     MVector rightMost() const;
     MVector middle() const;
@@ -32,17 +29,15 @@ public:
     MVector faceNormal() const;
     MVector center() const;
 
+    const MVector& operator[](int index) const;
+
 private:
     void init();
 
-    MVector _p;
-    MVector _q;
-    MVector _r;
-
-    MVector _v0, _v1;
-
     MVector _faceNormal;
     MVector _center;
+
+    MVector _vertices[3];
 };
 
 class Plane {

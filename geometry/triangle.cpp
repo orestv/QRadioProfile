@@ -3,62 +3,55 @@
 using namespace std;
 
 Triangle::Triangle(QVector3D &p, QVector3D &q, QVector3D &r) {
-    _p<<p.x(), p.y(), p.z();
-    _q<<q.x(), q.y(), q.z();
-    _r<<r.x(), r.y(), p.z();
+    _vertices[0]<<p.x(), p.y(), p.z();
+    _vertices[1]<<q.x(), q.y(), q.z();
+    _vertices[2]<<r.x(), r.y(), p.z();
 
     init();
 }
 
 Triangle::Triangle(MVector &p, MVector &q, MVector &r) {
-    _p = p;
-    _q = q;
-    _r = r;
+    _vertices[0] = p;
+    _vertices[1] = q;
+    _vertices[2] = r;
 
     init();
 }
 
 Triangle::Triangle(const Triangle &other)
 {
-    _p = other._p;
-    _q = other._q;
-    _r = other._r;
+    for (int i = 0; i < 3; i++)
+        _vertices[i] = other._vertices[i];
 
     init();
 }
 
 void Triangle::init() {
-    _center = (_p + _q + _r)/3;
+    _center << 0, 0, 0;
+    for (int i = 0; i < 3; i++)
+        _center += _vertices[i];
+    _center /= 3;
 //    cout<<"Calculating normal"<<endl;
 //    cout<<"q - p = "<<_q - _p<<endl;
 //    cout<<"r - p = "<<_r - _p<<endl;
 //    cout<<"Cross = "<<(_q-_p).cross(_r-_p)<<endl;
-    _faceNormal = (_q-_p).cross(_r-_p).normalized();
-    _v0 = _r - _p;
-    _v1 = _q - _p;
+    _faceNormal = (_vertices[1]-_vertices[0]).
+            cross(_vertices[2]-_vertices[0]).normalized();
 }
 
 MVector Triangle::p() const
 {
-    return _p;
+    return _vertices[0];
 }
 
 MVector Triangle::q() const
 {
-    return _q;
+    return _vertices[1];
 }
 
 MVector Triangle::r() const
 {
-    return _r;
-}
-
-MVector Triangle::v0() const {
-    return _v0;
-}
-
-MVector Triangle::v1() const {
-    return _v1;
+    return _vertices[2];
 }
 
 MVector Triangle::faceNormal() const
@@ -72,34 +65,30 @@ MVector Triangle::center() const
 }
 
 MVector Triangle::leftMost() const {
-    MVector result = _p;
-    if (_q[0] <= result[0])
-        if (_q[0] < result[0] || _q[1] <= result[1])
-            result = _q;
-    if (_r[0] <= result[0] && _r[1] <= result[1])
-        if (_r[0] < result[0] || _r[1] <= result[1])
-            result = _r;
+    MVector result = _vertices[0];
+    for (int i = 1; i < 3; i++)
+        if (_vertices[i][0] < result[0] && _vertices[i][1] <= result[1])
+            result = _vertices[i];
     return result;
 }
 
 MVector Triangle::rightMost() const {
-    MVector result = _p;
-    if (_q[0] >= result[0])
-        if (_q[0] > result[0] || _q[1] >= result[1])
-            result = _q;
-    if (_r[0] >= result[0] && _r[1] >= result[1])
-        if (_r[0] > result[0] || _r[1] >= result[1])
-            result = _r;
+    MVector result = _vertices[0];
+    for (int i = 1; i < 3; i++)
+        if (_vertices[i][0] > result[0] && _vertices[i][1] >= result[1])
+            result = _vertices[i];
     return result;
 }
 
 MVector Triangle::middle() const {
-    if (_p != leftMost() && _p != rightMost())
-        return _p;
-    if (_q != leftMost() && _q != rightMost())
-        return _q;
-    if (_r != leftMost() && _r != rightMost())
-        return _r;
+    for (int i = 0; i < 3; i++)
+        if (_vertices[i] != leftMost() && _vertices[i] != rightMost())
+            return _vertices[i];
+}
+
+const MVector& Triangle::operator [](int index) const {
+    index = index % 3;
+    return _vertices[index];
 }
 
 Plane::Plane(MVector &origin, MVector &norm)

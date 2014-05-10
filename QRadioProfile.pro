@@ -5,7 +5,7 @@ CONFIG   += app_bundle console
 
 QMAKE_CXXFLAGS = -std=c++0x
 
-DEFINES -= DEBUG_OUTPUT
+DEFINES += DEBUG_OUTPUT
 
 TEMPLATE = app
 
