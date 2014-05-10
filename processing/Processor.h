@@ -39,8 +39,8 @@ public:
     static std::complex<mdouble> getEs(const MVector &viewpoint, const Triangle &triangle, const mdouble wavelength, const mdouble amplitude);
     static bool isTriangleVisible(const Triangle &triangle, const QList<Triangle> &model, const MVector &viewPoint);
     static MMatrix getCoordinatesTransformationMatrix(const Triangle &triangle);
-    static MVector switchCoordinates(const MVector &vector, const MMatrix &matrix, const MVector &dCenter);
-    static MVector switchCoordinates(const MVector &vector, const MMatrix &matrix);
+    static MVector switchCoordinates(const MVector &vector, const Eigen::FullPivLU<MMatrix> &matrixLU, const MVector &dCenter);
+    static MVector switchCoordinates(const MVector &vector, const Eigen::FullPivLU<MMatrix> &matrixLU);
 
     static mdouble getAngleBisectionLength(const Triangle &triangle, int angleIndex);
 
