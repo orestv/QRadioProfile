@@ -238,6 +238,7 @@ Processor::getE(
     cout<<"Wavelength = "<<wavelength<<endl;
     cout<<"Amplitude = "<<amplitude<<endl;
     cout<<"k = "<<k<<endl;
+    cout<<"viewpoint: ("<<viewPoint.x()<<";"<<viewPoint.y()<<";"<<viewPoint.z()<<")"<<endl;
 #endif
 
     int i = 0;
