@@ -80,15 +80,18 @@ int main(int argc, char *argv[]) {
     QString optTriangle = args[1];
     QString optViewpoint = args[2];
     QString optFrequency = args[3];
+    QString optAmplitude = args[4];
 
     Triangle globalTriangle;
     MVector globalViewpoint;
     mdouble frequency;
+    mdouble amplitude;
 
     try {
         globalTriangle = getTriangle(optTriangle);
         globalViewpoint = getViewpoint(optViewpoint);
         frequency = optFrequency.toDouble();
+        amplitude = optAmplitude.toDouble();
     }
     catch (const QString error) {
         qDebug()<<"Виникла помилка:"<<error;
@@ -102,6 +105,6 @@ int main(int argc, char *argv[]) {
 
     QList<Triangle> model;
     model.push_back(globalTriangle);
-    std::complex<mdouble> e = Processor::getE(globalViewpoint, model, wavelength);
+    std::complex<mdouble> e = Processor::getE(globalViewpoint, model, wavelength, amplitude);
 #endif
 }

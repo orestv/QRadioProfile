@@ -66,7 +66,7 @@ public:
     constexpr static mdouble LIGHTSPEED = 299792458;
 
     static std::complex<mdouble> getE(const MVector &viewPoint, QList<Triangle> &model, const mdouble wavelength, const mdouble amplitude);
-    static std::complex<mdouble> getE0(const MVector &viewpoint, const Triangle &triangle, const mdouble wavelength);
+    static std::complex<mdouble> getEs(const MVector &viewpoint, const Triangle &triangle, const mdouble wavelength, const mdouble amplitude);
     static bool isTriangleVisible(const Triangle &triangle, const QList<Triangle> &model, const MVector &viewPoint);
     static mdouble getSigma(const MVector &observationPoint, const Triangle &triangle, const mdouble R, const mdouble wavelength);
     static MMatrix getCoordinatesTransformationMatrix(const Triangle &triangle);
