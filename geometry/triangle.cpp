@@ -67,7 +67,8 @@ MVector Triangle::center() const
 MVector Triangle::leftMost() const {
     MVector result = _vertices[0];
     for (int i = 1; i < 3; i++)
-        if (_vertices[i][0] < result[0] && _vertices[i][1] <= result[1])
+        if (_vertices[i][0] < result[0] ||
+                (_vertices[i][0] == result[0] && _vertices[i][1] <= result[1]))
             result = _vertices[i];
     return result;
 }
@@ -75,7 +76,8 @@ MVector Triangle::leftMost() const {
 MVector Triangle::rightMost() const {
     MVector result = _vertices[0];
     for (int i = 1; i < 3; i++)
-        if (_vertices[i][0] > result[0] && _vertices[i][1] >= result[1])
+        if (_vertices[i][0] > result[0] ||
+                (_vertices[i][0] == result[0] && _vertices[i][1] >= result[1]))
             result = _vertices[i];
     return result;
 }
