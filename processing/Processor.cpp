@@ -14,6 +14,10 @@
 #include "Processor.h"
 #include <math.h>
 
+#ifndef M_PIl
+#define M_PIl M_PI
+#endif
+
 using namespace std;
 
 MVector
